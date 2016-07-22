@@ -265,6 +265,124 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/22/快速幂原理解析/" itemprop="url">
+                  快速幂原理解析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-22T16:14:33+08:00" content="2016-07-22">
+              2016-07-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>求n的m次方，时间复杂度O(log(N)).不考虑大数情况。</p>
+<h1 id="解决方法：快速幂"><a href="#解决方法：快速幂" class="headerlink" title="解决方法：快速幂"></a>解决方法：快速幂</h1><h2 id="求解方法和步骤"><a href="#求解方法和步骤" class="headerlink" title="求解方法和步骤"></a>求解方法和步骤</h2><p>1）假设n=3,m=10</p>
+<p>2）将m转化为二进制为t=1010,数组形式为a={1,0,1,0}，a[i]表示m的第i位上的二进制数组。</p>
+<p>3）f[i]表示m的前i个二进制数字的十进制形式。我们可以得到<strong><em> f[i+1] = (f[i]+a[i] )</em>2 *</strong> ，如：10 =((((1+0)<em>2+1)</em>2+0)<em>2+1)</em>2 。</p>
+<p>4）2^3^4 = (2^3)^4 ，2^(1+2) = 2^2<em>2 ,由上面两条定理可以推得 g[i+1] = (g[i] </em>(n^a[i]))^2 。</p>
+<p>其中g[i]表示 n^f[i]。</p>
+<h2 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">package acm;</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line"> * Created by hubaobin on 16/7/22.</div><div class="line"></div><div class="line"> */</div><div class="line"></div><div class="line">public class QuickPower &#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public static int getPower(int n, int m) throws RuntimeException &#123;</div><div class="line"></div><div class="line">        if (n == 0) &#123;</div><div class="line"></div><div class="line">            if (m == 0) throw new RuntimeException(&quot;不能同时为0&quot;);</div><div class="line"></div><div class="line">            else return 1;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (m == 0) return 1;</div><div class="line"></div><div class="line">        int result = 1;</div><div class="line"></div><div class="line">        while (m &gt; 0) &#123;</div><div class="line"></div><div class="line">            if ((m &amp; 1) == 1) &#123;</div><div class="line"></div><div class="line">                result *= n;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            result *= result;</div><div class="line"></div><div class="line">            m &gt;&gt;= 1;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return result;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        System.out.println(getPower(2, 10));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/19/四种排序算法分析/" itemprop="url">
                   快排、递归、堆和基数四种排序方法
                 </a>
@@ -327,166 +445,15 @@
 
       
         
-          
-            <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。</p>
+          <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。</p>
 <p>2 )Key右侧的元素重复步骤1)</p>
 <p>3)Key右侧的元素重复步骤1)</p>
 <p>观察源码即可找到实现步骤一效果的方法。</p>
-<h2 id="可行性证明"><a href="#可行性证明" class="headerlink" title="可行性证明"></a>可行性证明</h2><p>题设</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">1)每次排序选中Key的左侧小于等于Key </div><div class="line"></div><div class="line">2)每次排序选中Key的右侧大于等于Key</div><div class="line"></div><div class="line">3)需要排序数组长度为2或3时，数据一定是升序</div></pre></td></tr></table></figure>
-<p>假设数组为 a[] ，Key的下标为k，数组范围为0-n。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">1)当 0&lt;=i&lt;k 时，a[i] &lt;=a[k] &amp;&amp; a[i]&lt;= a[i+1].</div><div class="line"></div><div class="line">2)当 k&lt;j&lt;=n 时，a[j] &gt;=a[k] &amp;&amp; a[j]&gt;= a[j-1].</div><div class="line"></div><div class="line">3)结合1)、2)可以推导出：当 0&lt;=l&lt;n , a[i]&lt;a[i+1]，即排序结果有序</div></pre></td></tr></table></figure>
-<h2 id="优点和缺点"><a href="#优点和缺点" class="headerlink" title="优点和缺点"></a>优点和缺点</h2><ul>
-<li><p>优点:空间复杂度为 O(N) </p>
-</li>
-<li><p>缺点:时间复杂度O(Nlog(N))，但是不稳定。Key的选择很关键，选不好复杂度就会变为N的平方。</p>
-</li>
-<li><p>优化方法：选择数组头部中间尾部，三个元素中间值作为Key。</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package sort;</div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line"> * Created by baobing on 16/7/15.</div><div class="line"></div><div class="line"> */</div><div class="line"></div><div class="line">public class QuickSort &#123;</div><div class="line"></div><div class="line">    private int[] list;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public QuickSort(int[] list) &#123;</div><div class="line"></div><div class="line">        this.list = list;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void sort() &#123;</div><div class="line"></div><div class="line">        sort(0, list.length-1);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void sort(int low, int high) &#123;</div><div class="line"></div><div class="line">        if (low &gt;= high) &#123;</div><div class="line"></div><div class="line">            return;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        int key = list[low];</div><div class="line"></div><div class="line">        int first = low;</div><div class="line"></div><div class="line">        int last = high;</div><div class="line"></div><div class="line">        while (first &lt; last) &#123;</div><div class="line"></div><div class="line">            //一定要从后往前先</div><div class="line"></div><div class="line">            while (first &lt; last &amp;&amp; list[last] &gt;= key) &#123;</div><div class="line"></div><div class="line">                last--;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            list[first] = list[last];</div><div class="line"></div><div class="line">            while (first &lt; last &amp;&amp; list[first] &lt;= key) &#123;</div><div class="line"></div><div class="line">                first++;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            list[last] = list[first];</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        list[first] = key;</div><div class="line"></div><div class="line">        sort(low, first - 1);</div><div class="line"></div><div class="line">        sort(first + 1, high);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        int[] list = &#123;10, 18, 12, 4, 5, 8, 15, 3, 23&#125;;</div><div class="line"></div><div class="line">        QuickSort q = new QuickSort(list);</div><div class="line"></div><div class="line">        q.sort();</div><div class="line"></div><div class="line">        System.out.println(Arrays.toString(list));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h1><h2 id="步骤-1"><a href="#步骤-1" class="headerlink" title="步骤"></a>步骤</h2><p>1）将数组分为两个大小相同的数组（有可能大小相差1），继续分割数组，直到数组大小为1.</p>
-<p>2）现在从同一个数组分割来的两个数组都为升序，将两个数组合并为一个升序的数组。</p>
-<p>3）重复步骤 2）直到整个数组被合并</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>典型的分治算法。通过子序列的有序性，保证自身的有序性。</p>
-<h2 id="优点缺点"><a href="#优点缺点" class="headerlink" title="优点缺点"></a>优点缺点</h2><ul>
-<li><p>优点：时间复杂度为O(Nlog(N)) 并且极其稳定</p>
-</li>
-<li><p>缺点：空间复杂度为O(2N)),比较节省空间的场合不适用，尤其是比较大的数组</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package sort;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line"> * Created by hubaobin on 16/7/16.</div><div class="line"></div><div class="line"> */</div><div class="line"></div><div class="line">public class MergeSort &#123;</div><div class="line"></div><div class="line">    int[] list;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public MergeSort(int[] list) &#123;</div><div class="line"></div><div class="line">        this.list = list;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 合并两个有序的数组</div><div class="line"></div><div class="line">     * 第一个数组的起始下标为low 终止下标为mid</div><div class="line"></div><div class="line">     * 第二个数组的起始下标为mid+1 终止下标为high</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private void merge(int low, int mid, int high) &#123;</div><div class="line"></div><div class="line">        //用于保存两个数组合并结果</div><div class="line"></div><div class="line">        int[] temp = new int[high - low + 1];</div><div class="line"></div><div class="line">        //第一个数组的始末下标</div><div class="line"></div><div class="line">        int first1 = low, end1 = mid;</div><div class="line"></div><div class="line">        //第二个数组的始末下标</div><div class="line"></div><div class="line">        int first2 = mid + 1, end2 = high;</div><div class="line"></div><div class="line">        //记录临时数组的下标</div><div class="line"></div><div class="line">        int k = 0;</div><div class="line"></div><div class="line">        while (first1 &lt;= end1 &amp;&amp; first2 &lt;= end2) &#123;</div><div class="line"></div><div class="line">            if (list[first1] &lt; list[first2]) &#123;</div><div class="line"></div><div class="line">                temp[k++] = list[first1++];</div><div class="line"></div><div class="line">            &#125; else &#123;</div><div class="line"></div><div class="line">                temp[k++] = list[first2++];</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //第一个数组的剩余元素放入临时数组</div><div class="line"></div><div class="line">        while (first1 &lt;= end1) &#123;</div><div class="line"></div><div class="line">            temp[k++] = list[first1++];</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //第二个数组的剩余元素放入临时数组</div><div class="line"></div><div class="line">        while (first2 &lt;= end2) &#123;</div><div class="line"></div><div class="line">            temp[k++] = list[first2++];</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //排序好的临时数组覆盖原数组</div><div class="line"></div><div class="line">        System.arraycopy(temp, 0, list, low, temp.length);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 排序数组</div><div class="line"></div><div class="line">     *</div><div class="line"></div><div class="line">     * @param low  起始下标</div><div class="line"></div><div class="line">     * @param high 末尾下标</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    public void sort(int low, int high) &#123;</div><div class="line"></div><div class="line">        if (low &gt;= high) return;</div><div class="line"></div><div class="line">        int mid = (low + high) &gt;&gt; 1;</div><div class="line"></div><div class="line">        sort(low, mid);</div><div class="line"></div><div class="line">        sort(mid + 1, high);</div><div class="line"></div><div class="line">        merge(low, mid, high);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void sort() &#123;</div><div class="line"></div><div class="line">        sort(0, list.length - 1);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        int[] list = &#123;10, 18, 12, 4, 5, 8, 15, 3, 23&#125;;</div><div class="line"></div><div class="line">        MergeSort q = new MergeSort(list);</div><div class="line"></div><div class="line">        q.sort();</div><div class="line"></div><div class="line">        System.out.println(Arrays.toString(list));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h1><h2 id="步骤-2"><a href="#步骤-2" class="headerlink" title="步骤"></a>步骤</h2><ul>
-<li>最大堆：完全二叉树，所有根节点的子节点小于等于本身</li>
-</ul>
-<p>1）N个节点的树，构建为最大堆。</p>
-<p>2）根节点与树最后一个叶子节点交换。</p>
-<p>3）除去尾部的交换节点之后的树，构造为最大堆</p>
-<p>4）重负步骤2）</p>
-<h2 id="优点缺点-1"><a href="#优点缺点-1" class="headerlink" title="优点缺点"></a>优点缺点</h2><ul>
-<li><p>优点 复杂度O(Nlog(N)) 空间复杂度为O(N)</p>
-</li>
-<li><p>缺点 构建最大堆浪费不少时间</p>
-</li>
-</ul>
-<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package sort;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line"> * Created by hubaobin on 16/7/16.</div><div class="line"></div><div class="line"> */</div><div class="line"></div><div class="line">public class HeapSort &#123;</div><div class="line"></div><div class="line">    private int[] list;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public HeapSort(int[] list) &#123;</div><div class="line"></div><div class="line">        this.list = list;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 排序，最大值放在末尾，data虽然是最大堆，在排序后就成了递增的</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private void sort() &#123;</div><div class="line"></div><div class="line">        buildMaxHeapify();</div><div class="line"></div><div class="line">        //末尾与头交换，交换后调整最大堆</div><div class="line"></div><div class="line">        for (int i = list.length - 1; i &gt; 0; i--) &#123;</div><div class="line"></div><div class="line">            swap(0, i);</div><div class="line"></div><div class="line">            maxHeapify(i, 0);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    private void buildMaxHeapify() &#123;</div><div class="line"></div><div class="line">        //没有子节点的才需要创建最大堆，从最后一个的父节点开始</div><div class="line"></div><div class="line">        int startIndex = getParentIndex(list.length - 1);</div><div class="line"></div><div class="line">        //从尾端开始创建最大堆，每次都是正确的堆</div><div class="line"></div><div class="line">        for (int i = startIndex; i &gt;= 0; i--) &#123;</div><div class="line"></div><div class="line">            maxHeapify(list.length, i);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 创建最大堆</div><div class="line"></div><div class="line">     *</div><div class="line"></div><div class="line">     * @paramheapSize需要创建最大堆的大小，一般在sort的时候用到，因为最多值放在末尾，末尾就不再归入最大堆了</div><div class="line"></div><div class="line">     * @paramindex当前需要创建最大堆的位置</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private void maxHeapify(int heapSize, int index) &#123;</div><div class="line"></div><div class="line">        //当前点与左右子节点比较</div><div class="line"></div><div class="line">        int left = getChildLeftIndex(index);</div><div class="line"></div><div class="line">        int right = getChildRightIndex(index);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">        int largest = index;</div><div class="line"></div><div class="line">        if (left &lt; heapSize &amp;&amp; list[index] &lt; list[left]) &#123;</div><div class="line"></div><div class="line">            largest = left;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (right &lt; heapSize &amp;&amp; list[largest] &lt; list[right]) &#123;</div><div class="line"></div><div class="line">            largest = right;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //得到最大值后可能需要交换，如果交换了，其子节点可能就不是最大堆了，需要重新调整</div><div class="line"></div><div class="line">        if (largest != index) &#123;</div><div class="line"></div><div class="line">            swap(index, largest);</div><div class="line"></div><div class="line">            maxHeapify(heapSize, largest);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    private void swap(int a, int b) &#123;</div><div class="line"></div><div class="line">        int temp = list[a];</div><div class="line"></div><div class="line">        list[a] = list[b];</div><div class="line"></div><div class="line">        list[b] = temp;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 父节点位置</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private static int getParentIndex(int current) &#123;</div><div class="line"></div><div class="line">        return (current - 1) &gt;&gt; 1;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 左子节点position注意括号，加法优先级更高</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private static int getChildLeftIndex(int current) &#123;</div><div class="line"></div><div class="line">        return (current &lt;&lt; 1) + 1;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line"></div><div class="line">     * 右子节点position</div><div class="line"></div><div class="line">     */</div><div class="line"></div><div class="line">    private static int getChildRightIndex(int current) &#123;</div><div class="line"></div><div class="line">        return (current &lt;&lt; 1) + 2;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        int[] list = &#123;10, 18, 12, 4, 5, 8, 15, 3, 23&#125;;</div><div class="line"></div><div class="line">        HeapSort q = new HeapSort(list);</div><div class="line"></div><div class="line">        q.sort();</div><div class="line"></div><div class="line">        System.out.println(Arrays.toString(list));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h1 id="基数排序"><a href="#基数排序" class="headerlink" title="基数排序"></a>基数排序</h1><h2 id="步骤-3"><a href="#步骤-3" class="headerlink" title="步骤"></a>步骤</h2><p>1）将需要排序的数组list中的数字根据他们的个位数字i放到对应的数组bucket[i]的末尾。</p>
-<p>2）从0-9依次将bucket中的数字放置到需要排序的数组list。</p>
-<p>3）接下来是十位、百位，重复类似步骤1），指导数组list中的所有元素该位置都没有数字。</p>
-<h2 id="优点和缺点-1"><a href="#优点和缺点-1" class="headerlink" title="优点和缺点"></a>优点和缺点</h2><p>优点：</p>
-<ul>
-<li><p>时间复杂度低O(Mlog(N)).（N为排序数字个数M为最大位）对于N大M小的情况尤为突出。</p>
-</li>
-<li><p>可以实现相同大小的数字，依旧保持先后顺序</p>
-</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li><p>辅助空间需求要求比较大</p>
-</li>
-<li><p>M大N小时，性能下降</p>
-</li>
-<li><p>试用的排序类型比较少，整数最适合</p>
-</li>
-</ul>
-<p>缺点</p>
-<h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><p>package sort;</p>
-<p>import java.util.Arrays;</p>
-<p>/**</p>
-<ul>
-<li><p>Created by hubaobin on 16/7/17.</p>
-<p>*/</p>
-</li>
-</ul>
-<p>public class RadixSort {</p>
-<pre><code>int list[];
-
-
-
-public RadixSort(int[] list) {
-
-    this.list = list;
-
-}
-
-
-
-public void sort() //d表示最大的数有多少位
-
-{
-
-    int n = 1;
-
-    //bucket[i]用来装载需要排序的位等于i的数字
-
-    int[][] bucket = new int[10][list.length];
-
-    //idxArr[i] 表示bucket[i]填充数据个数
-
-    int[] idxArr = new int[10];
-
-    for (int i = 0; i &lt; 10; i++) idxArr[i] = 0;
-
-
-
-    while (true) {
-
-        boolean isContinue = false;
-
-        //将数组放入bucket
-
-        for (int i = 0; i &lt; list.length; i++) {
-
-            int divRes = list[i] / n;
-
-            if (divRes &gt;= 10) isContinue = true;
-
-            int lsd = (divRes % 10);
-
-            bucket[lsd][idxArr[lsd]++] = list[i];
-
-        }
-
-        //bucket中的数字放回原数组
-
-        for (int i = 0, k = 0; i &lt; 10; i++) {
-
-            for (int j = 0; j &lt; idxArr[i]; j++) {
-
-                list[k++] = bucket[i][j];
-
-
-
-            }
-
-            idxArr[i] = 0;
-
-        }
-
-        if (!isContinue) break;
-
-        n *= 10;
-
-    }
-
-}
-
-
-
-public static void main(String[] args) {
-
-    int[] list = {10, 18, 12, 4, 5, 8, 15, 3, 23};
-
-    RadixSort q = new RadixSort(list);
-
-    q.sort();
-
-    System.out.println(Arrays.toString(list));
-
-}
-</code></pre><p>}</p>
-
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/07/19/四种排序算法分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -554,7 +521,7 @@ public static void main(String[] args) {
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
