@@ -96,7 +96,7 @@
 2 )Key右侧的元素重复步骤1)
 3)Key右侧的元素重复步骤1)
 观察源码即可找到实现步骤一效果的方法。">
-<meta property="og:updated_time" content="2016-07-20T02:04:18.000Z">
+<meta property="og:updated_time" content="2016-07-23T06:31:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="快排、递归、堆和基数四种排序方法">
 <meta name="twitter:description" content="快速排序步骤1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。
@@ -315,6 +315,13 @@
 
           
             
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/19/四种排序算法分析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/19/四种排序算法分析/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -397,101 +404,7 @@
 </li>
 </ul>
 <p>缺点</p>
-<h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><p>package sort;</p>
-<p>import java.util.Arrays;</p>
-<p>/**</p>
-<ul>
-<li><p>Created by hubaobin on 16/7/17.</p>
-<p>*/</p>
-</li>
-</ul>
-<p>public class RadixSort {</p>
-<pre><code>int list[];
-
-
-
-public RadixSort(int[] list) {
-
-    this.list = list;
-
-}
-
-
-
-public void sort() //d表示最大的数有多少位
-
-{
-
-    int n = 1;
-
-    //bucket[i]用来装载需要排序的位等于i的数字
-
-    int[][] bucket = new int[10][list.length];
-
-    //idxArr[i] 表示bucket[i]填充数据个数
-
-    int[] idxArr = new int[10];
-
-    for (int i = 0; i &lt; 10; i++) idxArr[i] = 0;
-
-
-
-    while (true) {
-
-        boolean isContinue = false;
-
-        //将数组放入bucket
-
-        for (int i = 0; i &lt; list.length; i++) {
-
-            int divRes = list[i] / n;
-
-            if (divRes &gt;= 10) isContinue = true;
-
-            int lsd = (divRes % 10);
-
-            bucket[lsd][idxArr[lsd]++] = list[i];
-
-        }
-
-        //bucket中的数字放回原数组
-
-        for (int i = 0, k = 0; i &lt; 10; i++) {
-
-            for (int j = 0; j &lt; idxArr[i]; j++) {
-
-                list[k++] = bucket[i][j];
-
-
-
-            }
-
-            idxArr[i] = 0;
-
-        }
-
-        if (!isContinue) break;
-
-        n *= 10;
-
-    }
-
-}
-
-
-
-public static void main(String[] args) {
-
-    int[] list = {10, 18, 12, 4, 5, 8, 15, 3, 23};
-
-    RadixSort q = new RadixSort(list);
-
-    q.sort();
-
-    System.out.println(Arrays.toString(list));
-
-}
-</code></pre><p>}</p>
+<h2 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package sort;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"></div><div class="line"> * Created by hubaobin on 16/7/17.</div><div class="line"></div><div class="line"> */</div><div class="line"></div><div class="line">public class RadixSort &#123;</div><div class="line"></div><div class="line">    int list[];</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public RadixSort(int[] list) &#123;</div><div class="line"></div><div class="line">        this.list = list;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void sort() //d表示最大的数有多少位</div><div class="line"></div><div class="line">    &#123;</div><div class="line"></div><div class="line">        int n = 1;</div><div class="line"></div><div class="line">        //bucket[i]用来装载需要排序的位等于i的数字</div><div class="line"></div><div class="line">        int[][] bucket = new int[10][list.length];</div><div class="line"></div><div class="line">        //idxArr[i] 表示bucket[i]填充数据个数</div><div class="line"></div><div class="line">        int[] idxArr = new int[10];</div><div class="line"></div><div class="line">        for (int i = 0; i &lt; 10; i++) idxArr[i] = 0;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">        while (true) &#123;</div><div class="line"></div><div class="line">            boolean isContinue = false;</div><div class="line"></div><div class="line">            //将数组放入bucket</div><div class="line"></div><div class="line">            for (int i = 0; i &lt; list.length; i++) &#123;</div><div class="line"></div><div class="line">                int divRes = list[i] / n;</div><div class="line"></div><div class="line">                if (divRes &gt;= 10) isContinue = true;</div><div class="line"></div><div class="line">                int lsd = (divRes % 10);</div><div class="line"></div><div class="line">                bucket[lsd][idxArr[lsd]++] = list[i];</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //bucket中的数字放回原数组</div><div class="line"></div><div class="line">            for (int i = 0, k = 0; i &lt; 10; i++) &#123;</div><div class="line"></div><div class="line">                for (int j = 0; j &lt; idxArr[i]; j++) &#123;</div><div class="line"></div><div class="line">                    list[k++] = bucket[i][j];</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">                idxArr[i] = 0;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            if (!isContinue) break;</div><div class="line"></div><div class="line">            n *= 10;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">        int[] list = &#123;10, 18, 12, 4, 5, 8, 15, 3, 23&#125;;</div><div class="line"></div><div class="line">        RadixSort q = new RadixSort(list);</div><div class="line"></div><div class="line">        q.sort();</div><div class="line"></div><div class="line">        System.out.println(Arrays.toString(list));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -538,6 +451,25 @@ public static void main(String[] args) {
 
     <div class="post-spread">
       
+        <div class="ds-share flat" data-thread-key="2016/07/19/四种排序算法分析/"
+     data-title="快排、递归、堆和基数四种排序方法"
+     data-content=""
+     data-url="http://yoursite.com/2016/07/19/四种排序算法分析/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
     </div>
   </div>
 
@@ -548,6 +480,10 @@ public static void main(String[] args) {
 
           
   <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/19/四种排序算法分析/"
+           data-title="快排、递归、堆和基数四种排序方法" data-url="http://yoursite.com/2016/07/19/四种排序算法分析/">
+      </div>
     
   </div>
 
@@ -751,9 +687,30 @@ public static void main(String[] args) {
 
   
 
+  
+    
+  
 
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
 
   
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
 
 
 
