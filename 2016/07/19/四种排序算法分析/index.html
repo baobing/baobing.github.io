@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="排序," />
 
 
 
@@ -84,25 +84,16 @@
 
 
 
-<meta name="description" content="快速排序步骤1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。
-2 )Key右侧的元素重复步骤1)
-3)Key右侧的元素重复步骤1)
-观察源码即可找到实现步骤一效果的方法。">
+<meta name="description" content="接下来文章将会讲述四种排序算法的实现和可行性证明。只有证明一个算法的正确性，才算理解一种算法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="快排、递归、堆和基数四种排序方法">
 <meta property="og:url" content="http://baobing.github.io/2016/07/19/四种排序算法分析/index.html">
 <meta property="og:site_name" content="BAOBING'S">
-<meta property="og:description" content="快速排序步骤1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。
-2 )Key右侧的元素重复步骤1)
-3)Key右侧的元素重复步骤1)
-观察源码即可找到实现步骤一效果的方法。">
-<meta property="og:updated_time" content="2016-07-23T06:31:23.000Z">
+<meta property="og:description" content="接下来文章将会讲述四种排序算法的实现和可行性证明。只有证明一个算法的正确性，才算理解一种算法。">
+<meta property="og:updated_time" content="2016-07-23T08:46:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="快排、递归、堆和基数四种排序方法">
-<meta name="twitter:description" content="快速排序步骤1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。
-2 )Key右侧的元素重复步骤1)
-3)Key右侧的元素重复步骤1)
-观察源码即可找到实现步骤一效果的方法。">
+<meta name="twitter:description" content="接下来文章将会讲述四种排序算法的实现和可行性证明。只有证明一个算法的正确性，才算理解一种算法。">
 
 
 
@@ -351,11 +342,11 @@
       
 
       
-        <h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。</p>
+        <p>接下来文章将会讲述四种排序算法的实现和可行性证明。<strong><em>只有证明一个算法的正确性，才算理解一种算法。</em></strong><br><a id="more"></a></p>
+<h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>1)从需要排序的数组选中一个作为Key，比Key小的放在右边，比Key大的放在左边。</p>
 <p>2 )Key右侧的元素重复步骤1)</p>
 <p>3)Key右侧的元素重复步骤1)</p>
 <p>观察源码即可找到实现步骤一效果的方法。</p>
-<a id="more"></a>
 <h2 id="可行性证明"><a href="#可行性证明" class="headerlink" title="可行性证明"></a>可行性证明</h2><p>题设</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">1)每次排序选中Key的左侧小于等于Key </div><div class="line"></div><div class="line">2)每次排序选中Key的右侧大于等于Key</div><div class="line"></div><div class="line">3)需要排序数组长度为2或3时，数据一定是升序</div></pre></td></tr></table></figure>
 <p>假设数组为 a[] ，Key的下标为k，数组范围为0-n。</p>
@@ -434,6 +425,12 @@
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/排序/" rel="tag">#排序</a>
+          
+        </div>
       
 
       
@@ -551,6 +548,13 @@
             </div>
           
 
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
           
 
         </nav>
