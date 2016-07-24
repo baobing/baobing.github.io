@@ -84,19 +84,16 @@
 
 
 
-<meta name="description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).
-解决方法1）需要查找的数组a，选取其中一个数字ai作为Key2) 小于Key的数字放在Key左侧3）大于等于Key的数字放在Key右侧4）如果Key的下标keyIndex等于K，返回Key；5）如果keyIndex 小于K，end = keyIndex - 1，重复1）6）如果keyIndex 大于K，start = k">
+<meta name="description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数组中第k大的数字">
 <meta property="og:url" content="http://baobing.github.io/2016/07/24/数组中第k大的数字/index.html">
 <meta property="og:site_name" content="BAOBING'S">
-<meta property="og:description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).
-解决方法1）需要查找的数组a，选取其中一个数字ai作为Key2) 小于Key的数字放在Key左侧3）大于等于Key的数字放在Key右侧4）如果Key的下标keyIndex等于K，返回Key；5）如果keyIndex 小于K，end = keyIndex - 1，重复1）6）如果keyIndex 大于K，start = k">
-<meta property="og:updated_time" content="2016-07-24T03:30:59.000Z">
+<meta property="og:description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).">
+<meta property="og:updated_time" content="2016-07-24T03:35:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数组中第k大的数字">
-<meta name="twitter:description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).
-解决方法1）需要查找的数组a，选取其中一个数字ai作为Key2) 小于Key的数字放在Key左侧3）大于等于Key的数字放在Key右侧4）如果Key的下标keyIndex等于K，返回Key；5）如果keyIndex 小于K，end = keyIndex - 1，重复1）6）如果keyIndex 大于K，start = k">
+<meta name="twitter:description" content="问题描述从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).">
 
 
 
@@ -338,7 +335,7 @@
       
 
       
-        <h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).</p>
+        <h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><p>从给定长度的整数数组中，选取第K大的数字。要求时间复杂度为O(N).<br><a id="more"></a></p>
 <h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>1）需要查找的数组a，选取其中一个数字a<a href="start&lt;=i&lt;=end">i</a>作为Key<br>2) 小于Key的数字放在Key左侧<br>3）大于等于Key的数字放在Key右侧<br>4）如果Key的下标keyIndex等于K，返回Key；<br>5）如果keyIndex 小于K，end = keyIndex - 1，重复1）<br>6）如果keyIndex 大于K，start = keyIndex + 1，重复1）</p>
 <p>这种求解方法是快速排序的思路演化而来。</p>
 <h1 id="衍生问题"><a href="#衍生问题" class="headerlink" title="衍生问题"></a>衍生问题</h1><ul>
