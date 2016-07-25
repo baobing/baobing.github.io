@@ -1,0 +1,852 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="关于HashMap的疑问
+HashMap底层的数据结构，怎样解决hash碰撞。
+
+HashMap何时扩容，扩容的过程是怎样的              
+
+红黑树是一种怎样的数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HashMap源码解读">
+<meta property="og:url" content="http://baobing.github.io/2016/07/25/HashMap源码解读/index.html">
+<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:description" content="关于HashMap的疑问
+HashMap底层的数据结构，怎样解决hash碰撞。
+
+HashMap何时扩容，扩容的过程是怎样的              
+
+红黑树是一种怎样的数据结构">
+<meta property="og:image" content="http://baobing.github.io/2016/07/25/HashMap源码解读/HashMap.png">
+<meta property="og:updated_time" content="2016-07-25T04:41:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HashMap源码解读">
+<meta name="twitter:description" content="关于HashMap的疑问
+HashMap底层的数据结构，怎样解决hash碰撞。
+
+HashMap何时扩容，扩容的过程是怎样的              
+
+红黑树是一种怎样的数据结构">
+<meta name="twitter:image" content="http://baobing.github.io/2016/07/25/HashMap源码解读/HashMap.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/07/25/HashMap源码解读/"/>
+
+  <title> HashMap源码解读 | BAOBING'S </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">BAOBING'S</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                HashMap源码解读
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-25T12:17:27+08:00" content="2016-07-25">
+              2016-07-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java基础/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/25/HashMap源码解读/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/HashMap源码解读/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="关于HashMap的疑问"><a href="#关于HashMap的疑问" class="headerlink" title="关于HashMap的疑问"></a>关于HashMap的疑问</h1><ul>
+<li><p>HashMap底层的数据结构，怎样解决hash碰撞。</p>
+</li>
+<li><p>HashMap何时扩容，扩容的过程是怎样的              </p>
+</li>
+<li><p>红黑树是一种怎样的数据结构</p>
+<a id="more"></a>
+</li>
+</ul>
+<h1 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h1><h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1><p><center><img src="/2016/07/25/HashMap源码解读/HashMap.png" alt="图1" title="图1"></center><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</div><div class="line">        final int hash;</div><div class="line">        final K key;</div><div class="line">        volatile V val;</div><div class="line">        volatile Node&lt;K,V&gt; next;</div><div class="line">       //省略省略</div><div class="line">&#125;</div><div class="line"> transient volatile Node&lt;K,V&gt;[] table;</div></pre></td></tr></table></figure></p>
+<p>　　不难发现HashMap底层由数组、链表和红黑树三者组成。</p>
+<h2 id="Node类"><a href="#Node类" class="headerlink" title="Node类"></a>Node类</h2><p>　　包含一个执行自身类型的引用next，显然Node类是组成链表的节点，next引用负责链接各个节点。</p>
+<h2 id="table数组："><a href="#table数组：" class="headerlink" title="table数组："></a>table数组：</h2><p>　　Node类组成的数组，装载所有的键值对。table有以下几个特点:</p>
+<ul>
+<li>长度N一定为2的幂。即使指定初始长度，N一定是大于等于初始长度的2的幂（可以参考tableSizeFor函数）</li>
+<li>table[i]包含的是hash&amp;(N-1)的Node节点。由于N为2的幂，hash&amp;(N-1)等价于hash%N。与运算的速度大大高于取余，这就是作者的高明之处。</li>
+<li><p>延迟初始化，只用第一次在Map中放入元素时，才会调用这个分配空间。</p>
+<h2 id="链表和红黑树"><a href="#链表和红黑树" class="headerlink" title="链表和红黑树"></a>链表和红黑树</h2><p>　　多个元素hash&amp;(n-1)的值相同的情况称为hash碰撞。链表和红黑树这两种数据结构都是在发生hash碰撞时产生的结果。如果链表的长度大于8且table长度大于64，链表被转化为红黑树。如果红黑树的节点数量小于6，则转化为链表。 </p>
+<h1 id="HashMap重要字段"><a href="#HashMap重要字段" class="headerlink" title="HashMap重要字段"></a>HashMap重要字段</h1></li>
+<li><p>Node<k,v>[] table，文章已经提到不再赘述</k,v></p>
+</li>
+<li><p>DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4。HashMap默认初始大小为16</p>
+</li>
+<li><p>DEFAULT_LOAD_FACTOR = 0.75f。默认负载因子是0.75，也就是说table数组有75%非空时进行扩容。</p>
+</li>
+<li><p>size：记录Map中键值对个数。</p>
+</li>
+<li><p>threshold：记录下一次扩容的阈值。threshold = loadFactor * table.length.</p>
+</li>
+</ul>
+<h1 id="重要的函数"><a href="#重要的函数" class="headerlink" title="重要的函数"></a>重要的函数</h1><h2 id="get操作实现函数getNode"><a href="#get操作实现函数getNode" class="headerlink" title="get操作实现函数getNode"></a>get操作实现函数getNode</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</div><div class="line"></div><div class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</div><div class="line"></div><div class="line">        //延迟初始化导致table可能为空</div><div class="line"></div><div class="line">        if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp;</div><div class="line"></div><div class="line">            (first = tab[(n - 1) &amp; hash]) != null) &#123;</div><div class="line"></div><div class="line">            //hash对应table数组位置的头元素key等于查找key，直接返回头节点</div><div class="line"></div><div class="line">            if (first.hash == hash &amp;&amp; // always check first node</div><div class="line"></div><div class="line">                ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line"></div><div class="line">                return first;</div><div class="line"></div><div class="line">            if ((e = first.next) != null) &#123;  </div><div class="line"></div><div class="line">                if (first instanceof TreeNode)   //头元素是一棵红黑树</div><div class="line"></div><div class="line">                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</div><div class="line"></div><div class="line">                do &#123;</div><div class="line"></div><div class="line">                    if (e.hash == hash &amp;&amp; //遍历链表直到找到hash相等 key相等的元素</div><div class="line"></div><div class="line">                         ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line"></div><div class="line">                        return e;</div><div class="line"></div><div class="line">                &#125; while ((e = e.next) != null);</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return null;</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="put操作实现函数putVal"><a href="#put操作实现函数putVal" class="headerlink" title="put操作实现函数putVal"></a>put操作实现函数putVal</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</div><div class="line"></div><div class="line">                   boolean evict) &#123;</div><div class="line"></div><div class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</div><div class="line"></div><div class="line">        if ((tab = table) == null || (n = tab.length) == 0) //第一次执行put操作时初始化table</div><div class="line"></div><div class="line">            n = (tab = resize()).length;</div><div class="line"></div><div class="line">        //节点填充的位置为null，直接放入新的Node节点</div><div class="line"></div><div class="line">        if ((p = tab[i = (n - 1) &amp; hash]) == null)</div><div class="line"></div><div class="line">            tab[i] = newNode(hash, key, value, null);</div><div class="line"></div><div class="line">        else &#123;</div><div class="line"></div><div class="line">            Node&lt;K,V&gt; e; K k;</div><div class="line"></div><div class="line">            if (p.hash == hash &amp;&amp;  //key已经在Map中出现，直接覆盖原数字</div><div class="line"></div><div class="line">                ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line"></div><div class="line">                e = p;</div><div class="line"></div><div class="line">            else if (p instanceof TreeNode)  //p是一棵红黑树</div><div class="line"></div><div class="line">                e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</div><div class="line"></div><div class="line">            else &#123;                ﻿    ﻿    ﻿    ﻿    ﻿    ﻿ //p是一个链表，将元素放置到链表末尾</div><div class="line"></div><div class="line">                for (int binCount = 0; ; ++binCount) &#123;</div><div class="line"></div><div class="line">                    if ((e = p.next) == null) &#123;</div><div class="line"></div><div class="line">                        p.next = newNode(hash, key, value, null);</div><div class="line"></div><div class="line">                        if (binCount &gt;= TREEIFY_THRESHOLD - 1)// 链表长度大于等于8，链表转化为红黑树</div><div class="line"></div><div class="line">                            treeifyBin(tab, hash);</div><div class="line"></div><div class="line">                        break;</div><div class="line"></div><div class="line">                    &#125;              </div><div class="line"></div><div class="line">                    if (e.hash == hash &amp;&amp;     // 相同key在链表中存在，覆盖原来节点</div><div class="line"></div><div class="line">                        ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))</div><div class="line"></div><div class="line">                        break;</div><div class="line"></div><div class="line">                    p = e;</div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            if (e != null) &#123; // existing mapping for key</div><div class="line"></div><div class="line">                V oldValue = e.value;</div><div class="line"></div><div class="line">                if (!onlyIfAbsent || oldValue == null)</div><div class="line"></div><div class="line">                    e.value = value;</div><div class="line"></div><div class="line">                afterNodeAccess(e);</div><div class="line"></div><div class="line">                return oldValue;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //table数组有一个位置被占用，判断是否扩容</div><div class="line"></div><div class="line">        ++modCount;</div><div class="line"></div><div class="line">        if (++size &gt; threshold)</div><div class="line"></div><div class="line">            resize();</div><div class="line"></div><div class="line">        afterNodeInsertion(evict);</div><div class="line"></div><div class="line">        return null;</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="扩容函数resize"><a href="#扩容函数resize" class="headerlink" title="扩容函数resize"></a>扩容函数resize</h2><p>1）获取新数组newTab的长度，为newTab申请空间。需要考虑容量最大边界，延迟初始化等问题。</p>
+<p>2）将原数组oldTab中的节点，放入newTab中。链表和红黑树拆解问题。数组容量是2的幂，所以拆解过程很有技巧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">final Node&lt;K,V&gt;[] resize() &#123;</div><div class="line"></div><div class="line">        Node&lt;K,V&gt;[] oldTab = table;</div><div class="line"></div><div class="line">        int oldCap = (oldTab == null) ? 0 : oldTab.length;</div><div class="line"></div><div class="line">        int oldThr = threshold;  //原数组阈值</div><div class="line"></div><div class="line">        int newCap, newThr = 0; //分别记录新table容量 和 新的阈值</div><div class="line"></div><div class="line">        if (oldCap &gt; 0) &#123;</div><div class="line"></div><div class="line">            if (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</div><div class="line"></div><div class="line">                threshold = Integer.MAX_VALUE;</div><div class="line"></div><div class="line">                return oldTab;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            else if ((newCap = oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp;</div><div class="line"></div><div class="line">                     oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</div><div class="line"></div><div class="line">                newThr = oldThr &lt;&lt; 1; // double threshold</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        else if (oldThr &gt; 0) // Map设置初始容量,threshold为table初始容量</div><div class="line"></div><div class="line">            newCap = oldThr;</div><div class="line"></div><div class="line">        else &#123;               // zero initial threshold signifies using defaults</div><div class="line"></div><div class="line">            newCap = DEFAULT_INITIAL_CAPACITY;</div><div class="line"></div><div class="line">            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (newThr == 0) &#123; //设置初始容量时，计算新的阈值</div><div class="line"></div><div class="line">            float ft = (float)newCap * loadFactor;</div><div class="line"></div><div class="line">            newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ?</div><div class="line"></div><div class="line">                      (int)ft : Integer.MAX_VALUE);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        threshold = newThr;</div><div class="line"></div><div class="line">        @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</div><div class="line"></div><div class="line">            Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])new Node[newCap];</div><div class="line"></div><div class="line">        table = newTab;</div><div class="line"></div><div class="line">        if (oldTab != null) &#123;</div><div class="line"></div><div class="line">            for (int j = 0; j &lt; oldCap; ++j) &#123;   //遍历原始table</div><div class="line"></div><div class="line">                Node&lt;K,V&gt; e;</div><div class="line"></div><div class="line">                if ((e = oldTab[j]) != null) &#123;</div><div class="line"></div><div class="line">                    oldTab[j] = null;</div><div class="line"></div><div class="line">                    if (e.next == null)    // 不存在hash碰撞，只有一个节点</div><div class="line"></div><div class="line">                        newTab[e.hash &amp; (newCap - 1)] = e;</div><div class="line"></div><div class="line">                    else if (e instanceof TreeNode)  // 红黑树</div><div class="line"></div><div class="line">                        ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap);</div><div class="line"></div><div class="line">                    else &#123; // preserve order</div><div class="line"></div><div class="line">                        Node&lt;K,V&gt; loHead = null, loTail = null; //将链表分为两个链表，分割依据看下面代码</div><div class="line"></div><div class="line">                        Node&lt;K,V&gt; hiHead = null, hiTail = null;</div><div class="line"></div><div class="line">                        Node&lt;K,V&gt; next;</div><div class="line"></div><div class="line">                        do &#123;</div><div class="line"></div><div class="line">                            next = e.next;</div><div class="line"></div><div class="line">                     // table的capcity一定是2的幂。e.hash &amp; oldCap 结果 r只可能等于0或者oldCap</div><div class="line"></div><div class="line">                         //e.hash &amp; oldCap == 0 时，e.hash &amp; (oldCap-1) == e.hash &amp; (newCap-1)</div><div class="line"></div><div class="line">                         //e.hash &amp; oldCap == oldCap 时,e.hash &amp; (oldCap-1) + oldCap ==  e.hash &amp; (newCap-1)</div><div class="line"></div><div class="line">                            if ((e.hash &amp; oldCap) == 0) &#123; </div><div class="line"></div><div class="line">                                if (loTail == null)</div><div class="line"></div><div class="line">                                    loHead = e;</div><div class="line"></div><div class="line">                                else</div><div class="line"></div><div class="line">                                    loTail.next = e;</div><div class="line"></div><div class="line">                                loTail = e;</div><div class="line"></div><div class="line">                            &#125;</div><div class="line"></div><div class="line">                            else &#123;</div><div class="line"></div><div class="line">                                if (hiTail == null)</div><div class="line"></div><div class="line">                                    hiHead = e;</div><div class="line"></div><div class="line">                                else</div><div class="line"></div><div class="line">                                    hiTail.next = e;</div><div class="line"></div><div class="line">                                hiTail = e;</div><div class="line"></div><div class="line">                            &#125;</div><div class="line"></div><div class="line">                        &#125; while ((e = next) != null);</div><div class="line"></div><div class="line">                        if (loTail != null) &#123;</div><div class="line"></div><div class="line">                            loTail.next = null;</div><div class="line"></div><div class="line">                            newTab[j] = loHead;</div><div class="line"></div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        if (hiTail != null) &#123;</div><div class="line"></div><div class="line">                            hiTail.next = null;</div><div class="line"></div><div class="line">                            newTab[j + oldCap] = hiHead;</div><div class="line"></div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return newTab;</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/24/数组中第k大的数字/" rel="next" title="数组中第k大的数字">
+                <i class="fa fa-chevron-left"></i> 数组中第k大的数字
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/25/HashMap源码解读/"
+     data-title="HashMap源码解读"
+     data-content=""
+     data-url="http://baobing.github.io/2016/07/25/HashMap源码解读/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/25/HashMap源码解读/"
+           data-title="HashMap源码解读" data-url="http://baobing.github.io/2016/07/25/HashMap源码解读/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于HashMap的疑问"><span class="nav-number">1.</span> <span class="nav-text">关于HashMap的疑问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap数据结构"><span class="nav-number">2.</span> <span class="nav-text">HashMap数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK8-HashMap数据结构"><span class="nav-number">3.</span> <span class="nav-text">JDK8 HashMap数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Node类"><span class="nav-number">3.1.</span> <span class="nav-text">Node类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table数组："><span class="nav-number">3.2.</span> <span class="nav-text">table数组：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表和红黑树"><span class="nav-number">3.3.</span> <span class="nav-text">链表和红黑树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap重要字段"><span class="nav-number">4.</span> <span class="nav-text">HashMap重要字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重要的函数"><span class="nav-number">5.</span> <span class="nav-text">重要的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#get操作实现函数getNode"><span class="nav-number">5.1.</span> <span class="nav-text">get操作实现函数getNode</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#put操作实现函数putVal"><span class="nav-number">5.1.1.</span> <span class="nav-text">put操作实现函数putVal</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容函数resize"><span class="nav-number">5.2.</span> <span class="nav-text">扩容函数resize</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
