@@ -101,7 +101,7 @@ HashMap何时扩容，扩容的过程是怎样的
 
 红黑树是一种怎样的数据结构">
 <meta property="og:image" content="http://baobing.github.io/2016/07/25/HashMap源码解读/HashMap.png">
-<meta property="og:updated_time" content="2016-07-25T06:39:29.000Z">
+<meta property="og:updated_time" content="2016-07-25T16:35:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap源码解读">
 <meta name="twitter:description" content="关于HashMap的疑问
@@ -366,13 +366,14 @@ HashMap何时扩容，扩容的过程是怎样的
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;</div><div class="line">       <span class="keyword">final</span> K key;</div><div class="line">       <span class="keyword">volatile</span> V val;</div><div class="line">       <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</div><div class="line">      <span class="comment">//省略省略</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</div></pre></td></tr></table></figure>
 <p>　　不难发现HashMap底层由数组、链表和红黑树三者组成。</p>
 <h2 id="Node类"><a href="#Node类" class="headerlink" title="Node类"></a>Node类</h2><p>　　包含一个执行自身类型的引用next，显然Node类是组成链表的节点，next引用负责链接各个节点。</p>
-<h2 id="table数组："><a href="#table数组：" class="headerlink" title="table数组："></a>table数组：</h2><p>　　Node类组成的数组，装载所有的键值对。table有以下几个特点:</p>
+<h2 id="table数组"><a href="#table数组" class="headerlink" title="table数组"></a>table数组</h2><p>　　Node类组成的数组，装载所有的键值对。table有以下几个特点:</p>
 <ul>
 <li>长度N一定为2的幂。即使指定初始长度，N一定是大于等于初始长度的2的幂（可以参考tableSizeFor函数）</li>
 <li>table[i]包含的是hash&amp;(N-1)的Node节点。由于N为2的幂，hash&amp;(N-1)等价于hash%N。与运算的速度大大高于取余，这就是作者的高明之处。</li>
-<li><p>延迟初始化，只用第一次在Map中放入元素时，才会调用这个分配空间。</p>
+<li>延迟初始化，只用第一次在Map中放入元素时，才会调用这个分配空间。</li>
+</ul>
 <h2 id="链表和红黑树"><a href="#链表和红黑树" class="headerlink" title="链表和红黑树"></a>链表和红黑树</h2><p>　　多个元素hash&amp;(n-1)的值相同的情况称为hash碰撞。链表和红黑树这两种数据结构都是在发生hash碰撞时产生的结果。如果链表的长度大于8且table长度大于64，链表被转化为红黑树。如果红黑树的节点数量小于6，则转化为链表。 </p>
-<h1 id="HashMap重要字段"><a href="#HashMap重要字段" class="headerlink" title="HashMap重要字段"></a>HashMap重要字段</h1></li>
+<h1 id="HashMap重要字段"><a href="#HashMap重要字段" class="headerlink" title="HashMap重要字段"></a>HashMap重要字段</h1><ul>
 <li><p>Node<k,v>[] table，文章已经提到不再赘述</k,v></p>
 </li>
 <li><p>DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4。HashMap默认初始大小为16</p>
@@ -521,7 +522,7 @@ HashMap何时扩容，扩容的过程是怎样的
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-count">6</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -567,7 +568,7 @@ HashMap何时扩容，扩容的过程是怎样的
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于HashMap的疑问"><span class="nav-number">1.</span> <span class="nav-text">关于HashMap的疑问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK8-HashMap数据结构"><span class="nav-number">2.</span> <span class="nav-text">JDK8 HashMap数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Node类"><span class="nav-number">2.1.</span> <span class="nav-text">Node类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table数组："><span class="nav-number">2.2.</span> <span class="nav-text">table数组：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表和红黑树"><span class="nav-number">2.3.</span> <span class="nav-text">链表和红黑树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap重要字段"><span class="nav-number">3.</span> <span class="nav-text">HashMap重要字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重要的函数"><span class="nav-number">4.</span> <span class="nav-text">重要的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#get操作实现函数getNode"><span class="nav-number">4.1.</span> <span class="nav-text">get操作实现函数getNode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put操作实现函数putVal"><span class="nav-number">4.2.</span> <span class="nav-text">put操作实现函数putVal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容函数resize"><span class="nav-number">4.3.</span> <span class="nav-text">扩容函数resize</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#关于HashMap的疑问"><span class="nav-number">1.</span> <span class="nav-text">关于HashMap的疑问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK8-HashMap数据结构"><span class="nav-number">2.</span> <span class="nav-text">JDK8 HashMap数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Node类"><span class="nav-number">2.1.</span> <span class="nav-text">Node类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table数组"><span class="nav-number">2.2.</span> <span class="nav-text">table数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表和红黑树"><span class="nav-number">2.3.</span> <span class="nav-text">链表和红黑树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HashMap重要字段"><span class="nav-number">3.</span> <span class="nav-text">HashMap重要字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重要的函数"><span class="nav-number">4.</span> <span class="nav-text">重要的函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#get操作实现函数getNode"><span class="nav-number">4.1.</span> <span class="nav-text">get操作实现函数getNode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put操作实现函数putVal"><span class="nav-number">4.2.</span> <span class="nav-text">put操作实现函数putVal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容函数resize"><span class="nav-number">4.3.</span> <span class="nav-text">扩容函数resize</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

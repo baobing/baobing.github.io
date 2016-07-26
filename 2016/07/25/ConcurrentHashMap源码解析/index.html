@@ -1,0 +1,818 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConcurrentHashMap源码解析">
+<meta property="og:url" content="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/index.html">
+<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
+<meta property="og:updated_time" content="2016-07-25T16:17:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ConcurrentHashMap源码解析">
+<meta name="twitter:description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/"/>
+
+  <title> ConcurrentHashMap源码解析 | BAOBING'S </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">BAOBING'S</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ConcurrentHashMap源码解析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-25T19:58:03+08:00" content="2016-07-25">
+              2016-07-25
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java基础/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/25/ConcurrentHashMap源码解析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　 JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：<br>　　 <a id="more"></a></p>
+<blockquote>
+<p><a href="http://blog.csdn.net/u010887744/article/details/51002358" target="_blank" rel="external">http://blog.csdn.net/u010887744/article/details/51002358</a><br><a href="http://www.cnblogs.com/huaizuo/p/5413069.html" target="_blank" rel="external">http://www.cnblogs.com/huaizuo/p/5413069.html</a><br>　　友情提示：看ConcurrentHashMap源码还是需要一些Java并发编程的了解，比如内存可见性、原子性、顺序性、无锁。另一点就是先阅读HashMap的源码。</p>
+<h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1></blockquote>
+<p><center></center></p>
+<p><center>图1</center><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</div><div class="line">        final int hash;</div><div class="line">        final K key;</div><div class="line">        volatile V val;</div><div class="line">        volatile Node&lt;K,V&gt; next;</div><div class="line">       //省略省略</div><div class="line">&#125;</div><div class="line"> transient volatile Node&lt;K,V&gt;[] table;</div></pre></td></tr></table></figure></p>
+<p>　　HashMap底层由数组、链表和红黑树三者组成。我们从图1和源码大改也可以推断出来。首先是HashMap使用Node组成的数组table装载所有的键值对，再者HashMap发生Hash值碰撞使用链表将它们连起来，最后是某个链表长度大于指定值链表转化为红黑树。   </p>
+<h1 id="重要的常量"><a href="#重要的常量" class="headerlink" title="重要的常量"></a>重要的常量</h1><h2 id="基本常量"><a href="#基本常量" class="headerlink" title="基本常量"></a>基本常量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"> transient volatile Node&lt;K,V&gt;[] table;</div><div class="line"></div><div class="line"> //扩容时使用，其他时候为null</div><div class="line"> private transient volatile Node&lt;K,V&gt;[] nextTable;</div><div class="line"></div><div class="line"> //基础计数器，主要用于无争用，同时也作为table数组初始化的回退记录</div><div class="line"> private transient volatile long baseCount;</div><div class="line"></div><div class="line"> //table数组初始化和扩容的控制标志。为负数时，table数组正在扩容或初始化，</div><div class="line"> //-1代表初始化，其他负数表示 -（1+参数扩容的线程数量）。当table为null时，</div><div class="line"> //sizeCtl持有扩容的阈值，0为默认值。</div><div class="line"> private transient volatile int sizeCtl;</div><div class="line"></div><div class="line">//table扩容时 每个线程最少需要处理的元素数量。看不懂就跳过去，下同</div><div class="line"> private static final int MIN_TRANSFER_STRIDE = 16;</div><div class="line"></div><div class="line"> //当table扩容时，transferIndex持有下一个线程或者下次循环可以处理的数组界限</div><div class="line"> private transient volatile int transferIndex;</div><div class="line"></div><div class="line"> //table数组的默认长度</div><div class="line"> private static final int DEFAULT_CAPACITY = 16;</div><div class="line"></div><div class="line"> //table数组的负载因子. 小数形式不经常使用，它更常见的表示形式是 n - (n &gt;&gt;&gt; 2)</div><div class="line"> private static final float LOAD_FACTOR = 0.75f;</div></pre></td></tr></table></figure>
+<h2 id="Unsafe相关常量"><a href="#Unsafe相关常量" class="headerlink" title="Unsafe相关常量"></a>Unsafe相关常量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">// Unsafe mechanics</div><div class="line">    private static final sun.misc.Unsafe U;</div><div class="line">    private static final long SIZECTL; //sizeCtl的偏移量</div><div class="line">    private static final long TRANSFERINDEX; //transferIndex的偏移量</div><div class="line">    private static final long BASECOUNT;   //</div><div class="line">    private static final long CELLSBUSY;</div><div class="line">    private static final long CELLVALUE;</div><div class="line">    //数组中第一个元素在数组中的位置</div><div class="line">    private static final long ABASE;</div><div class="line">     //Node数组元素大小scale的二进制去除前导零后的位数</div><div class="line">    private static final int ASHIFT;</div><div class="line"></div><div class="line">    static &#123;</div><div class="line">        try &#123;</div><div class="line">            U = sun.misc.Unsafe.getUnsafe();</div><div class="line">            Class&lt;?&gt; k = ConcurrentHashMap.class;</div><div class="line">    ﻿    ﻿  //获取sizeCtl的偏移量</div><div class="line">            SIZECTL = U.objectFieldOffset(k.getDeclaredField(&quot;sizeCtl&quot;)); </div><div class="line">    ﻿    ﻿  //省略代码，和上面一样获取各个变量的偏移量</div><div class="line">             ...</div><div class="line">            Class&lt;?&gt; ak = Node[].class;</div><div class="line">            //Arrays和Java别的对象一样，都有一个对象头，它是存储在实际的数据前面的。</div><div class="line">            //这个头的长度可以通过unsafe.arrayBaseOffset(T[].class) 方法来获取到，</div><div class="line">    ﻿    ﻿    ﻿ //这里T是数组元素的类型</div><div class="line">            ABASE = U.arrayBaseOffset(ak); </div><div class="line">            int scale = U.arrayIndexScale(ak); //获取数组元素的大小</div><div class="line">            if ((scale &amp; (scale - 1)) != 0) //元素大小必须是2的倍数，不知道为什么</div><div class="line">                throw new Error(&quot;data type scale not a power of two&quot;);</div><div class="line">            ASHIFT = 31 - Integer.numberOfLeadingZeros(scale);</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            throw new Error(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h1 id="重要的方法"><a href="#重要的方法" class="headerlink" title="重要的方法"></a>重要的方法</h1><h2 id="无锁方法"><a href="#无锁方法" class="headerlink" title="无锁方法"></a>无锁方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">    //内存中直接获取tab数组张第i个元素，保证内存可见性</div><div class="line">      static final &lt;K,V&gt; Node&lt;K,V&gt; tabAt(Node&lt;K,V&gt;[] tab, int i) &#123;</div><div class="line">        return (Node&lt;K,V&gt;)U.getObjectVolatile(tab, ((long)i &lt;&lt; ASHIFT) + ABASE);</div><div class="line">    &#125;</div><div class="line">   //为tab数组的第i个元素复制，使用CAS，保证操作的原子性</div><div class="line"></div><div class="line">    static final &lt;K,V&gt; boolean casTabAt(Node&lt;K,V&gt;[] tab, int i, Node&lt;K,V&gt; c, Node&lt;K,V&gt; v) &#123;</div><div class="line">        return U.compareAndSwapObject(tab, ((long)i &lt;&lt; ASHIFT) + ABASE, c, v);</div><div class="line">    &#125;</div><div class="line">   static final &lt;K,V&gt; void setTabAt(Node&lt;K,V&gt;[] tab, int i, Node&lt;K,V&gt; v) &#123;</div><div class="line">/**设置obj对象中offset偏移地址对应的object型field的值为指定值。这是一个有序或者</div><div class="line"> 有延迟的putObjectVolatile方法，并且不保证值的改变被其他线程立</div><div class="line"> 即看到。只有在field被&lt;code&gt;volatile&lt;/code&gt;修饰并且期望被意外修改的时候</div><div class="line">  使用才有用。*/</div><div class="line">        U.putObjectVolatile(tab, ((long)i &lt;&lt; ASHIFT) + ABASE, v);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="扩容方法transfer"><a href="#扩容方法transfer" class="headerlink" title="扩容方法transfer"></a>扩容方法transfer</h2><h3 id="扩容过程解析"><a href="#扩容过程解析" class="headerlink" title="扩容过程解析"></a>扩容过程解析</h3><p>　　ConcurrentHashMap无锁多线程扩容，减少扩容时的时间消耗。单线程构建两倍容量的nextTable；允许多线程复制原table元素到nextTable。为每个内核均分任务，并保证其不小于16（常量MIN_TRANSFER_STRIDE）。<br>1）若nextTab为null，则初始化其为原table的2倍；<br>2）死循环遍历，直到finishing。</p>
+<ul>
+<li>节点为空，则插入ForwardingNode；</li>
+<li>链表节点（fh&gt;=0），分别插入nextTable的i和i+n的位置；</li>
+<li>TreeBin节点（fh&lt;0），判断是否需要untreefi，分别插入nextTable的i和i+n的位置；</li>
+<li>finishing时，nextTab赋给table，更新sizeCtl为新容量的0.75倍 ，完成扩容。<br>以上说的都是单线程，多线程又是如何实现的呢？<pre><code>遍历到ForwardingNode节点((fh = f.hash) == MOVED)，说明此节点被处理过了，直接跳过。这是控制并发扩容的核心 。由于给节点上了锁，只允许当前线程完成此节点的操作，处理完毕后，将对应值设为ForwardingNode（fwd），其他线程看到forward，直接向后遍历。如此便完成了多线程的复制工作，也解决了线程安全问题。
+</code></pre></li>
+</ul>
+<h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Moves and/or copies the nodes in each bin to new table. See</div><div class="line"> * above for explanation.</div><div class="line"> */</div><div class="line">private final void transfer(Node&lt;K,V&gt;[] tab, Node&lt;K,V&gt;[] nextTab) &#123;</div><div class="line">    //n表示原数组的大小 ,stride表示每个线程或者单次循环负责节点的个数 </div><div class="line">    int n = tab.length, stride;</div><div class="line">    if ((stride = (NCPU &gt; 1) ? (n &gt;&gt;&gt; 3) / NCPU : n) &lt; MIN_TRANSFER_STRIDE)</div><div class="line">        stride = MIN_TRANSFER_STRIDE; // subdivide range</div><div class="line">    if (nextTab == null) &#123;            // 为nextTable申请空间</div><div class="line">        try &#123;</div><div class="line">            @SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">            Node&lt;K,V&gt;[] nt = (Node&lt;K,V&gt;[])new Node&lt;?,?&gt;[n &lt;&lt; 1];</div><div class="line">            nextTab = nt;</div><div class="line">        &#125; catch (Throwable ex) &#123;      // try to cope with OOME</div><div class="line">            sizeCtl = Integer.MAX_VALUE;</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        nextTable = nextTab;</div><div class="line">        transferIndex = n;</div><div class="line">    &#125;</div><div class="line">    int nextn = nextTab.length;</div><div class="line">    //构建一个连节点的指针，用于标识位</div><div class="line">    ForwardingNode&lt;K,V&gt; fwd = new ForwardingNode&lt;K,V&gt;(nextTab);</div><div class="line">    boolean advance = true;</div><div class="line">    //循环的关键变量，判断是否已经扩容完成</div><div class="line">    boolean finishing = false; // to ensure sweep before committing nextTab</div><div class="line">    //i--操作保证了倒序遍历数组，bound表示新的线程或者单次循环的下边界</div><div class="line">    for (int i = 0, bound = 0;;) &#123;</div><div class="line">        Node&lt;K,V&gt; f; int fh;</div><div class="line">      </div><div class="line">        while (advance) &#123;</div><div class="line">            int nextIndex, nextBound;</div><div class="line">            if (--i &gt;= bound || finishing) //循环没有到达下边界可以继续for循环</div><div class="line">                advance = false;</div><div class="line">            else if ((nextIndex = transferIndex) &lt;= 0) &#123; //整个for循环过程结束</div><div class="line">                i = -1;</div><div class="line">                advance = false;</div><div class="line">            &#125;</div><div class="line">    ﻿    ﻿   //只有通过CAS成功更新ransferIndex才能获取到扩容的资格</div><div class="line">            else if (U.compareAndSwapInt  </div><div class="line">                     (this, TRANSFERINDEX, nextIndex,</div><div class="line">                      nextBound = (nextIndex &gt; stride ?</div><div class="line">                                   nextIndex - stride : 0))) &#123;</div><div class="line">                bound = nextBound;</div><div class="line">                i = nextIndex - 1;</div><div class="line">                advance = false;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        //i&lt;0说明已经遍历完旧的数组tab；i&gt;=n什么时候有可能呢？</div><div class="line">    ﻿   //在下面看到i=n,所以目前i最大应该是n吧,导致的原因可能是多线程</div><div class="line">        //i+n&gt;=nextn,nextn=nextTab.length，所以如果满足i+n&gt;=nextn说明已经扩容完成</div><div class="line">        if (i &lt; 0 || i &gt;= n || i + n &gt;= nextn) &#123; </div><div class="line">            int sc;</div><div class="line">            if (finishing) &#123;//a</div><div class="line">                nextTable = null;</div><div class="line">                table = nextTab;</div><div class="line">                sizeCtl = (n &lt;&lt; 1) - (n &gt;&gt;&gt; 1);</div><div class="line">                return;</div><div class="line">            &#125;</div><div class="line">            //利用CAS方法更新这个扩容阈值，在这里面sizectl值减一，</div><div class="line">    ﻿    ﻿   //说明新加入一个线程参与到扩容操作,参考sizeCtl的注释</div><div class="line">            if (U.compareAndSwapInt(this, SIZECTL, sc = sizeCtl, sc - 1)) &#123;</div><div class="line">                //如果有多个线程进行扩容，那么这个值在第二个线程以后就不会相等，</div><div class="line">    ﻿    ﻿      ﻿//因为sizeCtl已经被减1了，所以后面的线程就只能直接返回,</div><div class="line">    ﻿    ﻿    ﻿  //始终保证只有一个线程执行了 a(上面注释a)</div><div class="line">                if ((sc - 2) != resizeStamp(n) &lt;&lt; RESIZE_STAMP_SHIFT)</div><div class="line">                    return;</div><div class="line">    ﻿    ﻿    ﻿//finishing和advance保证线程已经扩容完成了可以退出循环</div><div class="line">                finishing = advance = true;</div><div class="line">                i = n; // recheck before commit</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    ﻿   //如果tab[i]为null，那么就把fwd插入到tab[i]，表明这个节点已经处理过了</div><div class="line">        else if ((f = tabAt(tab, i)) == null)</div><div class="line">            advance = casTabAt(tab, i, null, fwd);</div><div class="line">    ﻿    //那么如果f.hash=-1的话说明该节点为ForwardingNode，说明该节点已经处理过了</div><div class="line">        else if ((fh = f.hash) == MOVED)</div><div class="line">            advance = true; // already processed</div><div class="line">        else &#123;</div><div class="line">            synchronized (f) &#123;</div><div class="line">                if (tabAt(tab, i) == f) &#123;</div><div class="line">                    Node&lt;K,V&gt; ln, hn;</div><div class="line">                    if (fh &gt;= 0) &#123;</div><div class="line">                        int runBit = fh &amp; n;</div><div class="line">                        Node&lt;K,V&gt; lastRun = f;</div><div class="line">                        //把链表分表拆分为，hash&amp;n等于0和不等于0的，</div><div class="line">    ﻿    ﻿    ﻿    ﻿    //然后分别放在新表的i和i+n位置。n一定是2的幂，这个很重要</div><div class="line">                        for (Node&lt;K,V&gt; p = f.next; p != null; p = p.next) &#123;</div><div class="line">                            int b = p.hash &amp; n;</div><div class="line">                            if (b != runBit) &#123;</div><div class="line">                                runBit = b;</div><div class="line">                                lastRun = p;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                        if (runBit == 0) &#123;</div><div class="line">                            ln = lastRun;</div><div class="line">                            hn = null;</div><div class="line">                        &#125;</div><div class="line">                        else &#123;</div><div class="line">                            hn = lastRun;</div><div class="line">                            ln = null;</div><div class="line">                        &#125;</div><div class="line">                        for (Node&lt;K,V&gt; p = f; p != lastRun; p = p.next) &#123;</div><div class="line">                            int ph = p.hash; K pk = p.key; V pv = p.val;</div><div class="line">                            if ((ph &amp; n) == 0)</div><div class="line">                                ln = new Node&lt;K,V&gt;(ph, pk, pv, ln);</div><div class="line">                            else</div><div class="line">                                hn = new Node&lt;K,V&gt;(ph, pk, pv, hn);</div><div class="line">                        &#125;</div><div class="line">                        setTabAt(nextTab, i, ln);</div><div class="line">                        setTabAt(nextTab, i + n, hn);</div><div class="line">                        //把已经替换的节点的旧tab的i的位置用fwd替换，fwd包含nextTab</div><div class="line">                        setTabAt(tab, i, fwd);</div><div class="line">                        advance = true;</div><div class="line">                    &#125;//下面红黑树基本和链表差不多</div><div class="line">                    else if (f instanceof TreeBin) &#123;</div><div class="line">                        TreeBin&lt;K,V&gt; t = (TreeBin&lt;K,V&gt;)f;</div><div class="line">                        TreeNode&lt;K,V&gt; lo = null, loTail = null;</div><div class="line">                        TreeNode&lt;K,V&gt; hi = null, hiTail = null;</div><div class="line">                        int lc = 0, hc = 0;</div><div class="line">                        for (Node&lt;K,V&gt; e = t.first; e != null; e = e.next) &#123;</div><div class="line">                            int h = e.hash;</div><div class="line">                            TreeNode&lt;K,V&gt; p = new TreeNode&lt;K,V&gt;</div><div class="line">                                (h, e.key, e.val, null, null);</div><div class="line">                            if ((h &amp; n) == 0) &#123;</div><div class="line">                                if ((p.prev = loTail) == null)</div><div class="line">                                    lo = p;</div><div class="line">                                else</div><div class="line">                                    loTail.next = p;</div><div class="line">                                loTail = p;</div><div class="line">                                ++lc;</div><div class="line">                            &#125;</div><div class="line">                            else &#123;</div><div class="line">                                if ((p.prev = hiTail) == null)</div><div class="line">                                    hi = p;</div><div class="line">                                else</div><div class="line">                                    hiTail.next = p;</div><div class="line">                                hiTail = p;</div><div class="line">                                ++hc;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                        //判断扩容后是否还需要红黑树结构</div><div class="line">                        ln = (lc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(lo) :</div><div class="line">                            (hc != 0) ? new TreeBin&lt;K,V&gt;(lo) : t;</div><div class="line">                        hn = (hc &lt;= UNTREEIFY_THRESHOLD) ? untreeify(hi) :</div><div class="line">                            (lc != 0) ? new TreeBin&lt;K,V&gt;(hi) : t;</div><div class="line">                        setTabAt(nextTab, i, ln);</div><div class="line">                        setTabAt(nextTab, i + n, hn);</div><div class="line">                        setTabAt(tab, i, fwd);</div><div class="line">                        advance = true;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag">#Java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/25/红黑树以及HashMap/" rel="next" title="红黑树和HashMap中实现">
+                <i class="fa fa-chevron-left"></i> 红黑树和HashMap中实现
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/"
+     data-title="ConcurrentHashMap源码解析"
+     data-content=""
+     data-url="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/"
+           data-title="ConcurrentHashMap源码解析" data-url="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK8-HashMap数据结构"><span class="nav-number">1.</span> <span class="nav-text">JDK8 HashMap数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重要的常量"><span class="nav-number">2.</span> <span class="nav-text">重要的常量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本常量"><span class="nav-number">2.1.</span> <span class="nav-text">基本常量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Unsafe相关常量"><span class="nav-number">2.2.</span> <span class="nav-text">Unsafe相关常量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重要的方法"><span class="nav-number">3.</span> <span class="nav-text">重要的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#无锁方法"><span class="nav-number">3.1.</span> <span class="nav-text">无锁方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容方法transfer"><span class="nav-number">3.2.</span> <span class="nav-text">扩容方法transfer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#扩容过程解析"><span class="nav-number">3.2.1.</span> <span class="nav-text">扩容过程解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码解析"><span class="nav-number">3.2.2.</span> <span class="nav-text">源码解析</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
