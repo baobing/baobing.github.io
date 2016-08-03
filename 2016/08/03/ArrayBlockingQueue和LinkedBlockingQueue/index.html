@@ -1,0 +1,826 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="jdk源码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="两点疑问没有解决：
+1、为什么ArrayBlockingQueue不使用takeLock、putLock的双锁机制？使用这种锁分离的策略明显效率更高。
+2、为什么判断是否存在剩余空间，使用while 而不是if？难道作者怕出现意外，但是什么时候会出现意外呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayBlockingQueue和LinkedBlockingQueue">
+<meta property="og:url" content="http://baobing.github.io/2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/index.html">
+<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:description" content="两点疑问没有解决：
+1、为什么ArrayBlockingQueue不使用takeLock、putLock的双锁机制？使用这种锁分离的策略明显效率更高。
+2、为什么判断是否存在剩余空间，使用while 而不是if？难道作者怕出现意外，但是什么时候会出现意外呢？">
+<meta property="og:updated_time" content="2016-08-03T05:49:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArrayBlockingQueue和LinkedBlockingQueue">
+<meta name="twitter:description" content="两点疑问没有解决：
+1、为什么ArrayBlockingQueue不使用takeLock、putLock的双锁机制？使用这种锁分离的策略明显效率更高。
+2、为什么判断是否存在剩余空间，使用while 而不是if？难道作者怕出现意外，但是什么时候会出现意外呢？">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/"/>
+
+  <title> ArrayBlockingQueue和LinkedBlockingQueue | BAOBING'S </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">BAOBING'S</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ArrayBlockingQueue和LinkedBlockingQueue
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-03T13:28:51+08:00" content="2016-08-03">
+              2016-08-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>两点疑问没有解决：</p>
+<p>1、为什么ArrayBlockingQueue不使用takeLock、putLock的双锁机制？使用这种锁分离的策略明显效率更高。</p>
+<p>2、为什么判断是否存在剩余空间，使用while 而不是if？难道作者怕出现意外，但是什么时候会出现意外呢？<br><a id="more"></a></p>
+<h1 id="ArrayBlockingQueue"><a href="#ArrayBlockingQueue" class="headerlink" title="ArrayBlockingQueue"></a>ArrayBlockingQueue</h1><p>　　一个数组组成的有界阻塞队列，保持队列基本特性先进先出。<br>　　此类对等待的生产者线程和使用者线程进行排序的公平策略选项提供支持。默认情况下，不保证是这种排序策略。通过将fairness设置为true构造的队列允许按照FIFO顺序访问线程。公平性通常会降低吞吐量，但也减少了可变性和避免了“不平衡性”。公平性的保证是通过ReentrantLock的公平锁实现。阻塞超时通过Condition的awaitNanos实现。</p>
+<h2 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//保存队列的数组，循环使用数组。泛型是不能使用数组</span></div><div class="line"></div><div class="line">    <span class="keyword">final</span> Object[] items; </div><div class="line"></div><div class="line">    <span class="keyword">int</span> takeIndex;<span class="comment">//下一次移除元素所在下标</span></div><div class="line"></div><div class="line">    <span class="keyword">int</span> putIndex; <span class="comment">//下一次添加元素所在下标</span></div><div class="line"></div><div class="line">    <span class="keyword">int</span> count;      <span class="comment">//队列中元素数量</span></div><div class="line"></div><div class="line">    <span class="keyword">final</span> ReentrantLock lock; <span class="comment">//重入锁保证线程安全</span></div><div class="line"></div><div class="line">    <span class="comment">//Condition的await相当于Object提供的wait</span></div><div class="line"></div><div class="line">    <span class="comment">//signals相当于notify方法</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty; <span class="comment">//获取元素线程使用</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition notFull; <span class="comment">//放置元素线程使用</span></div></pre></td></tr></table></figure>
+<h2 id="put操作"><a href="#put操作" class="headerlink" title="put操作"></a>put操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line"></div><div class="line">        checkNotNull(e); <span class="comment">//不能放入null</span></div><div class="line"></div><div class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock; </div><div class="line"></div><div class="line">        lock.lockInterruptibly(); <span class="comment">//中断异常交给调用者处理</span></div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">        <span class="comment">//整个数组被填满，线程阻塞。为什么用while而不用if语句？</span></div><div class="line"></div><div class="line">        <span class="comment">//难道是为了方式被唤醒时队列再次被填满。但是当前线程占用锁，</span></div><div class="line"></div><div class="line">        <span class="comment">//不可能有其他线程调用put方法并且成功添加元素。</span></div><div class="line"></div><div class="line">         <span class="comment">//想想肯定有不使用lock的方法添加元素成功。</span></div><div class="line"></div><div class="line">         <span class="comment">//如果真有这样的方法它一定不是线程安全的。往下看吧- -!</span></div><div class="line"></div><div class="line">            <span class="keyword">while</span> (count == items.length)</div><div class="line"></div><div class="line">                notFull.await();</div><div class="line"></div><div class="line">            enqueue(e);</div><div class="line"></div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">            lock.unlock();</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line"><span class="comment">//插入元素到指定位置，放置下标前移，发出非空信号量 。持有锁才能调用</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(E x)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">final</span> Object[] items = <span class="keyword">this</span>.items;</div><div class="line"></div><div class="line">        items[putIndex] = x;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (++putIndex == items.length)<span class="comment">//循环使用数组</span></div><div class="line"></div><div class="line">            putIndex = <span class="number">0</span>;</div><div class="line"></div><div class="line">        count++;</div><div class="line"></div><div class="line">        notEmpty.signal();<span class="comment">//发出非空信号</span></div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="take操作"><a href="#take操作" class="headerlink" title="take操作"></a>take操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</div><div class="line"></div><div class="line">        lock.lockInterruptibly();</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;<span class="comment">//队列为空等待</span></div><div class="line"></div><div class="line">            <span class="keyword">while</span> (count == <span class="number">0</span>)</div><div class="line"></div><div class="line">                notEmpty.await();</div><div class="line"></div><div class="line">            <span class="keyword">return</span> dequeue();</div><div class="line"></div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">            lock.unlock();</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> E <span class="title">dequeue</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">final</span> Object[] items = <span class="keyword">this</span>.items;</div><div class="line"></div><div class="line">        <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line"></div><div class="line">        E x = (E) items[takeIndex]; <span class="comment">//Object转泛型</span></div><div class="line"></div><div class="line">        items[takeIndex] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (++takeIndex == items.length)<span class="comment">//循环数组</span></div><div class="line"></div><div class="line">            takeIndex = <span class="number">0</span>;</div><div class="line"></div><div class="line">        count--;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (itrs != <span class="keyword">null</span>)</div><div class="line"></div><div class="line">            itrs.elementDequeued();</div><div class="line"></div><div class="line">        notFull.signal();<span class="comment">//发出非空通知</span></div><div class="line"></div><div class="line">        <span class="keyword">return</span> x;</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="drainTo操作"><a href="#drainTo操作" class="headerlink" title="drainTo操作"></a>drainTo操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">drainTo</span><span class="params">(Collection&lt;? <span class="keyword">super</span> E&gt; c, <span class="keyword">int</span> maxElements)</span> </span>&#123;</div><div class="line"></div><div class="line">       checkNotNull(c);</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (c == <span class="keyword">this</span>)</div><div class="line"></div><div class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</div><div class="line"></div><div class="line">       <span class="keyword">if</span> (maxElements &lt;= <span class="number">0</span>)</div><div class="line"></div><div class="line">           <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line"></div><div class="line">       <span class="keyword">final</span> Object[] items = <span class="keyword">this</span>.items;</div><div class="line"></div><div class="line">       <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</div><div class="line"></div><div class="line">       lock.lock();</div><div class="line"></div><div class="line">       <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">           <span class="keyword">int</span> n = Math.min(maxElements, count);</div><div class="line"></div><div class="line">           <span class="keyword">int</span> take = takeIndex;</div><div class="line"></div><div class="line">           <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line"></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">               <span class="keyword">while</span> (i &lt; n) &#123; <span class="comment">//有add存在不能保证n的正确性</span></div><div class="line"></div><div class="line">                   <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line"></div><div class="line">                   E x = (E) items[take];</div><div class="line"></div><div class="line">                   c.add(x);</div><div class="line"></div><div class="line">                   items[take] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">                   <span class="keyword">if</span> (++take == items.length)<span class="comment">//循环添加</span></div><div class="line"></div><div class="line">                       take = <span class="number">0</span>;</div><div class="line"></div><div class="line">                   i++;</div><div class="line"></div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">return</span> n;</div><div class="line"></div><div class="line">           &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">               <span class="comment">// Restore invariants even if c.add() threw</span></div><div class="line"></div><div class="line">               <span class="keyword">if</span> (i &gt; <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">                   count -= i;</div><div class="line"></div><div class="line">                   takeIndex = take;<span class="comment">//下一次获取元素的位置</span></div><div class="line"></div><div class="line">                   <span class="keyword">if</span> (itrs != <span class="keyword">null</span>) &#123;</div><div class="line"></div><div class="line">                       <span class="keyword">if</span> (count == <span class="number">0</span>)</div><div class="line"></div><div class="line">                           itrs.queueIsEmpty();</div><div class="line"></div><div class="line">                       <span class="keyword">else</span> <span class="keyword">if</span> (i &gt; take)</div><div class="line"></div><div class="line">                           itrs.takeIndexWrapped();</div><div class="line"></div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   <span class="keyword">for</span> (; i &gt; <span class="number">0</span> &amp;&amp; lock.hasWaiters(notFull); i--)</div><div class="line"></div><div class="line">                       notFull.signal();<span class="comment">//取走多个元素可以发出多个未满信号</span></div><div class="line"></div><div class="line">               &#125;</div><div class="line"></div><div class="line">           &#125;</div><div class="line"></div><div class="line">       &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">           lock.unlock();</div><div class="line"></div><div class="line">       &#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h1 id="LinkedBlockingQueue"><a href="#LinkedBlockingQueue" class="headerlink" title="LinkedBlockingQueue"></a>LinkedBlockingQueue</h1><p>　　一个基于已链接节点的、范围任意的 blocking queue。此队列按 FIFO（先进先出）排序元素。链接队列的吞吐量通常要高于基于数组的队列，但是在大多数并发应用程序中，其可预知的性能要低。链表动态分配空间可以处理更多的节点，但是动态分配空间会两份一些时间。<br>　　可选的容量范围构造方法参数作为防止队列过度扩展的一种方法。如果未指定容量，则它等于 Integer.MAX_VALUE。除非插入节点会使队列超出容量，否则每次插入后会动态地创建链接节点。<br>与ArrayBlockingQueue的不同点1）一个使用数组，固定大小，一个使用链表,非固定大小，最大是int最大值2）LinkedBlockingQueue使用锁分离策略，正类包含takeLock和putLock两把锁，提高了并发效率。</p>
+<h2 id="属性-1"><a href="#属性-1" class="headerlink" title="属性"></a>属性</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">private final int capacity;//记录队列容量</div><div class="line"></div><div class="line">//使用原子整数记录当前队列中元素的个数</div><div class="line"></div><div class="line">private final AtomicInteger count = new AtomicInteger();</div><div class="line"></div><div class="line">transient Node&lt;E&gt; head;//头部元素</div><div class="line"></div><div class="line">private transient Node&lt;E&gt; last;//尾部元素</div><div class="line"></div><div class="line">//获取头部元素锁和</div><div class="line"></div><div class="line">private final ReentrantLock takeLock = new ReentrantLock();</div><div class="line"></div><div class="line">private final Condition notEmpty = takeLock.newCondition();</div><div class="line"></div><div class="line">  //插入尾部元素锁</div><div class="line"></div><div class="line">private final ReentrantLock putLock = new ReentrantLock();</div><div class="line"></div><div class="line">private final Condition notFull = putLock.newCondition();</div></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public LinkedBlockingQueue(int capacity) &#123;</div><div class="line"></div><div class="line">    if (capacity &lt;= 0) throw new IllegalArgumentException();</div><div class="line"></div><div class="line">    this.capacity = capacity;</div><div class="line"></div><div class="line">    last = head = new Node&lt;E&gt;(null);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们可以看出初始化的时候LBQ含有一个Node节点,头指针和尾指针都指向它，count=0。也就是说LBQ一直包含一个多余的Node节点。</p>
+<h2 id="put操作-1"><a href="#put操作-1" class="headerlink" title="put操作"></a>put操作</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public void put(E e) throws InterruptedException &#123;</div><div class="line"></div><div class="line">       if (e == null) throw new NullPointerException();</div><div class="line"></div><div class="line">       int c = -1;</div><div class="line"></div><div class="line">       Node&lt;E&gt; node = new Node&lt;E&gt;(e);</div><div class="line"></div><div class="line">       final ReentrantLock putLock = this.putLock;</div><div class="line"></div><div class="line">      //putLock锁住以后队列中元素个数只会减小不会增大</div><div class="line"></div><div class="line">       final AtomicInteger count = this.count;</div><div class="line"></div><div class="line">       putLock.lockInterruptibly();//锁住put锁</div><div class="line"></div><div class="line">       try &#123;</div><div class="line"></div><div class="line">           while (count.get() == capacity) &#123;</div><div class="line"></div><div class="line">               notFull.await();</div><div class="line"></div><div class="line">           &#125;</div><div class="line"></div><div class="line">           enqueue(node);</div><div class="line"></div><div class="line">       //原子操作保证take与put不会导致线程安全问题</div><div class="line"></div><div class="line">           c = count.getAndIncrement();</div><div class="line"></div><div class="line">           if (c + 1 &lt; capacity)</div><div class="line"></div><div class="line">               notFull.signal();</div><div class="line"></div><div class="line">       &#125; finally &#123;</div><div class="line"></div><div class="line">           putLock.unlock();</div><div class="line"></div><div class="line">       &#125;</div><div class="line"></div><div class="line">       if (c == 0)</div><div class="line"></div><div class="line">           signalNotEmpty();</div><div class="line"></div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">   private void enqueue(Node&lt;E&gt; node) &#123;</div><div class="line"></div><div class="line">       last = last.next = node;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><p>需要公平机制来避免消费者、生产者饥饿，这时使用ABQ再好不过了。</p>
+</li>
+<li><p>如果队列的大小是有界的话，首选还是ABQ，ABQ的性能更好，不需要申请空间。否则还是LBQ吧！LBQ可以接受突入起来的大量生产者。</p>
+</li>
+<li>阻塞队列的效率某些场景的效率会低于非阻塞，下一次再写关于非阻塞队列CourrentLinkedQueue</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jdk源码/" rel="tag">#jdk源码</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/03/BlockingQueue接口/" rel="next" title="BlockingQueue接口">
+                <i class="fa fa-chevron-left"></i> BlockingQueue接口
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/"
+     data-title="ArrayBlockingQueue和LinkedBlockingQueue"
+     data-content=""
+     data-url="http://baobing.github.io/2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/"
+           data-title="ArrayBlockingQueue和LinkedBlockingQueue" data-url="http://baobing.github.io/2016/08/03/ArrayBlockingQueue和LinkedBlockingQueue/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ArrayBlockingQueue"><span class="nav-number">1.</span> <span class="nav-text">ArrayBlockingQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#属性"><span class="nav-number">1.1.</span> <span class="nav-text">属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put操作"><span class="nav-number">1.2.</span> <span class="nav-text">put操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#take操作"><span class="nav-number">1.3.</span> <span class="nav-text">take操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#drainTo操作"><span class="nav-number">1.4.</span> <span class="nav-text">drainTo操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LinkedBlockingQueue"><span class="nav-number">2.</span> <span class="nav-text">LinkedBlockingQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#属性-1"><span class="nav-number">2.1.</span> <span class="nav-text">属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造函数"><span class="nav-number">2.2.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put操作-1"><span class="nav-number">2.3.</span> <span class="nav-text">put操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

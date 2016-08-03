@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="可行性证明," />
+  <meta name="keywords" content="GYM," />
 
 
 
@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
+<meta name="description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数组排成最小的数">
-<meta property="og:url" content="http://baobing.github.io/2016/07/28/数组排成最小的数/index.html">
+<meta property="og:title" content="GYM1-并发基础和Thread类详解">
+<meta property="og:url" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/index.html">
 <meta property="og:site_name" content="BAOBING'S">
-<meta property="og:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
-<meta property="og:image" content="http://baobing.github.io/2016/07/28/数组排成最小的数/transitivity.png">
-<meta property="og:updated_time" content="2016-07-28T09:13:08.000Z">
+<meta property="og:description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
+<meta property="og:image" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png">
+<meta property="og:updated_time" content="2016-07-29T09:49:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数组排成最小的数">
-<meta name="twitter:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
-<meta name="twitter:image" content="http://baobing.github.io/2016/07/28/数组排成最小的数/transitivity.png">
+<meta name="twitter:title" content="GYM1-并发基础和Thread类详解">
+<meta name="twitter:description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
+<meta name="twitter:image" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png">
 
 
 
@@ -116,9 +116,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/28/数组排成最小的数/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/"/>
 
-  <title> 数组排成最小的数 | BAOBING'S </title>
+  <title> GYM1-并发基础和Thread类详解 | BAOBING'S </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -271,7 +271,7 @@
             
             
               
-                数组排成最小的数
+                GYM1-并发基础和Thread类详解
               
             
           </h1>
@@ -283,8 +283,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-28T12:47:30+08:00" content="2016-07-28">
-              2016-07-28
+            <time itemprop="dateCreated" datetime="2016-07-29T16:25:14+08:00" content="2016-07-29">
+              2016-07-29
             </time>
           </span>
 
@@ -297,8 +297,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
                   </a>
                 </span>
 
@@ -313,8 +313,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/28/数组排成最小的数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/28/数组排成最小的数/" itemprop="commentsCount"></span>
+                <a href="/2016/07/29/GYM1-并发基础和Thread类详解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -337,15 +337,41 @@
       
 
       
-        <h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）<br><a id="more"></a><br>　　贪心算法的题目，找到解决办法不能，难得是给出正确性证明。书中给出了证明，前半段讲的很好，不过后半段不是很满意。
-　　</p>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>1）将数组中所有数字转化为字符串，组成新的数组Str<br>2）对所有字符串排序。 return Str[i]+Str[j]&lt;Str[j]+Str[i]</p>
-<h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MinStringComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span> </span>&#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</div><div class="line">         <span class="keyword">return</span> (o1.toString() + o2.toString()).compareTo(o2.toString() + o1.toString());</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">     Integer[] arr = <span class="keyword">new</span> Integer[]&#123;<span class="number">3</span>, <span class="number">32</span>, <span class="number">321</span>&#125;;</div><div class="line">     List&lt;Integer&gt; list = Arrays.asList(arr);</div><div class="line">     Collections.sort(list, <span class="keyword">new</span> MinStringComparator());</div><div class="line">     StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="number">100</span>);</div><div class="line">     <span class="keyword">for</span> (Integer e : list) &#123;</div><div class="line">         stringBuilder.append(e);</div><div class="line">     &#125;</div><div class="line">     System.out.println(stringBuilder.toString());</div></pre></td></tr></table></figure>
-<h1 id="正确性证明"><a href="#正确性证明" class="headerlink" title="正确性证明"></a>正确性证明</h1><h2 id="排序关系有效性证明"><a href="#排序关系有效性证明" class="headerlink" title="排序关系有效性证明"></a>排序关系有效性证明</h2><p>一个有效的比较规则一定满足自反性、对称性和传递性。<br>1）自反性：显然有 aa = aa,所以a等于a。<br>2）传递性：如果a小于b，则ab<ba。所以ba>ab,因此b大于a。<br>3）传递性：假设a小于b，ab&lt;ba. b小于c，bc&lt;cb<br>a的十进制为m位，b的十进制为n位，c的十进制为k位</ba。所以ba></p>
-<img src="/2016/07/28/数组排成最小的数/transitivity.png" alt="传递性证明过程" title="传递性证明过程">
-<p>因此 a小于b，b小于c，a必定小于c</p>
-<h2 id="最终证明"><a href="#最终证明" class="headerlink" title="最终证明"></a>最终证明</h2><p>排序关系证明是很重要的前提。正面证明很困难，使用反证法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">假设存在一个序列A小于序列B。</div><div class="line">1）假设B[i] = A[j],我们可以一直向前或者向后移动B[i]直到B[i]到达位置j。B序列中的每一个元素都按照这种方法移动即可得到A序列。</div><div class="line">2）现在我没减缓这个移动过程，每次只移动一个特定的元素B[i]一步直到B[i]到达位置j，而且一次只移动一步。可就是说经过一次移动序列B(0)：B[0]...B[i-1]B[i]...变为B(1):[0]...B[i]B[i-1]...。 B(l)代表序列B经历过l次移动。</div><div class="line">3)因为B[i-1]B[i]&lt;B[i]B[i-1]（这一点需要排序关系证明的支持才能成立），所以B[0]...B[i-1]B[i]...&lt;[0]...B[i]B[i-1]...</div><div class="line">4）因为B[i]B[i+1]&lt;B[i+1]B[i]（这一点需要排序关系证明的支持才能成立），所以B[0]...B[i-1]B[i]...&lt;[0]...B[i]B[i-1]...</div><div class="line">5)因为B(0)&lt;B(1)&lt;B(2)&lt;...&lt;B(x)=A(0)，所以B&lt;A</div><div class="line">这与题设不相符，所以假设不成立。也就是说A是最小的序列</div></pre></td></tr></table></figure>
+        <p>GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。<br><a id="more"></a></p>
+<h1 id="线程的优势"><a href="#线程的优势" class="headerlink" title="线程的优势"></a>线程的优势</h1><p>1.发挥多处理器的强大能力<br>2.代码责任单一，方便调试<br>3.异步事件的简化处理,防止客户端阻塞<br>4.响应更灵敏的用户界面</p>
+<h1 id="多线程危害"><a href="#多线程危害" class="headerlink" title="多线程危害"></a>多线程危害</h1><p>1.线程安全性可能是非常复杂的，线程执行顺序是不可预测的，竞争条件，脏读。<br>2.活跃性问题：某件正确的事情最终会发生，死锁。<br>3.性能问题：context Switch 切换、影响性能。</p>
+<h1 id="java线程状态"><a href="#java线程状态" class="headerlink" title="java线程状态"></a>java线程状态</h1><p>1.New：状态 已经分配内存，无cpu时间<br>2.Runable： 资源已经全部分配，可能在已经分配cpu时间<br>3.blocked：进入临界区，被挂起<br>4.waiting：等他其他线程唤醒，或者定时唤醒<br>5.terminated：终止状态<br><img src="/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png" alt="图1" title="图1"></p>
+<h1 id="java线程的操作"><a href="#java线程的操作" class="headerlink" title="java线程的操作"></a>java线程的操作</h1><ul>
+<li>Thread的start()在新的线程中调用run()方法，单纯吊用run()方法不会开启一个新的线程。</li>
+<li>两种方法新建：<br>（1）传递一个实现Runable的类；<br>（2）重载Thread的run()方法；</li>
+<li>每个线程都拥有自己的名字；<h1 id="终止线程"><a href="#终止线程" class="headerlink" title="终止线程"></a>终止线程</h1></li>
+<li>thread.stop() 不建议使用，过于暴力，直接终止，可能导致数据的不一致，。</li>
+<li>thread.interruput() 中断线程，只是给相应的线程打招呼，并不会真的终端线程</li>
+<li>thread.isInterruput() 判断线程是否被中断，采取相应的措施</li>
+<li>thread.sleep() InterruptedException<br>在sleep过程中其他线程发送中断请求 ，可以在catch中做出中断处理。<br>中断异常的时候清空中断标志位，catch中需要重新设置中断标志，while中使用<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">static class InterruptedThread implements Runnable &#123;</div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        while (true) &#123;</div><div class="line">            if (Thread.currentThread().isInterrupted()) &#123;</div><div class="line">                System.out.println(&quot;i am breaking&quot;);</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">            try &#123;</div><div class="line">                System.out.println(&quot;i want to sleep&quot;);</div><div class="line">                Thread.sleep(5000);</div><div class="line">            &#125; catch (InterruptedException e) &#123;</div><div class="line">                System.out.println(&quot;someone interrupt me&quot;);</div><div class="line">            //恢复中断标志位</div><div class="line">                Thread.currentThread().interrupt();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static void main(String[] args) throws InterruptedException&#123;</div><div class="line">    Thread thread = new Thread(new InterruptedThread(), &quot;t1&quot;);</div><div class="line">    thread.start();</div><div class="line">    Thread.sleep(7000);</div><div class="line">    thread.interrupt();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>输出结果：</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">i want to sleep</div><div class="line">i want to sleep</div><div class="line">someone interrupt me</div><div class="line">i am breaking</div></pre></td></tr></table></figure></p>
+<h1 id="六、线程挂起和继续执行"><a href="#六、线程挂起和继续执行" class="headerlink" title="六、线程挂起和继续执行"></a>六、线程挂起和继续执行</h1><p>不建议使用，resume()发生在suspend之前时，线程无法释放锁处于runnable转台</p>
+<ul>
+<li>tread.suspend() 占用锁不释放</li>
+<li>thread.resume()  重启线程</li>
+</ul>
+<h1 id="七、等待和谦让（debugger、测试可能使用）"><a href="#七、等待和谦让（debugger、测试可能使用）" class="headerlink" title="七、等待和谦让（debugger、测试可能使用）"></a>七、等待和谦让（debugger、测试可能使用）</h1><ul>
+<li>thread.yield() 释放当前线程的cpu时间，但是还是继续竞争，</li>
+<li>thread.join()等待线程结束<br>调用线程等待join函数的所属线程结束<h2 id="join实现代码"><a href="#join实现代码" class="headerlink" title="join实现代码"></a>join实现代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public final synchronized void join(long millis)</div><div class="line">    throws InterruptedException &#123;</div><div class="line">        long base = System.currentTimeMillis();</div><div class="line">        long now = 0;</div><div class="line">        if (millis &lt; 0) &#123;</div><div class="line">            throw new IllegalArgumentException(&quot;timeout value is negative&quot;);</div><div class="line">        &#125;</div><div class="line">        if (millis == 0) &#123;</div><div class="line">            while (isAlive()) &#123;</div><div class="line">                wait(0);</div><div class="line">            &#125;</div><div class="line">        &#125; else &#123;</div><div class="line">            while (isAlive()) &#123;</div><div class="line">                long delay = millis - now;</div><div class="line">                if (delay &lt;= 0) &#123;</div><div class="line">                    break;</div><div class="line">                &#125;</div><div class="line">                wait(delay);</div><div class="line">                now = System.currentTimeMillis() - base;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="守护线程"><a href="#守护线程" class="headerlink" title="守护线程"></a>守护线程</h1><p>在后台默默完成一些系统性的服务，如GC、JIT理解为守护线程<br>setDeamon();在start之前设置<br>如果没有业务线程守护线程也会死掉。</p>
+<h1 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h1><p>setPriority(Thread.MAX_PRORITY)<br>高优先级程序不一定就能一直抢占cpu时间，只是几率高一些</p>
+<h1 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h1><ul>
+<li>synchronized<br>（1）指定加锁对象<br>（2）修饰实例方法：相当于当前对象加锁<br>（3）直接作用于静态方法：相当于对当前类加锁，进入同步代码前要获得当前类的锁</li>
+<li>object.wait()、object.notify()、notifyAll()<pre><code>没有获得监视器之前不能使用wait(),会释放当前线程的监视器，通知其他线程执行；
+notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait之后的事情。唤醒所有等待监视器的线程中的其中一个线程。notifyAll唤醒所有的线程，去争用监视器。
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">    public static Boolean flag = true;</div><div class="line"></div><div class="line">    public static class Task implements Runnable &#123;</div><div class="line">        @Override</div><div class="line">        public void run() &#123;</div><div class="line">            try &#123;</div><div class="line">            //必须获取监视器才能用wait 会排数InterruptedException</div><div class="line">                synchronized (flag) &#123;</div><div class="line">                    System.out.println(&quot;im ready to wait&quot;);</div><div class="line">                    flag.wait();</div><div class="line">                    System.out.println(&quot;someone notify me&quot;);</div><div class="line">                &#125;</div><div class="line">            &#125; catch (InterruptedException e) &#123;</div><div class="line"></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws Exception &#123;</div><div class="line">        new Thread(new Task()).start();</div><div class="line">        Thread.sleep(5000);</div><div class="line">        synchronized (flag) &#123;</div><div class="line">            TestWaitNotify.flag.notifyAll();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">  </div><div class="line">输出结果  </div><div class="line">/**</div><div class="line">  *im ready to wait</div><div class="line">  *someone notify me</div><div class="line">*/</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>﻿</p>
 
       
     </div>
@@ -368,7 +394,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/可行性证明/" rel="tag">#可行性证明</a>
+            <a href="/tags/GYM/" rel="tag">#GYM</a>
           
         </div>
       
@@ -377,16 +403,16 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/25/ConcurrentHashMap源码解析/" rel="next" title="ConcurrentHashMap源码解析">
-                <i class="fa fa-chevron-left"></i> ConcurrentHashMap源码解析
+              <a href="/2016/07/28/数组中只出现一次的数组和异或运算/" rel="next" title="数组中只出现一次的数字">
+                <i class="fa fa-chevron-left"></i> 数组中只出现一次的数字
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/07/28/数组中只出现一次的数组和异或运算/" rel="prev" title="数组中只出现一次的数字">
-                数组中只出现一次的数字 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/07/29/GYM2-Java内存模型和三个概念/" rel="prev" title="GYM2-Java内存模型和三个概念">
+                GYM2-Java内存模型和三个概念 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -402,10 +428,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/28/数组排成最小的数/"
-     data-title="数组排成最小的数"
+        <div class="ds-share flat" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/"
+     data-title="GYM1-并发基础和Thread类详解"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/28/数组排成最小的数/">
+     data-url="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -432,8 +458,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/28/数组排成最小的数/"
-           data-title="数组排成最小的数" data-url="http://baobing.github.io/2016/07/28/数组排成最小的数/">
+      <div class="ds-thread" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/"
+           data-title="GYM1-并发基础和Thread类详解" data-url="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/">
       </div>
     
   </div>
@@ -524,7 +550,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#题目"><span class="nav-number">1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码"><span class="nav-number">3.</span> <span class="nav-text">源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正确性证明"><span class="nav-number">4.</span> <span class="nav-text">正确性证明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#排序关系有效性证明"><span class="nav-number">4.1.</span> <span class="nav-text">排序关系有效性证明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终证明"><span class="nav-number">4.2.</span> <span class="nav-text">最终证明</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线程的优势"><span class="nav-number">1.</span> <span class="nav-text">线程的优势</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多线程危害"><span class="nav-number">2.</span> <span class="nav-text">多线程危害</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java线程状态"><span class="nav-number">3.</span> <span class="nav-text">java线程状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java线程的操作"><span class="nav-number">4.</span> <span class="nav-text">java线程的操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#终止线程"><span class="nav-number">5.</span> <span class="nav-text">终止线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#六、线程挂起和继续执行"><span class="nav-number">6.</span> <span class="nav-text">六、线程挂起和继续执行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#七、等待和谦让（debugger、测试可能使用）"><span class="nav-number">7.</span> <span class="nav-text">七、等待和谦让（debugger、测试可能使用）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#join实现代码"><span class="nav-number">7.1.</span> <span class="nav-text">join实现代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#守护线程"><span class="nav-number">8.</span> <span class="nav-text">守护线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程优先级"><span class="nav-number">9.</span> <span class="nav-text">线程优先级</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程同步"><span class="nav-number">10.</span> <span class="nav-text">线程同步</span></a></li></ol></div>
             
           </div>
         </section>
