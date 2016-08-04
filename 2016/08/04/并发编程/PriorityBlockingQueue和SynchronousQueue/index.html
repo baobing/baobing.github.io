@@ -1,0 +1,812 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="jdk源码," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PriorityBlockingQueue和SynchronousQueue">
+<meta property="og:url" content="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/index.html">
+<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
+<meta property="og:updated_time" content="2016-08-04T05:21:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PriorityBlockingQueue和SynchronousQueue">
+<meta name="twitter:description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"/>
+
+  <title> PriorityBlockingQueue和SynchronousQueue | BAOBING'S </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">BAOBING'S</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PriorityBlockingQueue和SynchronousQueue
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-04T13:19:57+08:00" content="2016-08-04">
+              2016-08-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <pre><code>优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。
+</code></pre><a id="more"></a>
+<h1 id="PriorityBlockingQueue和"><a href="#PriorityBlockingQueue和" class="headerlink" title="PriorityBlockingQueue和"></a>PriorityBlockingQueue和</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>　　一个无界阻塞队列，它使用与类 PriorityQueue 相同的顺序规则，并且提供了阻塞获取操作。虽然此队列逻辑上是无界的，但是资源被耗尽时试图执行 add 操作也将失败（导致 OutOfMemoryError）。此类不允许使用 null 元素。依赖自然顺序的优先级队列也不允许插入不可比较的对象（这样做会导致抛出 ClassCastException）。</p>
+<p>　　此类及其迭代器可以实现 Collection 和 Iterator 接口的所有可选 方法。iterator() 方法中提供的迭代器并不 保证以特定的顺序遍历 PriorityBlockingQueue 的元素。如果需要有序地进行遍历，则应考虑使用 Arrays.sort(pq.toArray())。此外，可以使用方法 drainTo 按优先级顺序移除 全部或部分元素，并将它们放在另一个 collection 中。</p>
+<p>　　在此类上进行的操作不保证具有同等优先级的元素的顺序。如果需要实施某一排序，那么可以定义自定义类或者比较器，比较器可使用修改键断开主优先级值之间的联系。例如，以下是应用先进先出 (first-in-first-out) 规则断开可比较元素之间联系的一个类。要使用该类，则需要插入一个新的FIFOEntry(anEntry) 来替换普通的条目对象。</p>
+<p>##属性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//优先队列用平衡二叉堆表示：queue[n] queue[2*n+1]和queue[2*(n+1)]。最小堆。</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Object[] queue;</div><div class="line"></div><div class="line"><span class="comment">//优先队列元素个数</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">int</span> size;</div><div class="line"></div><div class="line"><span class="comment">//比较器</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Comparator&lt;? <span class="keyword">super</span> E&gt; comparator;</div><div class="line"></div><div class="line"><span class="comment">//所有public方法的锁</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty;</div><div class="line"></div><div class="line"><span class="comment">//分配自旋锁通过CAS获取</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> allocationSpinLock;</div><div class="line"></div><div class="line"><span class="comment">//兼容以前的版本，序列化和反序列化使用</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> PriorityQueue&lt;E&gt; q;</div></pre></td></tr></table></figure>
+<h2 id="put-操作"><a href="#put-操作" class="headerlink" title="put 操作"></a>put 操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> </span>&#123;</div><div class="line"></div><div class="line">        offer(e); <span class="comment">// never need to block</span></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (e == <span class="keyword">null</span>)</div><div class="line"></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line"></div><div class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</div><div class="line"></div><div class="line">        lock.lock();</div><div class="line"></div><div class="line">        <span class="keyword">int</span> n, cap;</div><div class="line"></div><div class="line">        Object[] array;</div><div class="line"></div><div class="line">        <span class="comment">//优先队列数组装满需要扩容，扩容可能失败，需要循环</span></div><div class="line"></div><div class="line">        <span class="keyword">while</span> ((n = size) &gt;= (cap = (array = queue).length))</div><div class="line"></div><div class="line">            tryGrow(array, cap);</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">            Comparator&lt;? <span class="keyword">super</span> E&gt; cmp = comparator;</div><div class="line"></div><div class="line">           <span class="comment">//将元素插入优先队列</span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (cmp == <span class="keyword">null</span>)</div><div class="line"></div><div class="line">                siftUpComparable(n, e, array);</div><div class="line"></div><div class="line">            <span class="keyword">else</span></div><div class="line"></div><div class="line">                siftUpUsingComparator(n, e, array, cmp);</div><div class="line"></div><div class="line">            size = n + <span class="number">1</span>;</div><div class="line"></div><div class="line">            notEmpty.signal();</div><div class="line"></div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">            lock.unlock();</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"> <span class="comment">//优先队列扩容。考虑到有可能扩容过程中有消费线程获取元素，可以在不扩容</span></div><div class="line"></div><div class="line"><span class="comment">//的前提下继续使用队列。增加吞吐量</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryGrow</span><span class="params">(Object[] array, <span class="keyword">int</span> oldCap)</span> </span>&#123;</div><div class="line"></div><div class="line">       <span class="comment">//我猜是为了消费者线程可以继续消费，增加并发量</span></div><div class="line"></div><div class="line">        lock.unlock(); <span class="comment">// must release and then re-acquire main lock</span></div><div class="line"></div><div class="line">        Object[] newArray = <span class="keyword">null</span>; </div><div class="line"></div><div class="line">       <span class="comment">//获取到偏向锁标志位的才能扩容，使用CAS操作</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> (allocationSpinLock == <span class="number">0</span> &amp;&amp;</div><div class="line"></div><div class="line">            UNSAFE.compareAndSwapInt(<span class="keyword">this</span>, allocationSpinLockOffset,</div><div class="line"></div><div class="line">                                     <span class="number">0</span>, <span class="number">1</span>)) &#123;</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123; <span class="comment">//oldCap容量小于64扩展一倍加二，其他情况扩展一半</span></div><div class="line"></div><div class="line">                <span class="keyword">int</span> newCap = oldCap + ((oldCap &lt; <span class="number">64</span>) ?</div><div class="line"></div><div class="line">                                       (oldCap + <span class="number">2</span>) : <span class="comment">// grow faster if small</span></div><div class="line"></div><div class="line">                                       (oldCap &gt;&gt; <span class="number">1</span>));<span class="comment">//边界检查还是很重要的防止内存泄漏</span></div><div class="line"></div><div class="line">                <span class="keyword">if</span> (newCap - MAX_ARRAY_SIZE &gt; <span class="number">0</span>) &#123;    <span class="comment">// possible overflow</span></div><div class="line"></div><div class="line">                    <span class="keyword">int</span> minCap = oldCap + <span class="number">1</span>;</div><div class="line"></div><div class="line">                    <span class="keyword">if</span> (minCap &lt; <span class="number">0</span> || minCap &gt; MAX_ARRAY_SIZE)</div><div class="line"></div><div class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError();</div><div class="line"></div><div class="line">                    newCap = MAX_ARRAY_SIZE;</div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (newCap &gt; oldCap &amp;&amp; queue == array)</div><div class="line"></div><div class="line">                    newArray = <span class="keyword">new</span> Object[newCap];</div><div class="line"></div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">                allocationSpinLock = <span class="number">0</span>;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;<span class="comment">//其他线程还是有机会提前扩容新的数组</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> (newArray == <span class="keyword">null</span>) <span class="comment">// back off if another thread is allocating</span></div><div class="line"></div><div class="line">            Thread.yield();</div><div class="line"></div><div class="line">        lock.lock(); <span class="comment">//数组copy</span></div><div class="line"></div><div class="line">        <span class="keyword">if</span> (newArray != <span class="keyword">null</span> &amp;&amp; queue == array) &#123;</div><div class="line"></div><div class="line">            queue = newArray;</div><div class="line"></div><div class="line">            System.arraycopy(array, <span class="number">0</span>, newArray, <span class="number">0</span>, oldCap);</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//优先队列（最小堆）平衡插入。k代表数组中元素个数。</span></div><div class="line"></div><div class="line">   <span class="comment">//插入过程，将元素放在平衡堆的最后一个位置，父节点大于当前节点</span></div><div class="line"></div><div class="line">   <span class="comment">//交换位置，递归重复这个过程。</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">siftUpComparable</span><span class="params">(<span class="keyword">int</span> k, T x, Object[] array)</span> </span>&#123;</div><div class="line"></div><div class="line">        Comparable&lt;? <span class="keyword">super</span> T&gt; key = (Comparable&lt;? <span class="keyword">super</span> T&gt;) x;</div><div class="line"></div><div class="line">        <span class="keyword">while</span> (k &gt; <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">            <span class="keyword">int</span> parent = (k - <span class="number">1</span>) &gt;&gt;&gt; <span class="number">1</span>;<span class="comment">//父节点下标</span></div><div class="line"></div><div class="line">            Object e = array[parent];</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (key.compareTo((T) e) &gt;= <span class="number">0</span>) <span class="comment">//大于父节点循环终止</span></div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            array[k] = e;</div><div class="line"></div><div class="line">            k = parent;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        array[k] = key;</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="take-操作"><a href="#take-操作" class="headerlink" title="take 操作"></a>take 操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</div><div class="line"></div><div class="line">    lock.lockInterruptibly();</div><div class="line"></div><div class="line">    E result;</div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line"></div><div class="line">        <span class="keyword">while</span> ( (result = dequeue()) == <span class="keyword">null</span>)</div><div class="line"></div><div class="line">            notEmpty.await();</div><div class="line"></div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line"></div><div class="line">        lock.unlock();</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> result;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//持有锁才可以访问，堆中第一个元素为最小</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> E <span class="title">dequeue</span><span class="params">()</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> n = size - <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (n &lt; <span class="number">0</span>)</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line"></div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line">        Object[] array = queue;</div><div class="line"></div><div class="line">        E result = (E) array[<span class="number">0</span>];</div><div class="line"></div><div class="line">        E x = (E) array[n];</div><div class="line"></div><div class="line">        array[n] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">        Comparator&lt;? <span class="keyword">super</span> E&gt; cmp = comparator;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (cmp == <span class="keyword">null</span>)</div><div class="line"></div><div class="line">            siftDownComparable(<span class="number">0</span>, x, array, n);</div><div class="line"></div><div class="line">        <span class="keyword">else</span></div><div class="line"></div><div class="line">            siftDownUsingComparator(<span class="number">0</span>, x, array, n, cmp);</div><div class="line"></div><div class="line">        size = n;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> result;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//堆的头元素被去掉，头元素作为Z，选取头元素较小的子节点占据头结点位置。</span></div><div class="line"></div><div class="line"><span class="comment">//将头元素较小子节点作为Z重复这个过程，直到Z小于队列最后一个元素key，</span></div><div class="line"></div><div class="line"><span class="comment">//或者Z没有子节点。将key放置到Z的位置。</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">siftDownComparable</span><span class="params">(<span class="keyword">int</span> k, T x, Object[] array,<span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</div><div class="line"></div><div class="line">        Comparable&lt;? <span class="keyword">super</span> T&gt; key = (Comparable&lt;? <span class="keyword">super</span> T&gt;)x;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> half = n &gt;&gt;&gt; <span class="number">1</span>;           <span class="comment">// loop while a non-leaf</span></div><div class="line"></div><div class="line">        <span class="keyword">while</span> (k &lt; half) &#123;</div><div class="line"></div><div class="line">            <span class="keyword">int</span> child = (k &lt;&lt; <span class="number">1</span>) + <span class="number">1</span>; <span class="comment">// assume left child is least</span></div><div class="line"></div><div class="line">            Object c = array[child];</div><div class="line"></div><div class="line">            <span class="keyword">int</span> right = child + <span class="number">1</span>;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (right &lt; n &amp;&amp;  <span class="comment">//左子节点大于右子节点</span></div><div class="line"></div><div class="line">                ((Comparable&lt;? <span class="keyword">super</span> T&gt;) c).compareTo((T) array[right]) &gt; <span class="number">0</span>)</div><div class="line"></div><div class="line">                c = array[child = right]; <span class="comment">//c等于两个子节点中的较小值</span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (key.compareTo((T) c) &lt;= <span class="number">0</span>)<span class="comment">//如果key小于c停止循环</span></div><div class="line"></div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            array[k] = c;</div><div class="line"></div><div class="line">            k = child;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        array[k] = key;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="SynchronousQueue"><a href="#SynchronousQueue" class="headerlink" title="SynchronousQueue"></a>SynchronousQueue</h1><h2 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h2><p>　　一种阻塞队列，其中每个插入操作必须等待另一个线程的对应移除操作 ，反之亦然。同步队列没有任何内部容量，甚至连一个队列的容量都没有。不能在同步队列上进行 peek，因为仅在试图要移除元素时，该元素才存在；除非另一个线程试图移除某个元素，否则也不能（使用任何方法）插入元素；也不能迭代队列，因为其中没有元素可用于迭代。队列的头 是尝试添加到队列中的首个已排队插入线程的元素；如果没有这样的已排队线程，则没有可用于移除的元素并且 poll() 将会返回 null。对于其他 Collection 方法（例如 contains），SynchronousQueue 作为一个空 collection。此队列不允许 null元素。</p>
+<p>　　同步队列类似于 CSP 和 Ada 中使用的 rendezvous 信道。它非常适合于传递性设计，在这种设计中，在一个线程中运行的对象要将某些信息、事件或任务传递给在另一个线程中运行的对象，它就必须与该对象同步。</p>
+<p>　　对于正在等待的生产者和使用者线程而言，此类支持可选的公平排序策略。默认情况下不保证这种排序。但是，使用公平设置为 true 所构造的队列可保证线程以 FIFO 的顺序进行访问。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jdk源码/" rel="tag">#jdk源码</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/03/并发编程/ArrayBlockingQueue和LinkedBlockingQueue/" rel="next" title="ArrayBlockingQueue和LinkedBlockingQueue">
+                <i class="fa fa-chevron-left"></i> ArrayBlockingQueue和LinkedBlockingQueue
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"
+     data-title="PriorityBlockingQueue和SynchronousQueue"
+     data-content=""
+     data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"
+           data-title="PriorityBlockingQueue和SynchronousQueue" data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PriorityBlockingQueue和"><span class="nav-number">1.</span> <span class="nav-text">PriorityBlockingQueue和</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#put-操作"><span class="nav-number">1.2.</span> <span class="nav-text">put 操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#take-操作"><span class="nav-number">1.3.</span> <span class="nav-text">take 操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SynchronousQueue"><span class="nav-number">2.</span> <span class="nav-text">SynchronousQueue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介-1"><span class="nav-number">2.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码"><span class="nav-number">2.2.</span> <span class="nav-text">源码</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

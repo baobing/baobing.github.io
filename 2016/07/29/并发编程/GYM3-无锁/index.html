@@ -1,0 +1,823 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="GYM," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="CAS compare and swap线程切换线程8w个时钟周期。对于竞争不激烈的情况，使用循环使用CAS开销更小。无锁操作在并发比较少的情况下效率高，但不要迷恋无锁。CAS是CPU指令级别的原子操作，一条指令完成比较赋值过程，不用担心并发问题。
+AtomicIntegerAtomicInteger 部分源码1234567891011// setup to use Unsafe.compareA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GYM3-无锁">
+<meta property="og:url" content="http://baobing.github.io/2016/07/29/并发编程/GYM3-无锁/index.html">
+<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:description" content="CAS compare and swap线程切换线程8w个时钟周期。对于竞争不激烈的情况，使用循环使用CAS开销更小。无锁操作在并发比较少的情况下效率高，但不要迷恋无锁。CAS是CPU指令级别的原子操作，一条指令完成比较赋值过程，不用担心并发问题。
+AtomicIntegerAtomicInteger 部分源码1234567891011// setup to use Unsafe.compareA">
+<meta property="og:updated_time" content="2016-08-04T06:55:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GYM3-无锁">
+<meta name="twitter:description" content="CAS compare and swap线程切换线程8w个时钟周期。对于竞争不激烈的情况，使用循环使用CAS开销更小。无锁操作在并发比较少的情况下效率高，但不要迷恋无锁。CAS是CPU指令级别的原子操作，一条指令完成比较赋值过程，不用担心并发问题。
+AtomicIntegerAtomicInteger 部分源码1234567891011// setup to use Unsafe.compareA">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/07/29/并发编程/GYM3-无锁/"/>
+
+  <title> GYM3-无锁 | BAOBING'S </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">BAOBING'S</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GYM3-无锁
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-29T17:59:15+08:00" content="2016-07-29">
+              2016-07-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/29/并发编程/GYM3-无锁/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/并发编程/GYM3-无锁/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="CAS-compare-and-swap"><a href="#CAS-compare-and-swap" class="headerlink" title="CAS compare and swap"></a>CAS compare and swap</h1><p>线程切换线程8w个时钟周期。对于竞争不激烈的情况，使用循环使用CAS开销更小。<br>无锁操作在并发比较少的情况下效率高，但不要迷恋无锁。<br>CAS是CPU指令级别的原子操作，一条指令完成比较赋值过程，不用担心并发问题。</p>
+<h1 id="AtomicInteger"><a href="#AtomicInteger" class="headerlink" title="AtomicInteger"></a>AtomicInteger</h1><p>AtomicInteger 部分源码<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// setup to use Unsafe.compareAndSwapInt for updates</span></div><div class="line"><span class="comment">//只有bootstrap加载器加载的类才能获取Unsafe的实例，其他类只能用反射获取</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Unsafe unsafe = Unsafe.getUnsafe();</div><div class="line"><span class="comment">//valueOffset 代表需要更新的字段在对象中的偏移量，类似于c中的指针，获取需要更新字段的内存地址</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> valueOffset;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> unsafe.getAndAddInt(<span class="keyword">this</span>, valueOffset, <span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Unsafe 部分源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//valueOffset 代表需要更新的字段在对象中的偏移量，类似于c中的指针，获取需要更新字段的内存地址</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">compareAndSwapInt</span><span class="params">(Object var1,<span class="keyword">long</span> valueOffset, expect, update)</span></span>;</div><div class="line"><span class="comment">//不断zi'x</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAddInt</span><span class="params">(Object var1, <span class="keyword">long</span> var2, <span class="keyword">int</span> var4)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> var5;</div><div class="line">    do &#123;</div><div class="line">        var5 = <span class="keyword">this</span>.getIntVolatile(var1, var2);</div><div class="line">    &#125; <span class="keyword">while</span>(!<span class="keyword">this</span>.compareAndSwapInt(var1, var2, var5, var5 + var4));</div><div class="line"></div><div class="line">    <span class="keyword">return</span> var5;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="AtomicReference"><a href="#AtomicReference" class="headerlink" title="AtomicReference"></a>AtomicReference</h1><p>　　可以修饰任意类型的变量，是的变量操作变为院子操作<br>AtomicReference<string> stringAtomicReference = new AtomicReference&lt;&gt;();</string></p>
+<h1 id="AtomicStampedReference"><a href="#AtomicStampedReference" class="headerlink" title="AtomicStampedReference"></a>AtomicStampedReference</h1><p>　　与AtomicReference功能相似，不同点是AtomicStampedReference可以解决过程相关的情景。过程敏感的情景试用。<br>　　假设一个活动只能给每个用户充值一次10元钱，用户可以消费。假设用户A充值以后立马消费10元，AtomicReference还会认为只消费了一次。<br>　　<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AtomicStampedReference&lt;Integer&gt; money = <span class="keyword">new</span> AtomicStampedReference&lt;&gt;(<span class="number">0</span>,<span class="number">0</span>);</div><div class="line"><span class="keyword">int</span> stamp = money.getStamp();</div><div class="line">money.compareAndSet(<span class="number">0</span>,<span class="number">10</span>,stamp,stamp+<span class="number">1</span>);</div></pre></td></tr></table></figure></p>
+<p>AtomicStampedReference部分源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">final</span> T reference;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> stamp;</div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Pair</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.reference = reference;</div><div class="line">        <span class="keyword">this</span>.stamp = stamp;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">static</span> &lt;T&gt; <span class="function">Pair&lt;T&gt; <span class="title">of</span><span class="params">(T reference, <span class="keyword">int</span> stamp)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Pair&lt;T&gt;(reference, stamp);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> Pair&lt;V&gt; pair;</div><div class="line"><span class="comment">//构造函数</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AtomicStampedReference</span><span class="params">(V initialRef, <span class="keyword">int</span> initialStamp)</span> </span>&#123;</div><div class="line">    pair = Pair.of(initialRef, initialStamp);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(V   expectedReference, V   newReference,</span></span></div><div class="line">                             <span class="keyword">int</span> expectedStamp, <span class="keyword">int</span> newStamp) &#123;</div><div class="line">    Pair&lt;V&gt; current = pair;</div><div class="line">    <span class="keyword">return</span> expectedReference == current.reference &amp;&amp;</div><div class="line">        expectedStamp == current.stamp &amp;&amp;</div><div class="line">        ((newReference == current.reference &amp;&amp;</div><div class="line">          newStamp == current.stamp) ||</div><div class="line">         casPair(current, Pair.of(newReference, newStamp)));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">casPair</span><span class="params">(Pair&lt;V&gt; cmp, Pair&lt;V&gt; val)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> UNSAFE.compareAndSwapObject(<span class="keyword">this</span>, pairOffset, cmp, val);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="AtomicIntegerArray"><a href="#AtomicIntegerArray" class="headerlink" title="AtomicIntegerArray"></a>AtomicIntegerArray</h1><p>原子操作的整数数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AtomicIntegerArray array = <span class="keyword">new</span> AtomicIntegerArray(<span class="number">10</span>);</div><div class="line"><span class="comment">//下标为2的位置加一</span></div><div class="line">array.getAndIncrement(<span class="number">2</span>);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Unsafe unsafe = Unsafe.getUnsafe();</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> base = unsafe.arrayBaseOffset(<span class="keyword">int</span>[].class);</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> shift;</div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] array;</div><div class="line"></div><div class="line"><span class="keyword">static</span> &#123;</div><div class="line">    <span class="keyword">int</span> scale = unsafe.arrayIndexScale(<span class="keyword">int</span>[].class);</div><div class="line">    <span class="keyword">if</span> ((scale &amp; (scale - <span class="number">1</span>)) != <span class="number">0</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"data type scale not a power of two"</span>);</div><div class="line">    shift = <span class="number">31</span> - Integer.numberOfLeadingZeros(scale);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">checkedByteOffset</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= array.length)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">"index "</span> + i);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> byteOffset(i);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">byteOffset</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ((<span class="keyword">long</span>) i &lt;&lt; shift) + base;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AtomicIntegerArray</span><span class="params">(<span class="keyword">int</span> length)</span> </span>&#123;</div><div class="line">    array = <span class="keyword">new</span> <span class="keyword">int</span>[length];</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AtomicIntegerArray</span><span class="params">(<span class="keyword">int</span>[] array)</span> </span>&#123;</div><div class="line">    <span class="comment">// Visibility guaranteed by final field guarantees</span></div><div class="line">    <span class="keyword">this</span>.array = array.clone();</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> getAndAdd(i, <span class="number">1</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> delta)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> unsafe.getAndAddInt(array, checkedByteOffset(i), delta);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="AtomicIntegerFieldUpdater"><a href="#AtomicIntegerFieldUpdater" class="headerlink" title="AtomicIntegerFieldUpdater"></a>AtomicIntegerFieldUpdater</h1><p>AtomicIntegerFieldUpdater辅助一个类，用类似静态方法的方式，实现变量的原子操作。优点在于不必改变变量的类型，即可享受原子变量的好处。如果是已有代码修改，将会大大减少代码的修改量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Candidate</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> id = <span class="number">0</span> ;</div><div class="line">    <span class="keyword">volatile</span> <span class="keyword">int</span> score = <span class="number">0</span>;</div><div class="line">&#125;</div><div class="line">AtomicIntegerFieldUpdater&lt;Candidate&gt; scoreUpdater = AtomicIntegerFieldUpdater.newUpdater(Candidate.class, <span class="string">"score"</span>);</div><div class="line">Candidate candidate = <span class="keyword">new</span> Candidate();</div><div class="line">scoreUpdater.incrementAndGet(candidate);</div></pre></td></tr></table></figure>
+<p>AtomicIntegerFieldUpdater部分源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;U&gt; <span class="function">AtomicLongFieldUpdater&lt;U&gt; <span class="title">newUpdater</span><span class="params">(Class&lt;U&gt; tclass,</span></span></div><div class="line">                                                       String fieldName) &#123;</div><div class="line">    Class&lt;?&gt; caller = Reflection.getCallerClass();</div><div class="line">    <span class="keyword">if</span> (AtomicLong.VM_SUPPORTS_LONG_CAS)</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> CASUpdater&lt;U&gt;(tclass, fieldName, caller);</div><div class="line">    <span class="keyword">else</span>  </div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> LockedUpdater&lt;U&gt;(tclass, fieldName, caller);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="LockFreeVector"><a href="#LockFreeVector" class="headerlink" title="LockFreeVector"></a>LockFreeVector</h2><p>无锁数组，amino框架提供</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//第一桶的大小为8 </span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> First_BUCKET_SIZE = <span class="number">8</span>;</div><div class="line"><span class="comment">//采用二维数组做扩展，每个一维数组的大小都不同 sizeOf(buke[i+1]) = sizeOf( buket[i]) *2</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicReferenceArray&lt;AtomicReferenceArray&lt;E&gt;&gt; buckets;</div><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">WriteDescriptor</span>&lt;<span class="title">E</span>&gt;</span>&#123;</div><div class="line">   <span class="keyword">public</span> E odlV; </div><div class="line">   <span class="keyword">public</span> E newV;</div><div class="line">   <span class="keyword">public</span> AtomicReferenceArray&lt;E&gt; addr; <span class="comment">//操作地址</span></div><div class="line">   <span class="keyword">public</span> <span class="keyword">int</span> addr_ind;<span class="comment">//地址的index</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="title">WriteDesciptor</span><span class="params">(AtomicReferenceArray&lt;E&gt; addr,<span class="keyword">int</span> addr_ind, E oldV,E newV)</span></span>&#123;</div><div class="line">      <span class="keyword">this</span>.addr = addr;</div><div class="line">   <span class="keyword">this</span>.addr_ind =addr_ind;</div><div class="line">      <span class="keyword">this</span>.oldV = oldV;</div><div class="line">      <span class="keyword">this</span>.newV = newV;</div><div class="line">   &#125; </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doIt</span><span class="params">()</span></span>&#123;</div><div class="line">addr.compareAndSet()</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push_back</span><span class="params">(E e)</span></span>&#123;</div><div class="line">Desciptor</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GYM/" rel="tag">#GYM</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/29/并发编程/GYM2-Java内存模型和三个概念/" rel="next" title="GYM2-Java内存模型和三个概念">
+                <i class="fa fa-chevron-left"></i> GYM2-Java内存模型和三个概念
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/03/并发编程/BlockingQueue接口/" rel="prev" title="BlockingQueue接口">
+                BlockingQueue接口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/07/29/并发编程/GYM3-无锁/"
+     data-title="GYM3-无锁"
+     data-content=""
+     data-url="http://baobing.github.io/2016/07/29/并发编程/GYM3-无锁/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/29/并发编程/GYM3-无锁/"
+           data-title="GYM3-无锁" data-url="http://baobing.github.io/2016/07/29/并发编程/GYM3-无锁/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CAS-compare-and-swap"><span class="nav-number">1.</span> <span class="nav-text">CAS compare and swap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AtomicInteger"><span class="nav-number">2.</span> <span class="nav-text">AtomicInteger</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AtomicReference"><span class="nav-number">3.</span> <span class="nav-text">AtomicReference</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AtomicStampedReference"><span class="nav-number">4.</span> <span class="nav-text">AtomicStampedReference</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AtomicIntegerArray"><span class="nav-number">5.</span> <span class="nav-text">AtomicIntegerArray</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AtomicIntegerFieldUpdater"><span class="nav-number">6.</span> <span class="nav-text">AtomicIntegerFieldUpdater</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LockFreeVector"><span class="nav-number">6.1.</span> <span class="nav-text">LockFreeVector</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

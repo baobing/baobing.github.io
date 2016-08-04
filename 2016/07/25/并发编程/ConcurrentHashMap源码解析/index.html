@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java," />
+  <meta name="keywords" content="jdk源码," />
 
 
 
@@ -87,10 +87,10 @@
 <meta name="description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ConcurrentHashMap源码解析">
-<meta property="og:url" content="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/index.html">
+<meta property="og:url" content="http://baobing.github.io/2016/07/25/并发编程/ConcurrentHashMap源码解析/index.html">
 <meta property="og:site_name" content="BAOBING'S">
 <meta property="og:description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
-<meta property="og:updated_time" content="2016-07-25T16:17:49.000Z">
+<meta property="og:updated_time" content="2016-08-04T06:50:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ConcurrentHashMap源码解析">
 <meta name="twitter:description" content="JDK1.8中，ConcurrentHashMap的源码竟然有6300行,作者是大名鼎鼎Doug Lea（感谢开源让我离大神可以这么近，不过代码风格明显没打算交给他人维护）。本文只讲述扩容相关的内容，其他操作就放弃了。文章参考一下别人的文章，主要是以下两篇文章：">
@@ -114,7 +114,7 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/25/并发编程/ConcurrentHashMap源码解析/"/>
 
   <title> ConcurrentHashMap源码解析 | BAOBING'S </title>
 </head>
@@ -295,8 +295,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/Java基础/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础</span>
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
                   </a>
                 </span>
 
@@ -311,8 +311,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/25/ConcurrentHashMap源码解析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/" itemprop="commentsCount"></span>
+                <a href="/2016/07/25/并发编程/ConcurrentHashMap源码解析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/并发编程/ConcurrentHashMap源码解析/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -375,7 +375,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag">#Java</a>
+            <a href="/tags/jdk源码/" rel="tag">#jdk源码</a>
           
         </div>
       
@@ -409,10 +409,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/"
+        <div class="ds-share flat" data-thread-key="2016/07/25/并发编程/ConcurrentHashMap源码解析/"
      data-title="ConcurrentHashMap源码解析"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/">
+     data-url="http://baobing.github.io/2016/07/25/并发编程/ConcurrentHashMap源码解析/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -439,8 +439,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/25/ConcurrentHashMap源码解析/"
-           data-title="ConcurrentHashMap源码解析" data-url="http://baobing.github.io/2016/07/25/ConcurrentHashMap源码解析/">
+      <div class="ds-thread" data-thread-key="2016/07/25/并发编程/ConcurrentHashMap源码解析/"
+           data-title="ConcurrentHashMap源码解析" data-url="http://baobing.github.io/2016/07/25/并发编程/ConcurrentHashMap源码解析/">
       </div>
     
   </div>
@@ -485,7 +485,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

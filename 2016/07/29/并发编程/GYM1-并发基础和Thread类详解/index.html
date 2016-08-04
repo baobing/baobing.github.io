@@ -87,15 +87,15 @@
 <meta name="description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GYM1-并发基础和Thread类详解">
-<meta property="og:url" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/index.html">
+<meta property="og:url" content="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/index.html">
 <meta property="og:site_name" content="BAOBING'S">
 <meta property="og:description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
-<meta property="og:image" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png">
+<meta property="og:image" content="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/ThreadStatus.png">
 <meta property="og:updated_time" content="2016-07-29T09:49:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GYM1-并发基础和Thread类详解">
 <meta name="twitter:description" content="GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。">
-<meta name="twitter:image" content="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png">
+<meta name="twitter:image" content="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/ThreadStatus.png">
 
 
 
@@ -116,7 +116,7 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/"/>
 
   <title> GYM1-并发基础和Thread类详解 | BAOBING'S </title>
 </head>
@@ -313,8 +313,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/29/GYM1-并发基础和Thread类详解/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/" itemprop="commentsCount"></span>
+                <a href="/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/并发编程/GYM1-并发基础和Thread类详解/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -340,7 +340,7 @@
         <p>GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。<br><a id="more"></a></p>
 <h1 id="线程的优势"><a href="#线程的优势" class="headerlink" title="线程的优势"></a>线程的优势</h1><p>1.发挥多处理器的强大能力<br>2.代码责任单一，方便调试<br>3.异步事件的简化处理,防止客户端阻塞<br>4.响应更灵敏的用户界面</p>
 <h1 id="多线程危害"><a href="#多线程危害" class="headerlink" title="多线程危害"></a>多线程危害</h1><p>1.线程安全性可能是非常复杂的，线程执行顺序是不可预测的，竞争条件，脏读。<br>2.活跃性问题：某件正确的事情最终会发生，死锁。<br>3.性能问题：context Switch 切换、影响性能。</p>
-<h1 id="java线程状态"><a href="#java线程状态" class="headerlink" title="java线程状态"></a>java线程状态</h1><p>1.New：状态 已经分配内存，无cpu时间<br>2.Runable： 资源已经全部分配，可能在已经分配cpu时间<br>3.blocked：进入临界区，被挂起<br>4.waiting：等他其他线程唤醒，或者定时唤醒<br>5.terminated：终止状态<br><img src="/2016/07/29/GYM1-并发基础和Thread类详解/ThreadStatus.png" alt="图1" title="图1"></p>
+<h1 id="java线程状态"><a href="#java线程状态" class="headerlink" title="java线程状态"></a>java线程状态</h1><p>1.New：状态 已经分配内存，无cpu时间<br>2.Runable： 资源已经全部分配，可能在已经分配cpu时间<br>3.blocked：进入临界区，被挂起<br>4.waiting：等他其他线程唤醒，或者定时唤醒<br>5.terminated：终止状态<br><img src="/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/ThreadStatus.png" alt="图1" title="图1"></p>
 <h1 id="java线程的操作"><a href="#java线程的操作" class="headerlink" title="java线程的操作"></a>java线程的操作</h1><ul>
 <li>Thread的start()在新的线程中调用run()方法，单纯吊用run()方法不会开启一个新的线程。</li>
 <li>两种方法新建：<br>（1）传递一个实现Runable的类；<br>（2）重载Thread的run()方法；</li>
@@ -411,7 +411,7 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/07/29/GYM2-Java内存模型和三个概念/" rel="prev" title="GYM2-Java内存模型和三个概念">
+              <a href="/2016/07/29/并发编程/GYM2-Java内存模型和三个概念/" rel="prev" title="GYM2-Java内存模型和三个概念">
                 GYM2-Java内存模型和三个概念 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -428,10 +428,10 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/"
+        <div class="ds-share flat" data-thread-key="2016/07/29/并发编程/GYM1-并发基础和Thread类详解/"
      data-title="GYM1-并发基础和Thread类详解"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/">
+     data-url="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -458,8 +458,8 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/29/GYM1-并发基础和Thread类详解/"
-           data-title="GYM1-并发基础和Thread类详解" data-url="http://baobing.github.io/2016/07/29/GYM1-并发基础和Thread类详解/">
+      <div class="ds-thread" data-thread-key="2016/07/29/并发编程/GYM1-并发基础和Thread类详解/"
+           data-title="GYM1-并发基础和Thread类详解" data-url="http://baobing.github.io/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/">
       </div>
     
   </div>
@@ -504,7 +504,7 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
