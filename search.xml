@@ -4,8 +4,95 @@
   
     
     <entry>
-      <title><![CDATA[PriorityBlockingQueue和SynchronousQueue]]></title>
-      <url>http://baobing.github.io/2016/08/04/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/PriorityBlockingQueue%E5%92%8CSynchronousQueue/</url>
+      <title><![CDATA[SynchronousQueue源码解析]]></title>
+      <url>http://baobing.github.io/2016/08/12/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/SynchronousQueue%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
+      <content type="html"><![CDATA[<h1 id="SynchronousQueue"><a href="#SynchronousQueue" class="headerlink" title="SynchronousQueue"></a>SynchronousQueue</h1><p>　　SychronousQueue类的大部分代码都交给Transfer内部类的两个子类ThransferQueue和ThransferStack完成。我只写关于ThransferStack的代码。<br>　　<a id="more"></a></p>
+<p>这两个子类使用非阻塞无锁操作实现，理解起来有些困难。无锁是提高性能的重要手段，与此同时它让代码变得复杂。接下来要自己动手写无锁操作，增加对无锁操作的理解</p>
+<blockquote>
+<p><a href="http://www.tuicool.com/articles/aYrEZf" target="_blank" rel="external">http://www.tuicool.com/articles/aYrEZf</a></p>
+</blockquote>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>　　一种阻塞队列，其中每个插入操作必须等待另一个线程的对应移除操作 ，反之亦然。同步队列没有任何内部容量，甚至连一个队列的容量都没有。不能在同步队列上进行 peek，因为仅在试图要移除元素时，该元素才存在；除非另一个线程试图移除某个元素，否则也不能（使用任何方法）插入元素；也不能迭代队列，因为其中没有元素可用于迭代。队列的头 是尝试添加到队列中的首个已排队插入线程的元素；如果没有这样的已排队线程，则没有可用于移除的元素并且 poll() 将会返回 null。对于其他 Collection 方法（例如 contains），SynchronousQueue 作为一个空 collection。此队列不允许 null元素。</p>
+<p>　　同步队列类似于 CSP 和 Ada 中使用的 rendezvous 信道。它非常适合于传递性设计，在这种设计中，在一个线程中运行的对象要将某些信息、事件或任务传递给在另一个线程中运行的对象，它就必须与该对象同步。</p>
+<p>　　对于正在等待的生产者和使用者线程而言，此类支持可选的公平排序策略。默认情况下不保证这种排序。但是，使用公平设置为 true 所构造的队列可保证线程以 FIFO 的顺序进行访问。</p>
+<h2 id="take操作"><a href="#take操作" class="headerlink" title="take操作"></a>take操作</h2><p> public E take() throws InterruptedException {</p>
+<pre><code>    E e = transferer.transfer(null, false, 0);
+
+    if (e != null)
+
+        return e;
+
+    Thread.interrupted();
+
+    throw new InterruptedException();
+
+}
+</code></pre><h2 id="TransferStack类"><a href="#TransferStack类" class="headerlink" title="TransferStack类"></a>TransferStack类</h2><h3 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">static final int REQUEST    = 0; //代表未完成的消费者</div><div class="line"></div><div class="line">static final int DATA       = 1;     //代表未完成的生产者</div><div class="line"></div><div class="line">static final int FULFILLING = 2; //已经完成状态</div><div class="line"></div><div class="line">volatile SNode head;               //栈的顶端</div></pre></td></tr></table></figure>
+<h3 id="transfer操作"><a href="#transfer操作" class="headerlink" title="transfer操作"></a>transfer操作</h3><p>图片是粗略的过程，很多东西无法表示，还是看源码。无锁操作还是要看好几遍才能领会作者的意图，加油吧少年！！</p>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">        /**</div><div class="line"></div><div class="line">         * 放置或者获取一个节点</div><div class="line"></div><div class="line">         */</div><div class="line"></div><div class="line">        E transfer(E e, boolean timed, long nanos) &#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">            SNode s = null; // constructed/reused as needed</div><div class="line"></div><div class="line">            //节点e为null，代表这是一个消费者，否则它是一个生产者</div><div class="line"></div><div class="line">            int mode = (e == null) ? REQUEST : DATA;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">            for (;;) &#123;</div><div class="line"></div><div class="line">                SNode h = head;</div><div class="line"></div><div class="line">                //同为消费者或者生产者</div><div class="line"></div><div class="line">                if (h == null || h.mode == mode) &#123;  // empty or same-mode</div><div class="line"></div><div class="line">                    if (timed &amp;&amp; nanos &lt;= 0) &#123;      // can&apos;t wait 不允许等待</div><div class="line"></div><div class="line">                        if (h != null &amp;&amp; h.isCancelled())//栈顶节点请求已取消</div><div class="line"></div><div class="line">                            casHead(h, h.next);     // pop cancelled node</div><div class="line"></div><div class="line">                        else</div><div class="line"></div><div class="line">                            return null;</div><div class="line"></div><div class="line">                    //允许等待，尝试将e设置为栈顶，失败就继续循环尝试。</div><div class="line"></div><div class="line">                    //如果栈顶元素正在处理，说明栈顶元素找到自己匹配对象（看不懂跳过）</div><div class="line"></div><div class="line">                    &#125; else if (casHead(h, s = snode(s, e, h, mode))) &#123;</div><div class="line"></div><div class="line">                        //返回s的匹配元素</div><div class="line"></div><div class="line">                        SNode m = awaitFulfill(s, timed, nanos);</div><div class="line"></div><div class="line">                        //m == s 说明被取消，等待时间截止未出现匹配元素</div><div class="line"></div><div class="line">                        if (m == s) &#123;               // wait was cancelled</div><div class="line"></div><div class="line">                            clean(s);</div><div class="line"></div><div class="line">                            return null;</div><div class="line"></div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        //新的节点覆盖s节点，移除s</div><div class="line"></div><div class="line">                        if ((h = head) != null &amp;&amp; h.next == s)</div><div class="line"></div><div class="line">                            casHead(h, s.next);     // help s&apos;s fulfiller</div><div class="line"></div><div class="line">                        //返回生产者的item</div><div class="line"></div><div class="line">                        return (E) ((mode == REQUEST) ? m.item : s.item);</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125; else if (!isFulfilling(h.mode)) &#123; // try to fulfill</div><div class="line"></div><div class="line">                    //颜色不同且栈顶元素未被处理</div><div class="line"></div><div class="line">                    //栈顶元素被取消，移除栈顶元素</div><div class="line"></div><div class="line">                    if (h.isCancelled())            // already cancelled</div><div class="line"></div><div class="line">                        casHead(h, h.next);         // pop and retry</div><div class="line"></div><div class="line">                    //将s放入栈顶，并且设置为正在处理</div><div class="line"></div><div class="line">                    else if (casHead(h, s=snode(s, e, h, FULFILLING|mode))) &#123;</div><div class="line"></div><div class="line">    ﻿    ﻿    ﻿    ﻿    ﻿//栈中元素有可能时间到达，所以要循环遍历</div><div class="line"></div><div class="line">                        for (;;) &#123; // loop until matched or waiters disappear</div><div class="line"></div><div class="line">                            SNode m = s.next;       // m is s&apos;s match</div><div class="line"></div><div class="line">                            if (m == null) &#123;        // all waiters are gone</div><div class="line"></div><div class="line">                                casHead(s, null);   // pop fulfill node</div><div class="line"></div><div class="line">                                s = null;           // use new node next time</div><div class="line"></div><div class="line">                                break;              // restart main loop</div><div class="line"></div><div class="line">                            &#125;</div><div class="line"></div><div class="line">                            SNode mn = m.next;</div><div class="line"></div><div class="line">                            if (m.tryMatch(s)) &#123;</div><div class="line"></div><div class="line">                                casHead(s, mn);     // pop both s and m</div><div class="line"></div><div class="line">                                return (E) ((mode == REQUEST) ? m.item : s.item);</div><div class="line"></div><div class="line">                            &#125; else                  // lost match</div><div class="line"></div><div class="line">                                s.casNext(m, mn);   // help unlink</div><div class="line"></div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125; else &#123;                            // help a fulfiller</div><div class="line"></div><div class="line">                    //栈顶元素正在处理，帮助栈顶处理</div><div class="line"></div><div class="line">                    SNode m = h.next;               // m is h&apos;s match</div><div class="line"></div><div class="line">                    if (m == null)                  // waiter is gone</div><div class="line"></div><div class="line">                        casHead(h, null);           // pop fulfilling node</div><div class="line"></div><div class="line">                    else &#123;</div><div class="line"></div><div class="line">                        SNode mn = m.next;</div><div class="line"></div><div class="line">                        if (m.tryMatch(h))          // help match</div><div class="line"></div><div class="line">                            casHead(h, mn);         // pop both h and m</div><div class="line"></div><div class="line">                        else                        // lost match</div><div class="line"></div><div class="line">                            h.casNext(m, mn);       // help unlink</div><div class="line"></div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125;</div><div class="line"></div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">```   </div><div class="line"></div><div class="line">### awaitFulfill操作</div></pre></td></tr></table></figure>
+<p>SNode awaitFulfill(SNode s, boolean timed, long nanos) {</p>
+<pre><code>//计算等待终结时间，naoTime()函数更加精确
+
+final long deadline = timed ? System.nanoTime() + nanos : 0L;
+
+Thread w = Thread.currentThread();
+
+int spins = (shouldSpin(s) ?
+
+             (timed ? maxTimedSpins : maxUntimedSpins) : 0);
+
+for (;;) {
+
+    if (w.isInterrupted()) //线程中断，取消s节点
+
+        s.tryCancel();
+
+    SNode m = s.match;
+
+    if (m != null) //匹配成功返回
+
+        return m;
+
+    if (timed) {
+
+        nanos = deadline - System.nanoTime();
+
+        if (nanos &lt;= 0L) { //截止时间到达，取消当前线程的SNode
+
+            s.tryCancel();
+
+            continue;
+
+        }
+
+    }
+
+    //线程挂起
+
+    if (spins &gt; 0)
+</code></pre><p>﻿                    spins = shouldSpin(s) ? (spins-1) : 0;</p>
+<pre><code>        else if (s.waiter == null)
+
+            s.waiter = w; // establish waiter so can park next iter
+
+        else if (!timed) //无限期等待
+
+            LockSupport.park(this);
+
+        else if (nanos &gt; spinForTimeoutThreshold)
+
+            LockSupport.parkNanos(this, nanos);
+
+    }
+
+}
+</code></pre><p>```</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[PriorityBlockingQueue源码解析]]></title>
+      <url>http://baobing.github.io/2016/08/04/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/PriorityBlockingQueue/</url>
       <content type="html"><![CDATA[<pre><code>优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。
 </code></pre><a id="more"></a>
 <h1 id="PriorityBlockingQueue和"><a href="#PriorityBlockingQueue和" class="headerlink" title="PriorityBlockingQueue和"></a>PriorityBlockingQueue和</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>　　一个无界阻塞队列，它使用与类 PriorityQueue 相同的顺序规则，并且提供了阻塞获取操作。虽然此队列逻辑上是无界的，但是资源被耗尽时试图执行 add 操作也将失败（导致 OutOfMemoryError）。此类不允许使用 null 元素。依赖自然顺序的优先级队列也不允许插入不可比较的对象（这样做会导致抛出 ClassCastException）。</p>
@@ -172,7 +259,7 @@
       <content type="html"><![CDATA[<p>GYM是葛一鸣老师的简写。GYM系列文章都是观看葛老师课程的个人笔记。<br><a id="more"></a></p>
 <h1 id="线程的优势"><a href="#线程的优势" class="headerlink" title="线程的优势"></a>线程的优势</h1><p>1.发挥多处理器的强大能力<br>2.代码责任单一，方便调试<br>3.异步事件的简化处理,防止客户端阻塞<br>4.响应更灵敏的用户界面</p>
 <h1 id="多线程危害"><a href="#多线程危害" class="headerlink" title="多线程危害"></a>多线程危害</h1><p>1.线程安全性可能是非常复杂的，线程执行顺序是不可预测的，竞争条件，脏读。<br>2.活跃性问题：某件正确的事情最终会发生，死锁。<br>3.性能问题：context Switch 切换、影响性能。</p>
-<h1 id="java线程状态"><a href="#java线程状态" class="headerlink" title="java线程状态"></a>java线程状态</h1><p>1.New：状态 已经分配内存，无cpu时间<br>2.Runable： 资源已经全部分配，可能在已经分配cpu时间<br>3.blocked：进入临界区，被挂起<br>4.waiting：等他其他线程唤醒，或者定时唤醒<br>5.terminated：终止状态<br><img src="/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/ThreadStatus.png" alt="图1" title="图1"></p>
+<h1 id="java线程状态"><a href="#java线程状态" class="headerlink" title="java线程状态"></a>java线程状态</h1><p>1.New：状态 已经分配内存，无cpu时间<br>2.Runable： 资源已经全部分配，可能在已经分配cpu时间<br>3.blocked：进入临界区，被挂起<br>4.waiting：等他其他线程唤醒，或者定时唤醒<br>5.terminated：终止状态<br>x\</p>
 <h1 id="java线程的操作"><a href="#java线程的操作" class="headerlink" title="java线程的操作"></a>java线程的操作</h1><ul>
 <li>Thread的start()在新的线程中调用run()方法，单纯吊用run()方法不会开启一个新的线程。</li>
 <li>两种方法新建：<br>（1）传递一个实现Runable的类；<br>（2）重载Thread的run()方法；</li>

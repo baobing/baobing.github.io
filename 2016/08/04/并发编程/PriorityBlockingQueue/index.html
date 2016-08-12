@@ -86,13 +86,13 @@
 
 <meta name="description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PriorityBlockingQueue和SynchronousQueue">
-<meta property="og:url" content="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/index.html">
+<meta property="og:title" content="PriorityBlockingQueue源码解析">
+<meta property="og:url" content="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue/index.html">
 <meta property="og:site_name" content="BAOBING'S">
 <meta property="og:description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
-<meta property="og:updated_time" content="2016-08-04T05:21:08.000Z">
+<meta property="og:updated_time" content="2016-08-12T09:17:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PriorityBlockingQueue和SynchronousQueue">
+<meta name="twitter:title" content="PriorityBlockingQueue源码解析">
 <meta name="twitter:description" content="优先阻塞队列，一定会涉及优先队列的实现,而且是平衡优先队列。一起看看Doug Lea大师是怎么做的。">
 
 
@@ -114,9 +114,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue/"/>
 
-  <title> PriorityBlockingQueue和SynchronousQueue | BAOBING'S </title>
+  <title> PriorityBlockingQueue源码解析 | BAOBING'S </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -269,7 +269,7 @@
             
             
               
-                PriorityBlockingQueue和SynchronousQueue
+                PriorityBlockingQueue源码解析
               
             
           </h1>
@@ -311,8 +311,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/" itemprop="commentsCount"></span>
+                <a href="/2016/08/04/并发编程/PriorityBlockingQueue/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -386,6 +386,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2016/08/12/并发编程/SynchronousQueue源码解析/" rel="prev" title="SynchronousQueue源码解析">
+                SynchronousQueue源码解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -399,10 +403,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"
-     data-title="PriorityBlockingQueue和SynchronousQueue"
+        <div class="ds-share flat" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue/"
+     data-title="PriorityBlockingQueue源码解析"
      data-content=""
-     data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/">
+     data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -429,8 +433,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/"
-           data-title="PriorityBlockingQueue和SynchronousQueue" data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue和SynchronousQueue/">
+      <div class="ds-thread" data-thread-key="2016/08/04/并发编程/PriorityBlockingQueue/"
+           data-title="PriorityBlockingQueue源码解析" data-url="http://baobing.github.io/2016/08/04/并发编程/PriorityBlockingQueue/">
       </div>
     
   </div>
@@ -475,7 +479,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-count">15</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -492,7 +496,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
