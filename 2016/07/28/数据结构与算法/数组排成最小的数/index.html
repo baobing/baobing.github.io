@@ -87,15 +87,15 @@
 <meta name="description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数组排成最小的数">
-<meta property="og:url" content="http://baobing.github.io/2016/07/28/数组排成最小的数/index.html">
-<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:url" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/index.html">
+<meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
-<meta property="og:image" content="http://baobing.github.io/2016/07/28/数组排成最小的数/transitivity.png">
+<meta property="og:image" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/transitivity.png">
 <meta property="og:updated_time" content="2016-07-28T09:13:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数组排成最小的数">
 <meta name="twitter:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
-<meta name="twitter:image" content="http://baobing.github.io/2016/07/28/数组排成最小的数/transitivity.png">
+<meta name="twitter:image" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/transitivity.png">
 
 
 
@@ -116,9 +116,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/28/数组排成最小的数/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/"/>
 
-  <title> 数组排成最小的数 | BAOBING'S </title>
+  <title> 数组排成最小的数 | 贝叶斯的智慧 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -149,7 +149,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">BAOBING'S</span>
+      <span class="site-title">贝叶斯的智慧</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -313,8 +313,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/28/数组排成最小的数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/28/数组排成最小的数/" itemprop="commentsCount"></span>
+                <a href="/2016/07/28/数据结构与算法/数组排成最小的数/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/28/数据结构与算法/数组排成最小的数/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -342,7 +342,7 @@
 <h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>1）将数组中所有数字转化为字符串，组成新的数组Str<br>2）对所有字符串排序。 return Str[i]+Str[j]&lt;Str[j]+Str[i]</p>
 <h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MinStringComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span> </span>&#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</div><div class="line">         <span class="keyword">return</span> (o1.toString() + o2.toString()).compareTo(o2.toString() + o1.toString());</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">     Integer[] arr = <span class="keyword">new</span> Integer[]&#123;<span class="number">3</span>, <span class="number">32</span>, <span class="number">321</span>&#125;;</div><div class="line">     List&lt;Integer&gt; list = Arrays.asList(arr);</div><div class="line">     Collections.sort(list, <span class="keyword">new</span> MinStringComparator());</div><div class="line">     StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="number">100</span>);</div><div class="line">     <span class="keyword">for</span> (Integer e : list) &#123;</div><div class="line">         stringBuilder.append(e);</div><div class="line">     &#125;</div><div class="line">     System.out.println(stringBuilder.toString());</div></pre></td></tr></table></figure>
 <h1 id="正确性证明"><a href="#正确性证明" class="headerlink" title="正确性证明"></a>正确性证明</h1><h2 id="排序关系有效性证明"><a href="#排序关系有效性证明" class="headerlink" title="排序关系有效性证明"></a>排序关系有效性证明</h2><p>一个有效的比较规则一定满足自反性、对称性和传递性。<br>1）自反性：显然有 aa = aa,所以a等于a。<br>2）传递性：如果a小于b，则ab<ba。所以ba>ab,因此b大于a。<br>3）传递性：假设a小于b，ab&lt;ba. b小于c，bc&lt;cb<br>a的十进制为m位，b的十进制为n位，c的十进制为k位</ba。所以ba></p>
-<img src="/2016/07/28/数组排成最小的数/transitivity.png" alt="传递性证明过程" title="传递性证明过程">
+<img src="/2016/07/28/数据结构与算法/数组排成最小的数/transitivity.png" alt="传递性证明过程" title="传递性证明过程">
 <p>因此 a小于b，b小于c，a必定小于c</p>
 <h2 id="最终证明"><a href="#最终证明" class="headerlink" title="最终证明"></a>最终证明</h2><p>排序关系证明是很重要的前提。正面证明很困难，使用反证法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">假设存在一个序列A小于序列B。</div><div class="line">1）假设B[i] = A[j],我们可以一直向前或者向后移动B[i]直到B[i]到达位置j。B序列中的每一个元素都按照这种方法移动即可得到A序列。</div><div class="line">2）现在我没减缓这个移动过程，每次只移动一个特定的元素B[i]一步直到B[i]到达位置j，而且一次只移动一步。可就是说经过一次移动序列B(0)：B[0]...B[i-1]B[i]...变为B(1):[0]...B[i]B[i-1]...。 B(l)代表序列B经历过l次移动。</div><div class="line">3)因为B[i-1]B[i]&lt;B[i]B[i-1]（这一点需要排序关系证明的支持才能成立），所以B[0]...B[i-1]B[i]...&lt;[0]...B[i]B[i-1]...</div><div class="line">4）因为B[i]B[i+1]&lt;B[i+1]B[i]（这一点需要排序关系证明的支持才能成立），所以B[0]...B[i-1]B[i]...&lt;[0]...B[i]B[i-1]...</div><div class="line">5)因为B(0)&lt;B(1)&lt;B(2)&lt;...&lt;B(x)=A(0)，所以B&lt;A</div><div class="line">这与题设不相符，所以假设不成立。也就是说A是最小的序列</div></pre></td></tr></table></figure>
@@ -385,7 +385,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/07/28/数组中只出现一次的数组和异或运算/" rel="prev" title="数组中只出现一次的数字">
+              <a href="/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/" rel="prev" title="数组中只出现一次的数字">
                 数组中只出现一次的数字 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -402,10 +402,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/28/数组排成最小的数/"
+        <div class="ds-share flat" data-thread-key="2016/07/28/数据结构与算法/数组排成最小的数/"
      data-title="数组排成最小的数"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/28/数组排成最小的数/">
+     data-url="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -432,8 +432,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/28/数组排成最小的数/"
-           data-title="数组排成最小的数" data-url="http://baobing.github.io/2016/07/28/数组排成最小的数/">
+      <div class="ds-thread" data-thread-key="2016/07/28/数据结构与算法/数组排成最小的数/"
+           data-title="数组排成最小的数" data-url="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/">
       </div>
     
   </div>
@@ -478,7 +478,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">18</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

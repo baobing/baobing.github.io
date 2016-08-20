@@ -87,22 +87,13 @@
 <meta name="description" content="本人最近在看JDK的HashMap源码，在JDK1.8中引入红黑树。引入红黑树的原因是加快hash碰撞较多情景下的查找速度。网上找到下面这篇文章感觉写的非常好，思路清晰。我会在原文章基础上做一点批注，方便日后阅读。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="红黑树和HashMap中实现">
-<meta property="og:url" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/index.html">
-<meta property="og:site_name" content="BAOBING'S">
+<meta property="og:url" content="http://baobing.github.io/2016/07/25/数据结构与算法/红黑树以及HashMap/index.html">
+<meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="本人最近在看JDK的HashMap源码，在JDK1.8中引入红黑树。引入红黑树的原因是加快hash碰撞较多情景下的查找速度。网上找到下面这篇文章感觉写的非常好，思路清晰。我会在原文章基础上做一点批注，方便日后阅读。">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert1.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert2.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert3.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert4.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert5.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert6.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert7.jpg">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert8.jpg">
 <meta property="og:updated_time" content="2016-07-28T04:50:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="红黑树和HashMap中实现">
 <meta name="twitter:description" content="本人最近在看JDK的HashMap源码，在JDK1.8中引入红黑树。引入红黑树的原因是加快hash碰撞较多情景下的查找速度。网上找到下面这篇文章感觉写的非常好，思路清晰。我会在原文章基础上做一点批注，方便日后阅读。">
-<meta name="twitter:image" content="http://baobing.github.io/2016/07/25/红黑树以及HashMap/insert1.jpg">
 
 
 
@@ -123,9 +114,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/25/红黑树以及HashMap/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/25/数据结构与算法/红黑树以及HashMap/"/>
 
-  <title> 红黑树和HashMap中实现 | BAOBING'S </title>
+  <title> 红黑树和HashMap中实现 | 贝叶斯的智慧 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -156,7 +147,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">BAOBING'S</span>
+      <span class="site-title">贝叶斯的智慧</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -320,8 +311,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/25/红黑树以及HashMap/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/红黑树以及HashMap/" itemprop="commentsCount"></span>
+                <a href="/2016/07/25/数据结构与算法/红黑树以及HashMap/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/数据结构与算法/红黑树以及HashMap/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -362,26 +353,26 @@
 </li>
 </ol>
 <h1 id="红黑树上结点的插入"><a href="#红黑树上结点的插入" class="headerlink" title="红黑树上结点的插入"></a>红黑树上结点的插入</h1><p>　　<strong><em>任何一个即将插入的新结点的初始颜色都为红色。</em></strong>这一点很容易理解，因为插入黑点会增加某条路径上黑结点的数目，从而导致整棵树黑高度的不平衡。但如果新结点父结点为红色时（如图1所示），将会违返红黑树性质：一条路径上不能出现相邻的两个红色结点。这时就需要通过一系列操作来使红黑树保持平衡。</p>
-<center><img src="/2016/07/25/红黑树以及HashMap/insert1.jpg" alt="图1" title="图1"></center>
+<center></center>
 
 <p>　　为了清楚地表示插入操作以下在结点中使用“新”字表示一个新插入的结点；使用“父”字表示新插入点的父结点；使用“叔”字表示“父”结点的兄弟结点；使用“祖”字表示“父”结点的父结点。插入操作分为以下几种情况：</p>
 <h2 id="该树为空树。"><a href="#该树为空树。" class="headerlink" title="该树为空树。"></a>该树为空树。</h2><p>直接插入根结点的位置，违反性质2，把节点颜色有红改为黑即可。</p>
 <h2 id="黑父"><a href="#黑父" class="headerlink" title="黑父"></a>黑父</h2><p>　　如图2所示，如果新点的父结点为黑色结点，那么插入一个红点将不会影响红黑树的平衡，此时插入操作完成。红黑树比AVL树优秀的地方之一在于黑父的情况比较常见，从而使红黑树需要旋转的几率相对AVL树来说会少一些。</p>
-<center><img src="/2016/07/25/红黑树以及HashMap/insert2.jpg" alt="图2" title="图2"></center>
+<center></center>
 
 
 <h2 id="红父"><a href="#红父" class="headerlink" title="红父"></a>红父</h2><p>　　如图3所示，由于父结点为红色，此时可以判定，祖父结点必定为黑色。这时需要根据叔父结点的颜色来决定做什么样的操作。青色结点表示颜色未知。由于有可能需要根结点到新点的路径上进行多次旋转操作，而每次进行不平衡判断的起始点（<strong><em>我们可将其视为新点</em></strong>）都不一样。所以我们在此使用一个蓝色箭头指向这个起始点，并称之为判定点。<br>　　注：把一个树看成一个新的节点，继续进行旋转。这点很重要。</p>
-<center><img src="/2016/07/25/红黑树以及HashMap/insert3.jpg" alt="insert3.jpg" title=""></center>
+<center></center>
 
 
 <h3 id="红叔"><a href="#红叔" class="headerlink" title="红叔"></a>红叔</h3><p>　　当叔父结点为红色时，如图4所示，无需进行旋转操作，只要将父和叔结点变为黑色，将祖父结点变为红色即可。但由于祖父结点的父结点有可能为红色，从而违反红黑树性质。此时必须将祖父结点作为新的判定点继续向上进行平衡操作。需要注意，无论“父”在“叔”的左边还是右边，无论“新”是“父”的左孩子还是右孩子，它们的操作都完全一样。</p>
-<p><center><img src="/2016/07/25/红黑树以及HashMap/insert4.jpg" alt="insert4.jpg" title=""></center><br>　　注：如果祖父节点是根节点怎么办？答案是进行情景一的操作，把祖父节点变为黑色。</p>
-<h3 id="黑叔"><a href="#黑叔" class="headerlink" title="黑叔"></a>黑叔</h3><p>情形1：<br><img src="/2016/07/25/红黑树以及HashMap/insert5.jpg" alt="insert5.jpg" title=""></p>
-<p>情形2：<br><img src="/2016/07/25/红黑树以及HashMap/insert6.jpg" alt="insert6.jpg" title=""></p>
+<p><center></center><br>　　注：如果祖父节点是根节点怎么办？答案是进行情景一的操作，把祖父节点变为黑色。</p>
+<h3 id="黑叔"><a href="#黑叔" class="headerlink" title="黑叔"></a>黑叔</h3><p>情形1：<br></p>
+<p>情形2：<br></p>
 <p>情形3：</p>
-<img src="/2016/07/25/红黑树以及HashMap/insert7.jpg" alt="insert7.jpg" title="">
+
 <p>情形4：</p>
-<img src="/2016/07/25/红黑树以及HashMap/insert8.jpg" alt="insert8.jpg" title="">
+
 <p>　　可以观察到，当旋转完成后，新的旋转根全部为黑色，此时不需要再向上回溯进行平衡操作，插入操作完成。需要注意，上面四张图的“叔”、“1”、“2”、“3”结点有可能为黑哨兵结点。<br>　　其实红黑树的插入操作不是很难，甚至比AVL树的插入操作还更简单些。但删除操作就远远比AVL树复杂得多，下面就介绍红黑树的删除操作。
 　　</p>
 <h1 id="HashMap源码解析"><a href="#HashMap源码解析" class="headerlink" title="HashMap源码解析"></a>HashMap源码解析</h1><p>主要讲解红黑树的平衡插入</p>
@@ -442,10 +433,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/25/红黑树以及HashMap/"
+        <div class="ds-share flat" data-thread-key="2016/07/25/数据结构与算法/红黑树以及HashMap/"
      data-title="红黑树和HashMap中实现"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/25/红黑树以及HashMap/">
+     data-url="http://baobing.github.io/2016/07/25/数据结构与算法/红黑树以及HashMap/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -472,8 +463,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/25/红黑树以及HashMap/"
-           data-title="红黑树和HashMap中实现" data-url="http://baobing.github.io/2016/07/25/红黑树以及HashMap/">
+      <div class="ds-thread" data-thread-key="2016/07/25/数据结构与算法/红黑树以及HashMap/"
+           data-title="红黑树和HashMap中实现" data-url="http://baobing.github.io/2016/07/25/数据结构与算法/红黑树以及HashMap/">
       </div>
     
   </div>
@@ -518,7 +509,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">18</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
