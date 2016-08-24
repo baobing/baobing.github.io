@@ -84,17 +84,17 @@
 
 
 
-<meta name="description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
+<meta name="description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《剑指Offer》P177）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数组排成最小的数">
 <meta property="og:url" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
-<meta property="og:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
+<meta property="og:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《剑指Offer》P177）">
 <meta property="og:image" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/transitivity.png">
-<meta property="og:updated_time" content="2016-07-28T09:13:08.000Z">
+<meta property="og:updated_time" content="2016-08-24T08:37:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数组排成最小的数">
-<meta name="twitter:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）">
+<meta name="twitter:description" content="题目　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《剑指Offer》P177）">
 <meta name="twitter:image" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组排成最小的数/transitivity.png">
 
 
@@ -337,7 +337,7 @@
       
 
       
-        <h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）<br><a id="more"></a><br>　　贪心算法的题目，找到解决办法不能，难得是给出正确性证明。书中给出了证明，前半段讲的很好，不过后半段不是很满意。
+        <h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《剑指Offer》P177）<br><a id="more"></a><br>　　贪心算法的题目，找到解决办法不能，难得是给出正确性证明。书中给出了证明，前半段讲的很好，不过后半段不是很满意。
 　　</p>
 <h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>1）将数组中所有数字转化为字符串，组成新的数组Str<br>2）对所有字符串排序。 return Str[i]+Str[j]&lt;Str[j]+Str[i]</p>
 <h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MinStringComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span> </span>&#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</div><div class="line">         <span class="keyword">return</span> (o1.toString() + o2.toString()).compareTo(o2.toString() + o1.toString());</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">     Integer[] arr = <span class="keyword">new</span> Integer[]&#123;<span class="number">3</span>, <span class="number">32</span>, <span class="number">321</span>&#125;;</div><div class="line">     List&lt;Integer&gt; list = Arrays.asList(arr);</div><div class="line">     Collections.sort(list, <span class="keyword">new</span> MinStringComparator());</div><div class="line">     StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="number">100</span>);</div><div class="line">     <span class="keyword">for</span> (Integer e : list) &#123;</div><div class="line">         stringBuilder.append(e);</div><div class="line">     &#125;</div><div class="line">     System.out.println(stringBuilder.toString());</div></pre></td></tr></table></figure>

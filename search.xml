@@ -428,7 +428,7 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
     <entry>
       <title><![CDATA[数组排成最小的数]]></title>
       <url>http://baobing.github.io/2016/07/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%95%B0%E7%BB%84%E6%8E%92%E6%88%90%E6%9C%80%E5%B0%8F%E7%9A%84%E6%95%B0/</url>
-      <content type="html"><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《jianzhiOffer》P177）<br><a id="more"></a><br>　　贪心算法的题目，找到解决办法不能，难得是给出正确性证明。书中给出了证明，前半段讲的很好，不过后半段不是很满意。
+      <content type="html"><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>　　输入一个正整数数组，每个元素都不相等，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如数组{3，32，321},则打印出这3个数字能排成的最小数字321323.（《剑指Offer》P177）<br><a id="more"></a><br>　　贪心算法的题目，找到解决办法不能，难得是给出正确性证明。书中给出了证明，前半段讲的很好，不过后半段不是很满意。
 　　</p>
 <h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>1）将数组中所有数字转化为字符串，组成新的数组Str<br>2）对所有字符串排序。 return Str[i]+Str[j]&lt;Str[j]+Str[i]</p>
 <h1 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MinStringComparator</span> <span class="keyword">implements</span> <span class="title">Comparator</span> </span>&#123;</div><div class="line">     <span class="meta">@Override</span></div><div class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Object o1, Object o2)</span> </span>&#123;</div><div class="line">         <span class="keyword">return</span> (o1.toString() + o2.toString()).compareTo(o2.toString() + o1.toString());</div><div class="line">     &#125;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">     Integer[] arr = <span class="keyword">new</span> Integer[]&#123;<span class="number">3</span>, <span class="number">32</span>, <span class="number">321</span>&#125;;</div><div class="line">     List&lt;Integer&gt; list = Arrays.asList(arr);</div><div class="line">     Collections.sort(list, <span class="keyword">new</span> MinStringComparator());</div><div class="line">     StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="number">100</span>);</div><div class="line">     <span class="keyword">for</span> (Integer e : list) &#123;</div><div class="line">         stringBuilder.append(e);</div><div class="line">     &#125;</div><div class="line">     System.out.println(stringBuilder.toString());</div></pre></td></tr></table></figure>
@@ -485,26 +485,25 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
 </li>
 </ol>
 <h1 id="红黑树上结点的插入"><a href="#红黑树上结点的插入" class="headerlink" title="红黑树上结点的插入"></a>红黑树上结点的插入</h1><p>　　<strong><em>任何一个即将插入的新结点的初始颜色都为红色。</em></strong>这一点很容易理解，因为插入黑点会增加某条路径上黑结点的数目，从而导致整棵树黑高度的不平衡。但如果新结点父结点为红色时（如图1所示），将会违返红黑树性质：一条路径上不能出现相邻的两个红色结点。这时就需要通过一系列操作来使红黑树保持平衡。</p>
-<center></center>
-
+<img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert1.jpg" alt="图1" title="图1">
 <p>　　为了清楚地表示插入操作以下在结点中使用“新”字表示一个新插入的结点；使用“父”字表示新插入点的父结点；使用“叔”字表示“父”结点的兄弟结点；使用“祖”字表示“父”结点的父结点。插入操作分为以下几种情况：</p>
 <h2 id="该树为空树。"><a href="#该树为空树。" class="headerlink" title="该树为空树。"></a>该树为空树。</h2><p>直接插入根结点的位置，违反性质2，把节点颜色有红改为黑即可。</p>
 <h2 id="黑父"><a href="#黑父" class="headerlink" title="黑父"></a>黑父</h2><p>　　如图2所示，如果新点的父结点为黑色结点，那么插入一个红点将不会影响红黑树的平衡，此时插入操作完成。红黑树比AVL树优秀的地方之一在于黑父的情况比较常见，从而使红黑树需要旋转的几率相对AVL树来说会少一些。</p>
-<center></center>
+<center><img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert2.jpg" alt="图2" title="图2"></center>
 
 
 <h2 id="红父"><a href="#红父" class="headerlink" title="红父"></a>红父</h2><p>　　如图3所示，由于父结点为红色，此时可以判定，祖父结点必定为黑色。这时需要根据叔父结点的颜色来决定做什么样的操作。青色结点表示颜色未知。由于有可能需要根结点到新点的路径上进行多次旋转操作，而每次进行不平衡判断的起始点（<strong><em>我们可将其视为新点</em></strong>）都不一样。所以我们在此使用一个蓝色箭头指向这个起始点，并称之为判定点。<br>　　注：把一个树看成一个新的节点，继续进行旋转。这点很重要。</p>
-<center></center>
+<center><img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert3.jpg" alt="insert3.jpg" title=""></center>
 
 
 <h3 id="红叔"><a href="#红叔" class="headerlink" title="红叔"></a>红叔</h3><p>　　当叔父结点为红色时，如图4所示，无需进行旋转操作，只要将父和叔结点变为黑色，将祖父结点变为红色即可。但由于祖父结点的父结点有可能为红色，从而违反红黑树性质。此时必须将祖父结点作为新的判定点继续向上进行平衡操作。需要注意，无论“父”在“叔”的左边还是右边，无论“新”是“父”的左孩子还是右孩子，它们的操作都完全一样。</p>
-<p><center></center><br>　　注：如果祖父节点是根节点怎么办？答案是进行情景一的操作，把祖父节点变为黑色。</p>
-<h3 id="黑叔"><a href="#黑叔" class="headerlink" title="黑叔"></a>黑叔</h3><p>情形1：<br></p>
-<p>情形2：<br></p>
+<p><center><img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert4.jpg" alt="insert4.jpg" title=""></center><br>　　注：如果祖父节点是根节点怎么办？答案是进行情景一的操作，把祖父节点变为黑色。</p>
+<h3 id="黑叔"><a href="#黑叔" class="headerlink" title="黑叔"></a>黑叔</h3><p>情形1：<br><img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert5.jpg" alt="insert5.jpg" title=""></p>
+<p>情形2：<br><img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert6.jpg" alt="insert6.jpg" title=""></p>
 <p>情形3：</p>
-
+<img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert7.jpg" alt="insert7.jpg" title="">
 <p>情形4：</p>
-
+<img src="/2016/07/25/数据结构与算法/红黑树以及HashMap/insert8.jpg" alt="insert8.jpg" title="">
 <p>　　可以观察到，当旋转完成后，新的旋转根全部为黑色，此时不需要再向上回溯进行平衡操作，插入操作完成。需要注意，上面四张图的“叔”、“1”、“2”、“3”结点有可能为黑哨兵结点。<br>　　其实红黑树的插入操作不是很难，甚至比AVL树的插入操作还更简单些。但删除操作就远远比AVL树复杂得多，下面就介绍红黑树的删除操作。
 　　</p>
 <h1 id="HashMap源码解析"><a href="#HashMap源码解析" class="headerlink" title="HashMap源码解析"></a>HashMap源码解析</h1><p>主要讲解红黑树的平衡插入</p>
