@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="位运算," />
+  <meta name="keywords" content="GYM," />
 
 
 
@@ -84,16 +84,21 @@
 
 
 
-<meta name="description" content="题目一个整型数组里除了两个数字之外，其他的数字都出现两次。请写程序找出这两个只出现一次的数字。要求时间复杂度为O(n),空间复杂度为O（1）。{2，4，3，6，3，2，5，5} 结果为4，6。">
+<meta name="description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数组中只出现一次的数字">
-<meta property="og:url" content="http://baobing.github.io/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/index.html">
+<meta property="og:title" content="JVM1-运行机制内存工作原理">
+<meta property="og:url" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
-<meta property="og:description" content="题目一个整型数组里除了两个数字之外，其他的数字都出现两次。请写程序找出这两个只出现一次的数字。要求时间复杂度为O(n),空间复杂度为O（1）。{2，4，3，6，3，2，5，5} 结果为4，6。">
-<meta property="og:updated_time" content="2016-08-03T07:28:12.000Z">
+<meta property="og:description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic4.png">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic1.png">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic2.png">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic3.png">
+<meta property="og:updated_time" content="2016-08-28T02:37:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数组中只出现一次的数字">
-<meta name="twitter:description" content="题目一个整型数组里除了两个数字之外，其他的数字都出现两次。请写程序找出这两个只出现一次的数字。要求时间复杂度为O(n),空间复杂度为O（1）。{2，4，3，6，3，2，5，5} 结果为4，6。">
+<meta name="twitter:title" content="JVM1-运行机制内存工作原理">
+<meta name="twitter:description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
+<meta name="twitter:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic4.png">
 
 
 
@@ -114,9 +119,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/"/>
 
-  <title> 数组中只出现一次的数字 | 贝叶斯的智慧 </title>
+  <title> JVM1-运行机制内存工作原理 | 贝叶斯的智慧 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -269,7 +274,7 @@
             
             
               
-                数组中只出现一次的数字
+                JVM1-运行机制内存工作原理
               
             
           </h1>
@@ -281,19 +286,38 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-28T17:47:19+08:00" content="2016-07-28">
-              2016-07-28
+            <time itemprop="dateCreated" datetime="2016-08-28T09:21:38+08:00" content="2016-08-28">
+              2016-08-28
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/" itemprop="commentsCount"></span>
+                <a href="/2016/08/28/JVM1-运行机制内存工作原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -316,18 +340,95 @@
       
 
       
-        <h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p>一个整型数组里除了两个数字之外，其他的数字都出现两次。请写程序找出这两个只出现一次的数字。要求时间复杂度为O(n),空间复杂度为O（1）。<br>{2，4，3，6，3，2，5，5} 结果为4，6。<br><a id="more"></a></p>
-<h1 id="异或运算的特性"><a href="#异或运算的特性" class="headerlink" title="异或运算的特性"></a>异或运算的特性</h1><ol>
-<li>交换律 a^b = b^a</li>
-<li>结合律 a^b^c = a^(b^c)</li>
-<li>a^a = 0</li>
-<li>0^a = a</li>
-<li>a^b^a = a^a^b = b</li>
-<li>如果a^b = 1 != 0，则a与b的二进制形式的个位是不相同的</li>
-</ol>
-<h1 id="结题思路"><a href="#结题思路" class="headerlink" title="结题思路"></a>结题思路</h1><h2 id="只有一个数字只出现一次"><a href="#只有一个数字只出现一次" class="headerlink" title="只有一个数字只出现一次"></a>只有一个数字只出现一次</h2><p>题目如果改为只有一个出现一次的数字。<br>根据特性5，我们只需要把所有的数字一起异或就会得到这个只出现一次的数字N.<br>N = 0^A[0]^A[1]^A[2]….</p>
-<h2 id="两个数字只出现一次"><a href="#两个数字只出现一次" class="headerlink" title="两个数字只出现一次"></a>两个数字只出现一次</h2><p>1) x = n^m = 0^A[0]^A[1]^A[2]….<br>根据特性6我们知道如果n,m不相等.他们异或的结果的二进制形式的每一位都代表n，m二进制对应位不相同。例如两个二进制数字a,b异或：10011^11011 = 1000 , 二进制结果中只有第四位数字等于1，则a，b的第四位不同。<br>2）挑选所有元素异或结果x的其中一个为1的位置不变，其他位置变为0，得到y.假设x的二进制形式为10110，y=10000.<br>3）每个元素与y进行与运算，结果为等于y的是一组，结果不为y的是一组。n和m一定不在同一组。<br>4）问题转化为只有一个数字只出现一次</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestXor</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getArrXorResult</span><span class="params">(<span class="keyword">int</span>[] arr, <span class="keyword">int</span> begin, <span class="keyword">int</span> end)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = begin; i &lt; end; i++) &#123;</div><div class="line">            result ^= arr[i];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getXOne</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> l = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (l = <span class="number">0</span>; x &gt;&gt; <span class="number">1</span> != <span class="number">0</span>; l++) &#123;</div><div class="line">            x &gt;&gt;= <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="number">1</span> &lt;&lt; l;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span>&#125;;</div><div class="line">        <span class="comment">//分别装载两个分组</span></div><div class="line">        <span class="keyword">int</span>[] arr0 = <span class="keyword">new</span> <span class="keyword">int</span>[arr.length];</div><div class="line">        <span class="keyword">int</span>[] arr1 = <span class="keyword">new</span> <span class="keyword">int</span>[arr.length];</div><div class="line">        <span class="keyword">int</span> x = getArrXorResult(arr, <span class="number">0</span>, arr.length);</div><div class="line">        <span class="comment">//获取异或结果二进制结果是1的最大的那个</span></div><div class="line">        <span class="keyword">int</span> y = getXOne(x);</div><div class="line">        <span class="keyword">int</span> index0 = <span class="number">0</span>, index1 = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> ((arr[i] &amp; y) == y) &#123;</div><div class="line">                arr0[index0++] = arr[i];</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                arr1[index1++] = arr[i];</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">int</span> n = getArrXorResult(arr0, <span class="number">0</span>, index0);</div><div class="line">        <span class="keyword">int</span> m = getArrXorResult(arr1, <span class="number">0</span>, index1);</div><div class="line">        System.out.println(<span class="string">"n="</span> + n + <span class="string">" m="</span> + m);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        <h1 id="JVM-规范"><a href="#JVM-规范" class="headerlink" title="JVM 规范"></a>JVM 规范</h1><p>JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：<br><a id="more"></a><br>1、class文件格式<br>2、数据的内部表示和存储<br>3、returnAddress 数据类型定义<br>4、invokedynamic<br>5、定义pc<br>6、堆、栈、方法区<br>7、 类型转化<br>8 、出栈入栈<br>9 、运算<br>10、流程控制<br>11、函数调用<br>12 对javaLibrary提供支持、反射、类加载、初始化类。安全、多线程、弱引用</p>
+<h1 id="运行时数据区的划分"><a href="#运行时数据区的划分" class="headerlink" title="运行时数据区的划分"></a>运行时数据区的划分</h1><ul>
+<li>程序计数器</li>
+<li>java堆</li>
+<li>java虚拟机栈</li>
+<li>本地方法栈</li>
+<li>方法区</li>
+</ul>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>　　一块较小的内存空间，他的作用可以看做是当前线程所执行的字节码的行号指示器。线程私有的内存区域，生命周期与线程相同。<br>　　如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址；如果正在执行的是native方法，则个计数器值则为空。<br>　　此内存区域是唯一一个在java虚拟机规范中没有任何OutOfMemoryError情况的区域。<br>　　Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多喝处理器老说是一个内核）都只会执行一条线程中的指令。为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的计数器。</p>
+<h2 id="JVM栈"><a href="#JVM栈" class="headerlink" title="JVM栈"></a>JVM栈</h2><p>　　栈上分配 ：小对象，不存在内存逃逸的情况下，直接分配在栈上。可以自动回收，减轻GC压力，大对象或者逃逸对象无法栈上分配 。内存逃逸指被多个线程共享。</p>
+<ul>
+<li>执行字节码</li>
+<li>线程私用</li>
+<li>存储栈帧，执行java方法的调用、执行和退出</li>
+<li>存在OutofMemoryError 和 stackOverFlow</li>
+</ul>
+<h1 id="本地方法栈NativeMethodStack"><a href="#本地方法栈NativeMethodStack" class="headerlink" title="本地方法栈NativeMethodStack"></a>本地方法栈NativeMethodStack</h1><p>　　本地方法栈与JVM栈所发挥的作用是非常相似的，他们之间的区别不过是虚拟机栈为虚拟机执行Java方法服务，本地方法栈为JVM使用到的Native方法服务</p>
+<ul>
+<li>线程私用</li>
+<li>执行Native方法的调用、执行和退出</li>
+<li>OutofMemoryError 和 stackOverFlow</li>
+<li>hotspot将栈与本地方法栈合并。</li>
+<li>方法结束自动释放内存</li>
+</ul>
+<h2 id="栈帧-stack-frame"><a href="#栈帧-stack-frame" class="headerlink" title="栈帧 stack frame"></a>栈帧 stack frame</h2><p>　　JVM栈中存储数据的内容，他被用于存储局部变量表、操作数和部分过程结果的数据结构，同时也被用来处理动态链接，方法返回值和异常分派。<br>　　包含局部变量表，操作数栈，动态链接信息，方法正常完成、异常完成信息<br>　　局部变量由如若干slot组成，长度由编译器决定。单个slot可以存储一个基本类型、reference和returnAddress的数据，两个slot可以存储一个类型为long或double的数据。reference 直接或间接的找到对象，直接或间接的找到对象在方法区中的数据类型。<br>第一个为本对象的引用地址。<br>每个方法创建一个栈帧，并且压入栈。<br>操作数栈，进行数学计算 。</p>
+<h1 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h1><p>　　JVM明确要求该区域需要实现自动内存管理。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代：再细致一点的有Eden空间、FromSurvior空间，To Survivor、tenured  。从内存分配的角度来看，线程共享的Java堆中可能划分出多个私有的分配缓冲区（TLAB）。存在OutofMemoryError。</p>
+<h1 id="方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）"><a href="#方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）" class="headerlink" title="方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）"></a>方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）</h1><ul>
+<li>线程共享。</li>
+<li>作用是存储Jva类的类型信息、常量、静态变量、即时编辑后的代码等数据。</li>
+<li>JVM不要求该区域实现自动内存管理，常量池的回收已经类型信息的卸载</li>
+<li>JDK1.2-1.6 hotspot 使用永久代与方法区 jdk1.7 使用堆 </li>
+</ul>
+<h2 id="运行时常量池-Runtime-Constant-Pool"><a href="#运行时常量池-Runtime-Constant-Pool" class="headerlink" title="运行时常量池(Runtime Constant Pool)"></a>运行时常量池(Runtime Constant Pool)</h2><ul>
+<li>全局共享</li>
+<li>方法区的一部分</li>
+<li>作用是存储Java类文件常量池中的数据信息、字面量和符号引用</li>
+<li>并非只有类加载使用，运行期也可以动态添加，如String.intern()</li>
+</ul>
+<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p> jdk1.4中nio被引入，目的是避免在java堆和native堆中来来回复制数据带来的性能损失。全局共享。</p>
+<h1 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h1><p>　　假设Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，这种分配方式成为“指针碰撞”。相对的分配方式成为“空闲列表”。<br>　　对象内存分配的同步：（1）采用CAS配上失败重试的方式保证更新操作的原子性（2）内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一块内存，本地线程缓冲（TLAB）。<br>　　对象头（Object Header）存放对象哈希码、对象的GC分代、类的元数据信息。</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
+<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>　　对象头、实例数据、和对齐填充（Padding）。对象头包含两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等、这部分数据的长度在32位和64位，官方称它为Mark Word。25位存储哈希码、4位存储对象分代年龄、2位用于存储锁标志</p>
+<p>对象的访问定位</p>
+<p>（1）使用直接指针访问方式的最大好蠢就是速度更快，他节省了一次指针定位 的时间开销</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
+<p>（2）使用句柄</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
+<h1 id="Java反编译"><a href="#Java反编译" class="headerlink" title="Java反编译"></a>Java反编译</h1><p>javap -verbose Test01 反编译java字节码 查看java字节码</p>
+<h1 id="happen-before原则（指令重排原则）"><a href="#happen-before原则（指令重排原则）" class="headerlink" title="happen-before原则（指令重排原则）"></a>happen-before原则（指令重排原则）</h1><ul>
+<li>程序顺序原则：一个程序内保证语意的串行</li>
+</ul>
+<ul>
+<li>volatile规则：volatile变量的写必须先于读 。</li>
+</ul>
+<ul>
+<li>锁原则： 解锁必然先于加锁</li>
+</ul>
+<ul>
+<li>传递性</li>
+</ul>
+<ul>
+<li>线程的start方法优先于他的每一动作</li>
+</ul>
+<ul>
+<li>线程的所有操作先于线程的中断</li>
+</ul>
+<ul>
+<li>线程中断先于被中断线程的代码</li>
+</ul>
+<p>﻿- 构造函数先于finalize()</p>
+<h1 id="解释运行"><a href="#解释运行" class="headerlink" title="解释运行"></a>解释运行</h1><ul>
+<li>解释执行以解释方式运行字节码</li>
+</ul>
+<ul>
+<li>解释执行的意思是读一句执行一句</li>
+</ul>
+<h1 id="编译运行JIT"><a href="#编译运行JIT" class="headerlink" title="编译运行JIT"></a>编译运行JIT</h1><ul>
+<li>将字节码编译成机器码</li>
+</ul>
+<ul>
+<li>直接执行机器码 </li>
+</ul>
+<ul>
+<li>运行时编译</li>
+</ul>
+<ul>
+<li>速度快十倍</li>
+</ul>
 
       
     </div>
@@ -350,7 +451,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/位运算/" rel="tag">#位运算</a>
+            <a href="/tags/GYM/" rel="tag">#GYM</a>
           
         </div>
       
@@ -359,17 +460,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/28/数据结构与算法/数组排成最小的数/" rel="next" title="数组排成最小的数">
-                <i class="fa fa-chevron-left"></i> 数组排成最小的数
+              <a href="/2016/08/27/并发编程/GYM11-Jetty/" rel="next" title="GYM11-Jetty简介">
+                <i class="fa fa-chevron-left"></i> GYM11-Jetty简介
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/07/29/并发编程/GYM1-并发基础和Thread类详解/" rel="prev" title="GYM1-并发基础和Thread类详解">
-                GYM1-并发基础和Thread类详解 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -384,10 +481,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/"
-     data-title="数组中只出现一次的数字"
+        <div class="ds-share flat" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/"
+     data-title="JVM1-运行机制内存工作原理"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/">
+     data-url="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -414,8 +511,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/"
-           data-title="数组中只出现一次的数字" data-url="http://baobing.github.io/2016/07/28/数据结构与算法/数组中只出现一次的数组和异或运算/">
+      <div class="ds-thread" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/"
+           data-title="JVM1-运行机制内存工作原理" data-url="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/">
       </div>
     
   </div>
@@ -506,7 +603,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#题目"><span class="nav-number">1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#异或运算的特性"><span class="nav-number">2.</span> <span class="nav-text">异或运算的特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结题思路"><span class="nav-number">3.</span> <span class="nav-text">结题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#只有一个数字只出现一次"><span class="nav-number">3.1.</span> <span class="nav-text">只有一个数字只出现一次</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两个数字只出现一次"><span class="nav-number">3.2.</span> <span class="nav-text">两个数字只出现一次</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">4.</span> <span class="nav-text">代码</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM-规范"><span class="nav-number">1.</span> <span class="nav-text">JVM 规范</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行时数据区的划分"><span class="nav-number">2.</span> <span class="nav-text">运行时数据区的划分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序计数器"><span class="nav-number">2.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM栈"><span class="nav-number">2.2.</span> <span class="nav-text">JVM栈</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地方法栈NativeMethodStack"><span class="nav-number">3.</span> <span class="nav-text">本地方法栈NativeMethodStack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧-stack-frame"><span class="nav-number">3.1.</span> <span class="nav-text">栈帧 stack frame</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java堆"><span class="nav-number">4.</span> <span class="nav-text">Java堆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）"><span class="nav-number">5.</span> <span class="nav-text">方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时常量池-Runtime-Constant-Pool"><span class="nav-number">5.1.</span> <span class="nav-text">运行时常量池(Runtime Constant Pool)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#直接内存"><span class="nav-number">6.</span> <span class="nav-text">直接内存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象创建"><span class="nav-number">7.</span> <span class="nav-text">对象创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">8.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java反编译"><span class="nav-number">9.</span> <span class="nav-text">Java反编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#happen-before原则（指令重排原则）"><span class="nav-number">10.</span> <span class="nav-text">happen-before原则（指令重排原则）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解释运行"><span class="nav-number">11.</span> <span class="nav-text">解释运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译运行JIT"><span class="nav-number">12.</span> <span class="nav-text">编译运行JIT</span></a></li></ol></div>
             
           </div>
         </section>

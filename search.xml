@@ -4,8 +4,103 @@
   
     
     <entry>
+      <title><![CDATA[JVM1-运行机制内存工作原理]]></title>
+      <url>http://baobing.github.io/2016/08/28/JVM1-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E5%86%85%E5%AD%98%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
+      <content type="html"><![CDATA[<h1 id="JVM-规范"><a href="#JVM-规范" class="headerlink" title="JVM 规范"></a>JVM 规范</h1><p>JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：<br><a id="more"></a><br>1、class文件格式<br>2、数据的内部表示和存储<br>3、returnAddress 数据类型定义<br>4、invokedynamic<br>5、定义pc<br>6、堆、栈、方法区<br>7、 类型转化<br>8 、出栈入栈<br>9 、运算<br>10、流程控制<br>11、函数调用<br>12 对javaLibrary提供支持、反射、类加载、初始化类。安全、多线程、弱引用</p>
+<h1 id="运行时数据区的划分"><a href="#运行时数据区的划分" class="headerlink" title="运行时数据区的划分"></a>运行时数据区的划分</h1><ul>
+<li>程序计数器</li>
+<li>java堆</li>
+<li>java虚拟机栈</li>
+<li>本地方法栈</li>
+<li>方法区</li>
+</ul>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>　　一块较小的内存空间，他的作用可以看做是当前线程所执行的字节码的行号指示器。线程私有的内存区域，生命周期与线程相同。<br>　　如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址；如果正在执行的是native方法，则个计数器值则为空。<br>　　此内存区域是唯一一个在java虚拟机规范中没有任何OutOfMemoryError情况的区域。<br>　　Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多喝处理器老说是一个内核）都只会执行一条线程中的指令。为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的计数器。</p>
+<h2 id="JVM栈"><a href="#JVM栈" class="headerlink" title="JVM栈"></a>JVM栈</h2><p>　　栈上分配 ：小对象，不存在内存逃逸的情况下，直接分配在栈上。可以自动回收，减轻GC压力，大对象或者逃逸对象无法栈上分配 。内存逃逸指被多个线程共享。</p>
+<ul>
+<li>执行字节码</li>
+<li>线程私用</li>
+<li>存储栈帧，执行java方法的调用、执行和退出</li>
+<li>存在OutofMemoryError 和 stackOverFlow</li>
+</ul>
+<h1 id="本地方法栈NativeMethodStack"><a href="#本地方法栈NativeMethodStack" class="headerlink" title="本地方法栈NativeMethodStack"></a>本地方法栈NativeMethodStack</h1><p>　　本地方法栈与JVM栈所发挥的作用是非常相似的，他们之间的区别不过是虚拟机栈为虚拟机执行Java方法服务，本地方法栈为JVM使用到的Native方法服务</p>
+<ul>
+<li>线程私用</li>
+<li>执行Native方法的调用、执行和退出</li>
+<li>OutofMemoryError 和 stackOverFlow</li>
+<li>hotspot将栈与本地方法栈合并。</li>
+<li>方法结束自动释放内存</li>
+</ul>
+<h2 id="栈帧-stack-frame"><a href="#栈帧-stack-frame" class="headerlink" title="栈帧 stack frame"></a>栈帧 stack frame</h2><p>　　JVM栈中存储数据的内容，他被用于存储局部变量表、操作数和部分过程结果的数据结构，同时也被用来处理动态链接，方法返回值和异常分派。<br>　　包含局部变量表，操作数栈，动态链接信息，方法正常完成、异常完成信息<br>　　局部变量由如若干slot组成，长度由编译器决定。单个slot可以存储一个基本类型、reference和returnAddress的数据，两个slot可以存储一个类型为long或double的数据。reference 直接或间接的找到对象，直接或间接的找到对象在方法区中的数据类型。<br>第一个为本对象的引用地址。<br>每个方法创建一个栈帧，并且压入栈。<br>操作数栈，进行数学计算 。</p>
+<h1 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h1><p>　　JVM明确要求该区域需要实现自动内存管理。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代：再细致一点的有Eden空间、FromSurvior空间，To Survivor、tenured  。从内存分配的角度来看，线程共享的Java堆中可能划分出多个私有的分配缓冲区（TLAB）。存在OutofMemoryError。</p>
+<h1 id="方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）"><a href="#方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）" class="headerlink" title="方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）"></a>方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）</h1><ul>
+<li>线程共享。</li>
+<li>作用是存储Jva类的类型信息、常量、静态变量、即时编辑后的代码等数据。</li>
+<li>JVM不要求该区域实现自动内存管理，常量池的回收已经类型信息的卸载</li>
+<li>JDK1.2-1.6 hotspot 使用永久代与方法区 jdk1.7 使用堆 </li>
+</ul>
+<h2 id="运行时常量池-Runtime-Constant-Pool"><a href="#运行时常量池-Runtime-Constant-Pool" class="headerlink" title="运行时常量池(Runtime Constant Pool)"></a>运行时常量池(Runtime Constant Pool)</h2><ul>
+<li>全局共享</li>
+<li>方法区的一部分</li>
+<li>作用是存储Java类文件常量池中的数据信息、字面量和符号引用</li>
+<li>并非只有类加载使用，运行期也可以动态添加，如String.intern()</li>
+</ul>
+<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p> jdk1.4中nio被引入，目的是避免在java堆和native堆中来来回复制数据带来的性能损失。全局共享。</p>
+<h1 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h1><p>　　假设Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，这种分配方式成为“指针碰撞”。相对的分配方式成为“空闲列表”。<br>　　对象内存分配的同步：（1）采用CAS配上失败重试的方式保证更新操作的原子性（2）内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一块内存，本地线程缓冲（TLAB）。<br>　　对象头（Object Header）存放对象哈希码、对象的GC分代、类的元数据信息。</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
+<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>　　对象头、实例数据、和对齐填充（Padding）。对象头包含两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等、这部分数据的长度在32位和64位，官方称它为Mark Word。25位存储哈希码、4位存储对象分代年龄、2位用于存储锁标志</p>
+<p>对象的访问定位</p>
+<p>（1）使用直接指针访问方式的最大好蠢就是速度更快，他节省了一次指针定位 的时间开销</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
+<p>（2）使用句柄</p>
+<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
+<h1 id="Java反编译"><a href="#Java反编译" class="headerlink" title="Java反编译"></a>Java反编译</h1><p>javap -verbose Test01 反编译java字节码 查看java字节码</p>
+<h1 id="happen-before原则（指令重排原则）"><a href="#happen-before原则（指令重排原则）" class="headerlink" title="happen-before原则（指令重排原则）"></a>happen-before原则（指令重排原则）</h1><ul>
+<li>程序顺序原则：一个程序内保证语意的串行</li>
+</ul>
+<ul>
+<li>volatile规则：volatile变量的写必须先于读 。</li>
+</ul>
+<ul>
+<li>锁原则： 解锁必然先于加锁</li>
+</ul>
+<ul>
+<li>传递性</li>
+</ul>
+<ul>
+<li>线程的start方法优先于他的每一动作</li>
+</ul>
+<ul>
+<li>线程的所有操作先于线程的中断</li>
+</ul>
+<ul>
+<li>线程中断先于被中断线程的代码</li>
+</ul>
+<p>﻿- 构造函数先于finalize()</p>
+<h1 id="解释运行"><a href="#解释运行" class="headerlink" title="解释运行"></a>解释运行</h1><ul>
+<li>解释执行以解释方式运行字节码</li>
+</ul>
+<ul>
+<li>解释执行的意思是读一句执行一句</li>
+</ul>
+<h1 id="编译运行JIT"><a href="#编译运行JIT" class="headerlink" title="编译运行JIT"></a>编译运行JIT</h1><ul>
+<li>将字节码编译成机器码</li>
+</ul>
+<ul>
+<li>直接执行机器码 </li>
+</ul>
+<ul>
+<li>运行时编译</li>
+</ul>
+<ul>
+<li>速度快十倍</li>
+</ul>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[GYM11-Jetty简介]]></title>
-      <url>http://baobing.github.io/2016/08/27/GYM11-Jetty/</url>
+      <url>http://baobing.github.io/2016/08/27/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/GYM11-Jetty/</url>
       <content type="html"><![CDATA[<p>简要的介绍了Jetty的启动流程。对象池是一个很新颖的概念，与线程池有所区别。<br><a id="more"></a></p>
 <h1 id="创建Server"><a href="#创建Server" class="headerlink" title="创建Server"></a>创建Server</h1><h2 id="初始化线程池"><a href="#初始化线程池" class="headerlink" title="初始化线程池"></a>初始化线程池</h2><p>使用QueuedThreadpool实现SizedThreadPool  </p>
 <h2 id="初始化ServerConnector"><a href="#初始化ServerConnector" class="headerlink" title="初始化ServerConnector"></a>初始化ServerConnector</h2><ul>
@@ -601,7 +696,7 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
     
     <entry>
       <title><![CDATA[HashMap源码解读]]></title>
-      <url>http://baobing.github.io/2016/07/25/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
+      <url>http://baobing.github.io/2016/07/25/Java%E5%9F%BA%E7%A1%80/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</url>
       <content type="html"><![CDATA[<h1 id="关于HashMap的疑问"><a href="#关于HashMap的疑问" class="headerlink" title="关于HashMap的疑问"></a>关于HashMap的疑问</h1><ul>
 <li><p>HashMap底层的数据结构，怎样解决hash碰撞。</p>
 </li>
@@ -611,7 +706,7 @@ notify之后不会立即启动wait方法，拿到锁之后可以继续执行wait
 <a id="more"></a>
 </li>
 </ul>
-<h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1><center><img src="/2016/07/25/HashMap源码解读/HashMap.png" alt="图1" title="图1"></center>
+<h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1><center><img src="/2016/07/25/Java基础/HashMap源码解读/HashMap.png" alt="图1" title="图1"></center>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;</div><div class="line">       <span class="keyword">final</span> K key;</div><div class="line">       <span class="keyword">volatile</span> V val;</div><div class="line">       <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</div><div class="line">      <span class="comment">//省略省略</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</div></pre></td></tr></table></figure>
 <p>　　不难发现HashMap底层由数组、链表和红黑树三者组成。</p>

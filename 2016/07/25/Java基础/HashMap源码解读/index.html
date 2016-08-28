@@ -92,7 +92,7 @@ HashMap何时扩容，扩容的过程是怎样的
 红黑树是一种怎样的数据结构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HashMap源码解读">
-<meta property="og:url" content="http://baobing.github.io/2016/07/25/HashMap源码解读/index.html">
+<meta property="og:url" content="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="关于HashMap的疑问
 HashMap底层的数据结构，怎样解决hash碰撞。
@@ -100,7 +100,7 @@ HashMap底层的数据结构，怎样解决hash碰撞。
 HashMap何时扩容，扩容的过程是怎样的              
 
 红黑树是一种怎样的数据结构">
-<meta property="og:image" content="http://baobing.github.io/2016/07/25/HashMap源码解读/HashMap.png">
+<meta property="og:image" content="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/HashMap.png">
 <meta property="og:updated_time" content="2016-08-20T11:50:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap源码解读">
@@ -110,7 +110,7 @@ HashMap底层的数据结构，怎样解决hash碰撞。
 HashMap何时扩容，扩容的过程是怎样的              
 
 红黑树是一种怎样的数据结构">
-<meta name="twitter:image" content="http://baobing.github.io/2016/07/25/HashMap源码解读/HashMap.png">
+<meta name="twitter:image" content="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/HashMap.png">
 
 
 
@@ -131,7 +131,7 @@ HashMap何时扩容，扩容的过程是怎样的
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/07/25/HashMap源码解读/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/"/>
 
   <title> HashMap源码解读 | 贝叶斯的智慧 </title>
 </head>
@@ -328,8 +328,8 @@ HashMap何时扩容，扩容的过程是怎样的
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/25/HashMap源码解读/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/HashMap源码解读/" itemprop="commentsCount"></span>
+                <a href="/2016/07/25/Java基础/HashMap源码解读/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/Java基础/HashMap源码解读/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -361,7 +361,7 @@ HashMap何时扩容，扩容的过程是怎样的
 <a id="more"></a>
 </li>
 </ul>
-<h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1><center><img src="/2016/07/25/HashMap源码解读/HashMap.png" alt="图1" title="图1"></center>
+<h1 id="JDK8-HashMap数据结构"><a href="#JDK8-HashMap数据结构" class="headerlink" title="JDK8 HashMap数据结构"></a>JDK8 HashMap数据结构</h1><center><img src="/2016/07/25/Java基础/HashMap源码解读/HashMap.png" alt="图1" title="图1"></center>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</div><div class="line">       <span class="keyword">final</span> <span class="keyword">int</span> hash;</div><div class="line">       <span class="keyword">final</span> K key;</div><div class="line">       <span class="keyword">volatile</span> V val;</div><div class="line">       <span class="keyword">volatile</span> Node&lt;K,V&gt; next;</div><div class="line">      <span class="comment">//省略省略</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</div></pre></td></tr></table></figure>
 <p>　　不难发现HashMap底层由数组、链表和红黑树三者组成。</p>
@@ -446,10 +446,10 @@ HashMap何时扩容，扩容的过程是怎样的
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/07/25/HashMap源码解读/"
+        <div class="ds-share flat" data-thread-key="2016/07/25/Java基础/HashMap源码解读/"
      data-title="HashMap源码解读"
      data-content=""
-     data-url="http://baobing.github.io/2016/07/25/HashMap源码解读/">
+     data-url="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -476,8 +476,8 @@ HashMap何时扩容，扩容的过程是怎样的
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/07/25/HashMap源码解读/"
-           data-title="HashMap源码解读" data-url="http://baobing.github.io/2016/07/25/HashMap源码解读/">
+      <div class="ds-thread" data-thread-key="2016/07/25/Java基础/HashMap源码解读/"
+           data-title="HashMap源码解读" data-url="http://baobing.github.io/2016/07/25/Java基础/HashMap源码解读/">
       </div>
     
   </div>
@@ -522,7 +522,7 @@ HashMap何时扩容，扩容的过程是怎样的
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">22</span>
+              <span class="site-state-item-count">23</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -530,7 +530,7 @@ HashMap何时扩容，扩容的过程是怎样的
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
