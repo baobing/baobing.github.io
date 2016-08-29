@@ -84,21 +84,19 @@
 
 
 
-<meta name="description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
+<meta name="description" content="垃圾判定引用计数算法循环引用 每次都要技术影响性能">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM1-运行机制内存工作原理">
-<meta property="og:url" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/index.html">
+<meta property="og:title" content="JVM4-垃圾回收">
+<meta property="og:url" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
-<meta property="og:description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
-<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic4.png">
-<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic1.png">
-<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic2.png">
-<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic3.png">
-<meta property="og:updated_time" content="2016-08-28T02:37:55.000Z">
+<meta property="og:description" content="垃圾判定引用计数算法循环引用 每次都要技术影响性能">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/pic1.png">
+<meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/pic2.png">
+<meta property="og:updated_time" content="2016-08-28T16:26:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JVM1-运行机制内存工作原理">
-<meta name="twitter:description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
-<meta name="twitter:image" content="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/pic4.png">
+<meta name="twitter:title" content="JVM4-垃圾回收">
+<meta name="twitter:description" content="垃圾判定引用计数算法循环引用 每次都要技术影响性能">
+<meta name="twitter:image" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/pic1.png">
 
 
 
@@ -119,9 +117,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/"/>
+  <link rel="canonical" href="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/"/>
 
-  <title> JVM1-运行机制内存工作原理 | 贝叶斯的智慧 </title>
+  <title> JVM4-垃圾回收 | 贝叶斯的智慧 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -274,7 +272,7 @@
             
             
               
-                JVM1-运行机制内存工作原理
+                JVM4-垃圾回收
               
             
           </h1>
@@ -286,7 +284,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-28T09:21:38+08:00" content="2016-08-28">
+            <time itemprop="dateCreated" datetime="2016-08-28T17:41:40+08:00" content="2016-08-28">
               2016-08-28
             </time>
           </span>
@@ -316,8 +314,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/08/28/JVM1-运行机制内存工作原理/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/" itemprop="commentsCount"></span>
+                <a href="/2016/08/28/JVM/JVM4-垃圾回收/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/28/JVM/JVM4-垃圾回收/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -340,95 +338,16 @@
       
 
       
-        <h1 id="JVM-规范"><a href="#JVM-规范" class="headerlink" title="JVM 规范"></a>JVM 规范</h1><p>JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：<br><a id="more"></a><br>1、class文件格式<br>2、数据的内部表示和存储<br>3、returnAddress 数据类型定义<br>4、invokedynamic<br>5、定义pc<br>6、堆、栈、方法区<br>7、 类型转化<br>8 、出栈入栈<br>9 、运算<br>10、流程控制<br>11、函数调用<br>12 对javaLibrary提供支持、反射、类加载、初始化类。安全、多线程、弱引用</p>
-<h1 id="运行时数据区的划分"><a href="#运行时数据区的划分" class="headerlink" title="运行时数据区的划分"></a>运行时数据区的划分</h1><ul>
-<li>程序计数器</li>
-<li>java堆</li>
-<li>java虚拟机栈</li>
-<li>本地方法栈</li>
-<li>方法区</li>
+        <h1 id="垃圾判定"><a href="#垃圾判定" class="headerlink" title="垃圾判定"></a>垃圾判定</h1><h2 id="引用计数算法"><a href="#引用计数算法" class="headerlink" title="引用计数算法"></a>引用计数算法</h2><p>循环引用 每次都要技术影响性能<br><a id="more"></a></p>
+<h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象</p>
+<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><p>1）标记-清除算法 老年代<br>2）标记压缩 老年代<br>3）复制算法 缺点空间浪费<br>4）分代算法<br>新生代分为一大两小，大小8:1<br>大对象：移到老年代。<br>小对象：放置到复制空间<br>老年对象：长期有效的对象<br>s0、s1只有一个能用<br><img src="/2016/08/28/JVM/JVM4-垃圾回收/pic1.png" alt="pic1.png" title=""></p>
+<h1 id="内存空间"><a href="#内存空间" class="headerlink" title="内存空间"></a>内存空间</h1><p>短命对象归为新生代，长命对象归为老年代<br>根据不同代的特点，选取合适的收集算法<br>少量对象存活，适合复制算法。新生代。<br>大量对象存活，适合标记清理或者标记压缩。老年代。<br>对象多次GC未被回收放入老年代，或者新生代空间不足放入老年代。</p>
+<h1 id="可触及性"><a href="#可触及性" class="headerlink" title="可触及性"></a>可触及性</h1><ul>
+<li>可复活： 一旦所有引用被释放，就是可复活状态；因为在finalize()中可能复活该对象；<br>避免使用finalize()方法，被调用时间不确定，使用finally代替。<br>finalize方法一个对象只能使用一次。</li>
+<li>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象<img src="/2016/08/28/JVM/JVM4-垃圾回收/pic2.png" alt="pic2.png" title="">
+</li>
 </ul>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
-<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>　　一块较小的内存空间，他的作用可以看做是当前线程所执行的字节码的行号指示器。线程私有的内存区域，生命周期与线程相同。<br>　　如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址；如果正在执行的是native方法，则个计数器值则为空。<br>　　此内存区域是唯一一个在java虚拟机规范中没有任何OutOfMemoryError情况的区域。<br>　　Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多喝处理器老说是一个内核）都只会执行一条线程中的指令。为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的计数器。</p>
-<h2 id="JVM栈"><a href="#JVM栈" class="headerlink" title="JVM栈"></a>JVM栈</h2><p>　　栈上分配 ：小对象，不存在内存逃逸的情况下，直接分配在栈上。可以自动回收，减轻GC压力，大对象或者逃逸对象无法栈上分配 。内存逃逸指被多个线程共享。</p>
-<ul>
-<li>执行字节码</li>
-<li>线程私用</li>
-<li>存储栈帧，执行java方法的调用、执行和退出</li>
-<li>存在OutofMemoryError 和 stackOverFlow</li>
-</ul>
-<h1 id="本地方法栈NativeMethodStack"><a href="#本地方法栈NativeMethodStack" class="headerlink" title="本地方法栈NativeMethodStack"></a>本地方法栈NativeMethodStack</h1><p>　　本地方法栈与JVM栈所发挥的作用是非常相似的，他们之间的区别不过是虚拟机栈为虚拟机执行Java方法服务，本地方法栈为JVM使用到的Native方法服务</p>
-<ul>
-<li>线程私用</li>
-<li>执行Native方法的调用、执行和退出</li>
-<li>OutofMemoryError 和 stackOverFlow</li>
-<li>hotspot将栈与本地方法栈合并。</li>
-<li>方法结束自动释放内存</li>
-</ul>
-<h2 id="栈帧-stack-frame"><a href="#栈帧-stack-frame" class="headerlink" title="栈帧 stack frame"></a>栈帧 stack frame</h2><p>　　JVM栈中存储数据的内容，他被用于存储局部变量表、操作数和部分过程结果的数据结构，同时也被用来处理动态链接，方法返回值和异常分派。<br>　　包含局部变量表，操作数栈，动态链接信息，方法正常完成、异常完成信息<br>　　局部变量由如若干slot组成，长度由编译器决定。单个slot可以存储一个基本类型、reference和returnAddress的数据，两个slot可以存储一个类型为long或double的数据。reference 直接或间接的找到对象，直接或间接的找到对象在方法区中的数据类型。<br>第一个为本对象的引用地址。<br>每个方法创建一个栈帧，并且压入栈。<br>操作数栈，进行数学计算 。</p>
-<h1 id="Java堆"><a href="#Java堆" class="headerlink" title="Java堆"></a>Java堆</h1><p>　　JVM明确要求该区域需要实现自动内存管理。从内存回收的角度来看，由于现在收集器基本都采用分代收集算法，所以Java堆中还可以细分为：新生代和老年代：再细致一点的有Eden空间、FromSurvior空间，To Survivor、tenured  。从内存分配的角度来看，线程共享的Java堆中可能划分出多个私有的分配缓冲区（TLAB）。存在OutofMemoryError。</p>
-<h1 id="方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）"><a href="#方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）" class="headerlink" title="方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）"></a>方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）</h1><ul>
-<li>线程共享。</li>
-<li>作用是存储Jva类的类型信息、常量、静态变量、即时编辑后的代码等数据。</li>
-<li>JVM不要求该区域实现自动内存管理，常量池的回收已经类型信息的卸载</li>
-<li>JDK1.2-1.6 hotspot 使用永久代与方法区 jdk1.7 使用堆 </li>
-</ul>
-<h2 id="运行时常量池-Runtime-Constant-Pool"><a href="#运行时常量池-Runtime-Constant-Pool" class="headerlink" title="运行时常量池(Runtime Constant Pool)"></a>运行时常量池(Runtime Constant Pool)</h2><ul>
-<li>全局共享</li>
-<li>方法区的一部分</li>
-<li>作用是存储Java类文件常量池中的数据信息、字面量和符号引用</li>
-<li>并非只有类加载使用，运行期也可以动态添加，如String.intern()</li>
-</ul>
-<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p> jdk1.4中nio被引入，目的是避免在java堆和native堆中来来回复制数据带来的性能损失。全局共享。</p>
-<h1 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h1><p>　　假设Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，这种分配方式成为“指针碰撞”。相对的分配方式成为“空闲列表”。<br>　　对象内存分配的同步：（1）采用CAS配上失败重试的方式保证更新操作的原子性（2）内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一块内存，本地线程缓冲（TLAB）。<br>　　对象头（Object Header）存放对象哈希码、对象的GC分代、类的元数据信息。</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
-<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>　　对象头、实例数据、和对齐填充（Padding）。对象头包含两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等、这部分数据的长度在32位和64位，官方称它为Mark Word。25位存储哈希码、4位存储对象分代年龄、2位用于存储锁标志</p>
-<p>对象的访问定位</p>
-<p>（1）使用直接指针访问方式的最大好蠢就是速度更快，他节省了一次指针定位 的时间开销</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
-<p>（2）使用句柄</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
-<h1 id="Java反编译"><a href="#Java反编译" class="headerlink" title="Java反编译"></a>Java反编译</h1><p>javap -verbose Test01 反编译java字节码 查看java字节码</p>
-<h1 id="happen-before原则（指令重排原则）"><a href="#happen-before原则（指令重排原则）" class="headerlink" title="happen-before原则（指令重排原则）"></a>happen-before原则（指令重排原则）</h1><ul>
-<li>程序顺序原则：一个程序内保证语意的串行</li>
-</ul>
-<ul>
-<li>volatile规则：volatile变量的写必须先于读 。</li>
-</ul>
-<ul>
-<li>锁原则： 解锁必然先于加锁</li>
-</ul>
-<ul>
-<li>传递性</li>
-</ul>
-<ul>
-<li>线程的start方法优先于他的每一动作</li>
-</ul>
-<ul>
-<li>线程的所有操作先于线程的中断</li>
-</ul>
-<ul>
-<li>线程中断先于被中断线程的代码</li>
-</ul>
-<p>﻿- 构造函数先于finalize()</p>
-<h1 id="解释运行"><a href="#解释运行" class="headerlink" title="解释运行"></a>解释运行</h1><ul>
-<li>解释执行以解释方式运行字节码</li>
-</ul>
-<ul>
-<li>解释执行的意思是读一句执行一句</li>
-</ul>
-<h1 id="编译运行JIT"><a href="#编译运行JIT" class="headerlink" title="编译运行JIT"></a>编译运行JIT</h1><ul>
-<li>将字节码编译成机器码</li>
-</ul>
-<ul>
-<li>直接执行机器码 </li>
-</ul>
-<ul>
-<li>运行时编译</li>
-</ul>
-<ul>
-<li>速度快十倍</li>
-</ul>
+<h1 id="Stop-The-World"><a href="#Stop-The-World" class="headerlink" title="Stop The World"></a>Stop The World</h1><p>所有Java代码停止，native代码可以执行，但不能和JVM交互<br>dump线程 死锁检查 dump堆 GC 可以一起StopTheWorld<br>GC线程之外的线程停止工作，进行垃圾回收。防止新的垃圾生成。<br>危害：长时间服务停止，没有响应；遇到HA系统，可能一起主备切换，严重危害生产环境。<br>老年代停顿时间长（微妙、秒、分钟都有可能）、新生代停顿时间短。</p>
 
       
     </div>
@@ -460,13 +379,17 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/08/27/并发编程/GYM11-Jetty/" rel="next" title="GYM11-Jetty简介">
-                <i class="fa fa-chevron-left"></i> GYM11-Jetty简介
+              <a href="/2016/08/28/JVM/JVM3-参数设置/" rel="next" title="JVM3-参数设置">
+                <i class="fa fa-chevron-left"></i> JVM3-参数设置
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/29/JVM/JVM5-GC收集器和参数/" rel="prev" title="JVM5-GC收集器和参数">
+                JVM5-GC收集器和参数 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -481,10 +404,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/"
-     data-title="JVM1-运行机制内存工作原理"
+        <div class="ds-share flat" data-thread-key="2016/08/28/JVM/JVM4-垃圾回收/"
+     data-title="JVM4-垃圾回收"
      data-content=""
-     data-url="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/">
+     data-url="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -511,8 +434,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/08/28/JVM1-运行机制内存工作原理/"
-           data-title="JVM1-运行机制内存工作原理" data-url="http://baobing.github.io/2016/08/28/JVM1-运行机制内存工作原理/">
+      <div class="ds-thread" data-thread-key="2016/08/28/JVM/JVM4-垃圾回收/"
+           data-title="JVM4-垃圾回收" data-url="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/">
       </div>
     
   </div>
@@ -557,7 +480,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">28</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -603,7 +526,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM-规范"><span class="nav-number">1.</span> <span class="nav-text">JVM 规范</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行时数据区的划分"><span class="nav-number">2.</span> <span class="nav-text">运行时数据区的划分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序计数器"><span class="nav-number">2.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM栈"><span class="nav-number">2.2.</span> <span class="nav-text">JVM栈</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地方法栈NativeMethodStack"><span class="nav-number">3.</span> <span class="nav-text">本地方法栈NativeMethodStack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧-stack-frame"><span class="nav-number">3.1.</span> <span class="nav-text">栈帧 stack frame</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java堆"><span class="nav-number">4.</span> <span class="nav-text">Java堆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法区（别名-：Method-Area、Non-Heap、永久代、permanent-Gerneration）"><span class="nav-number">5.</span> <span class="nav-text">方法区（别名 ：Method Area、Non-Heap、永久代、permanent Gerneration）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时常量池-Runtime-Constant-Pool"><span class="nav-number">5.1.</span> <span class="nav-text">运行时常量池(Runtime Constant Pool)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#直接内存"><span class="nav-number">6.</span> <span class="nav-text">直接内存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象创建"><span class="nav-number">7.</span> <span class="nav-text">对象创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">8.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java反编译"><span class="nav-number">9.</span> <span class="nav-text">Java反编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#happen-before原则（指令重排原则）"><span class="nav-number">10.</span> <span class="nav-text">happen-before原则（指令重排原则）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解释运行"><span class="nav-number">11.</span> <span class="nav-text">解释运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译运行JIT"><span class="nav-number">12.</span> <span class="nav-text">编译运行JIT</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾判定"><span class="nav-number">1.</span> <span class="nav-text">垃圾判定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用计数算法"><span class="nav-number">1.1.</span> <span class="nav-text">引用计数算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可达性分析算法"><span class="nav-number">1.2.</span> <span class="nav-text">可达性分析算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#回收算法"><span class="nav-number">2.</span> <span class="nav-text">回收算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存空间"><span class="nav-number">3.</span> <span class="nav-text">内存空间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可触及性"><span class="nav-number">4.</span> <span class="nav-text">可触及性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stop-The-World"><span class="nav-number">5.</span> <span class="nav-text">Stop The World</span></a></li></ol></div>
             
           </div>
         </section>

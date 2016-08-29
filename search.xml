@@ -4,8 +4,85 @@
   
     
     <entry>
+      <title><![CDATA[JVM8-锁及优化]]></title>
+      <url>http://baobing.github.io/2016/08/29/JVM/JVM8-%E9%94%81%E5%8F%8A%E4%BC%98%E5%8C%96/</url>
+      <content type="html"><![CDATA[<h1 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h1><a id="more"></a>
+<p>下面类由于ArrayList不是线程安全的在数组扩展的时候回导致异常<br>public class SafeThread {<br>    public static List<integer> numberList = new ArrayList&lt;&gt;();<br>    public static class AddToList implements Runnable{<br>        int startNum = 0;<br>        public AddToList(int startNum) {<br>            this.startNum = startNum;<br>        }<br>        @Override<br>        public void run() {<br>            int count = 0;<br>            while(count &lt; 1000000){<br>                numberList.add(startNum);<br>                startNum += 2;<br>                count++;<br>            }<br>        }<br>    }<br>    public static void main(String[] args) throws Exception{<br>        Thread t1 = new Thread(new AddToList(0));<br>        Thread t2 = new Thread(new AddToList(1));<br>        t1.start();<br>        t2.start();<br>        while(t1.isAlive() || t2.isAlive()){<br>            Thread.sleep(1);<br>        }<br>        System.out.println(numberList.size());<br>    }<br>}</integer></p>
+<h1 id="对象头Mark"><a href="#对象头Mark" class="headerlink" title="对象头Mark"></a>对象头Mark</h1><p>描述对象的hash、锁信息，垃圾回收标记，年龄<br>指向锁记录的指针；指向monitor的指针 ；GC标记；偏向锁线程ID；</p>
+<h1 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h1><p>应用场景：大部分情况是没有竞争的情况，可以铜鼓哦偏向来提高性能；<br>锁偏向当前已经占有锁的线程。<br>将对象Mark的标记设置为偏向，并将线程ID写入对象头mark<br>只要没有竞争，获得偏向锁的线程，在将来进入同步块，不需要做同步<br>当其他线程请求相同的锁时，偏向模式结束<br>-XX：+UseBiaseLocking 默认启用；<br>-XX：BiasedLockingStartupDelay = 0；<br>-XX：-UseBiasedLocking 不启用偏向锁<br>竞争激烈的场合，不使用；<br>默认撑起刚开始不使用偏向锁，刚开始竞争比较激烈</p>
+<h1 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h1><p>BacicObjectLock 嵌入在线程栈中的对象 。<br>包含两部分：BasicLock 对象头；指向持有本锁的对象的指针；<br>普通锁的处理性能不理想<br> 如果对象没有被锁定，将对象头的mark指针保存到锁对象中，将对象头设置为指向锁的指针。<br>对象头的指的方向是否在线程的内存区域中，说明线程持有锁。<br>具体代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">lock.set_displaecd_header(mark);</div><div class="line">if(mark == (markOop) Atomic::cmpxchg_ptr(lock,obj()-&gt;mark_addr(),mark))&#123;</div><div class="line">     TEVENT(slow_enter:release stacklock);</div><div class="line">     return ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果轻量级锁失败表示存在竞争，升级为重量级锁（常规锁）<br>在没有锁竞争的前提下，减少传统锁使用OS互斥产生的性能损耗；</p>
+<h1 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h1><p>空循环，等待锁。<br>如果线程可以很快获得锁，name可以不再os层挂起线程，让线程做几个空操作（自选）<br>如果同步块很长，自选失败，会降低系统性能<br>如果同步快很短，自选成功，节省线程挂起切换时间，提升系统性能</p>
+<h1 id="JVM获取锁的步骤"><a href="#JVM获取锁的步骤" class="headerlink" title="JVM获取锁的步骤"></a>JVM获取锁的步骤</h1><p>偏向锁可用先会尝试偏向锁。<br>轻量级锁可用胡先尝试轻量级锁<br>以上都失败，尝试自旋锁<br>再失败，尝试普通锁，使用os互斥量在操作系统层挂起</p>
+<h1 id="Java并发编程技巧"><a href="#Java并发编程技巧" class="headerlink" title="Java并发编程技巧"></a>Java并发编程技巧</h1><h2 id="减少锁粒度"><a href="#减少锁粒度" class="headerlink" title="减少锁粒度"></a>减少锁粒度</h2><p>将大对象，拆成小对象，打打增加并行度，降低锁竞争。<br>ConcurrentHashMap<br>若干个Segment：Segment<k,v>[] segments<br>Segment中维护HashEntry<k,v><br>put 操作时 先定位到Segment，锁定一个Segment，执行put</k,v></k,v></p>
+<h2 id="锁分离"><a href="#锁分离" class="headerlink" title="锁分离"></a>锁分离</h2><p>根据功能进行锁分离，如：读锁 、写锁。<br>读多写少的情况<br>LinkedBlockingQueue 分为take锁和put锁</p>
+<h2 id="锁粗化"><a href="#锁粗化" class="headerlink" title="锁粗化"></a>锁粗化</h2><p>如果对同一个锁不停的进行请求、同步和释放，其本身也会消耗系统宝贵的资源，反而不利于性能优化。 多个同步快合并，不需要同步很快完成。</p>
+<h2 id="锁消除"><a href="#锁消除" class="headerlink" title="锁消除"></a>锁消除</h2><p>局部变量不使用同步机制的集合<br>-server-XX：+DoEscapeAnalysis -XX:+ElminateLocks 逃逸分析 判断是否逃逸出局部范围</p>
+<h2 id="无锁"><a href="#无锁" class="headerlink" title="无锁"></a>无锁</h2><p>锁是悲观的操作：预期竞争存在<br>无锁是乐观的操作：认为竞争不存在<br>无锁的实现方式：<br>CAS（Compare And Swap）；非阻塞的同步；<br>CAS（V,E,N）; V需要更新的值，E期望当前的值，N新的值 ；返回最终值；<br>不出现线程的切换<br>AtomicInterger</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JVM6-类加载]]></title>
+      <url>http://baobing.github.io/2016/08/29/JVM/JVM6-%E7%B1%BB%E5%8A%A0%E8%BD%BD/</url>
+      <content type="html"><![CDATA[<h1 id="class装载验证流程"><a href="#class装载验证流程" class="headerlink" title="class装载验证流程"></a>class装载验证流程</h1><h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>取得类的二进制流 ；转为方法区的数据结构；生成Class对象<br><a id="more"></a></p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><h3 id="验证：保证Class流的格式是否正确"><a href="#验证：保证Class流的格式是否正确" class="headerlink" title="验证：保证Class流的格式是否正确"></a>验证：保证Class流的格式是否正确</h3><p>文件格式验证：以0xCAFEBABE开头；版本号是否合理；<br>元数据验证（语法检查）：父类检查；继承final类；非抽象类实现所有的抽象方法；<br>字节码验证（JVM规范检查、非常复杂）：运行检查；栈数据类型和操作吗数据参数吻合；跳转指令指定到合理的位置；<br>符号引用验证：常量池中描述类是否存在；访问的方法或字段是否存在且有足够的权限；</p>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>分配内存，并为类设置初始值<br>非静态属性设置为0、0.0、false<br>final类型，在准备阶段就会被赋予正确的值</p>
+<h3 id="解析符"><a href="#解析符" class="headerlink" title="解析符"></a>解析符</h3><p>符号引用替换为直接引用；符号引用：字符串引用对象不一定被加载；直接饮用：指针或者地址编译量引用该对象一定在内存</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>执行类构造器clinit ：static变量赋值 static语句<br>子类的<clint>调用钱保证父类的clint被调用<br>clinit是线程安全的</clint></p>
+<h1 id="类装载器ClassLoader"><a href="#类装载器ClassLoader" class="headerlink" title="类装载器ClassLoader"></a>类装载器ClassLoader</h1><p>ClassLoader读入Java字节码将类装载到JVM中<br>ClassLoader可以定制，满足不同 的字节码流获取方式<br>加载阶段</p>
+<h2 id="重要方法"><a href="#重要方法" class="headerlink" title="重要方法"></a>重要方法</h2><p>loadClass  载入并返回一个Class<br>defineClass 定义一个类，不公开调用<br>findClass 回调方法足鼎ClassLoader的推荐做法<br>findLoadedClass 寻找已加载的类</p>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>BootStrap（rt.jar）、Extension(lib/ext/*/jar)、App 、CustomerClassLod er<br><img src="/2016/08/29/JVM/JVM6-类加载/pic1" alt="pic1" title=""><br>向上寻找父亲知否加载，父亲加载好返回Class给子类<br>-Xbootclasspath<br>让jvm从指定的路径中加载bootclass，用来替换jdk的rt.jar。一般不会用到。</p>
+<h2 id="Thread-setContextClassLoader-上下文加载器"><a href="#Thread-setContextClassLoader-上下文加载器" class="headerlink" title="Thread.setContextClassLoader() 上下文加载器"></a>Thread.setContextClassLoader() 上下文加载器</h2><p>问题：上层ClassLoader无法查看底层ClassLoader中的类<br>是一个角色，任何一个加载器都可以是这个角色<br>解决顶层ClassLoader无法访问底层 ClassLoader<br>顶层classLoader传入底层classLoader<br>2.5 双亲委派模式的破坏<br>双亲模式是默认的模式但是不是必须这么做<br>Tomcat的WebappClassLoder就会先加载自己的Class，找不到再委托parent<br>OSGi（热加载）的ClassLOder芯层王庄结构，分局需要自由加载Class<br>class被替换后，系统无需重启，替换的类立即成效<br><img src="/2016/08/29/JVM/JVM6-类加载/pic2" alt="pic2" title=""></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JVM5-GC收集器和参数]]></title>
+      <url>http://baobing.github.io/2016/08/29/JVM/JVM5-GC%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%8F%82%E6%95%B0/</url>
+      <content type="html"><![CDATA[<h1 id="堆得回顾"><a href="#堆得回顾" class="headerlink" title="堆得回顾"></a>堆得回顾</h1><p>大对象、栈分配、不在新生代。<br>s0、s1大小相同、对称，只能一个可用。<br><a id="more"></a><br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic1" alt="pic1" title=""></p>
+<h1 id="串行收集器"><a href="#串行收集器" class="headerlink" title="串行收集器"></a>串行收集器</h1><p>1）最古老，最稳定，效率高，可能产生较长的停顿。<br>只有一个线程回收，多核中性能不能得到发挥。<br>2）-XX:+UseSerialGC<br>新生代 老年代使用串行回收；新生代复制算法；老年代标记－压缩；<br> DefNew新生代、Tenured老年代、Perm永久代</p>
+<h1 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h1><p>-XX:+UseParNewGC 新生代执行并行收集<br> ParNew 新生代</p>
+<h1 id="Parallel收集器"><a href="#Parallel收集器" class="headerlink" title="Parallel收集器"></a>Parallel收集器</h1><p>1）类似于ParNew 新生代复制算法；老年代标记－压缩；<br>PSYoungGen年轻代/ParLOldGen老年代收集/PSPermGen</p>
+<p>2）-XX:+UseParallelGC 使用Parallel收集器+老年代串行<br>-XX:+UseParallelOldGC 使用ParallelOldGC 使用Parallel收集器+并行老年代</p>
+<p>3）-XX:MaxGCPauseMills 最大停顿时间，单位毫秒；GC尽力保证回收时间不超过设定值<br>-XX:GCTimeRation 0-100的取值范围；垃圾收集时间占总时间的比；默认99，即最大允许1%时间做GC ，比重大，GC时间长<br>这两个参数是矛盾的。因为停顿时间和吞吐量不可能同时调优。</p>
+<h1 id="CMS收集器-Concurrent-Mark-Sweep"><a href="#CMS收集器-Concurrent-Mark-Sweep" class="headerlink" title="CMS收集器 Concurrent Mark Sweep"></a>CMS收集器 Concurrent Mark Sweep</h1><p>与应用程序一起并发执行；老年代收集器；并发阶段吞吐量降低；<br>降低停顿、清理不彻、不能再空间快满时清理<br>-XX:CMSInitiatingOccupancyFraction 设置出发GC的阈值 ；<br>如果空间不够，就会引起concurrent mode failure，遇到此情况停止业务，采用串行收集器。<br>CMS-concurrent-sweep 收集显示文字<br>-XX:+UseConcMarkSweepGC<br>新生代用并行收集器，老年代使用CMS+串行收集器<br>-XX:+UseCMSCompactAtFullColleciont  FullGC后，进行一次空间整理，整理过程是独占的，会引起停顿时间变长<br>-XX:CMSFullGCsBeforeCompaction 设置进行几次Full GC（CMS GC）后，进行一次碎片整理<br>-XX:ParallelCMSThreads 设定CMS的线程数量<br>-XX:+CMSClassUnloadingEnabled 允许对类元数据进行回收<br>工作流程：<br>（1）初始标记 根可以直接关联到的对象；速度快；需要停顿<br>（2）并发标记 主要标记过程，标记全部对象；主要步骤；<br>（3）重新标记  由于编发标记时，用户线程依然运行，因此正式清理前修正，需要停止其他线程<br>（4）并发清除 基于标记结果，直接清理对象<br>由于清理时并发的所以只能清除不能压缩<br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic2" alt="pic2" title=""></p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JVM4-垃圾回收]]></title>
+      <url>http://baobing.github.io/2016/08/28/JVM/JVM4-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</url>
+      <content type="html"><![CDATA[<h1 id="垃圾判定"><a href="#垃圾判定" class="headerlink" title="垃圾判定"></a>垃圾判定</h1><h2 id="引用计数算法"><a href="#引用计数算法" class="headerlink" title="引用计数算法"></a>引用计数算法</h2><p>循环引用 每次都要技术影响性能<br><a id="more"></a></p>
+<h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象</p>
+<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><p>1）标记-清除算法 老年代<br>2）标记压缩 老年代<br>3）复制算法 缺点空间浪费<br>4）分代算法<br>新生代分为一大两小，大小8:1<br>大对象：移到老年代。<br>小对象：放置到复制空间<br>老年对象：长期有效的对象<br>s0、s1只有一个能用<br><img src="/2016/08/28/JVM/JVM4-垃圾回收/pic1.png" alt="pic1.png" title=""></p>
+<h1 id="内存空间"><a href="#内存空间" class="headerlink" title="内存空间"></a>内存空间</h1><p>短命对象归为新生代，长命对象归为老年代<br>根据不同代的特点，选取合适的收集算法<br>少量对象存活，适合复制算法。新生代。<br>大量对象存活，适合标记清理或者标记压缩。老年代。<br>对象多次GC未被回收放入老年代，或者新生代空间不足放入老年代。</p>
+<h1 id="可触及性"><a href="#可触及性" class="headerlink" title="可触及性"></a>可触及性</h1><ul>
+<li>可复活： 一旦所有引用被释放，就是可复活状态；因为在finalize()中可能复活该对象；<br>避免使用finalize()方法，被调用时间不确定，使用finally代替。<br>finalize方法一个对象只能使用一次。</li>
+<li>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象<img src="/2016/08/28/JVM/JVM4-垃圾回收/pic2.png" alt="pic2.png" title="">
+</li>
+</ul>
+<h1 id="Stop-The-World"><a href="#Stop-The-World" class="headerlink" title="Stop The World"></a>Stop The World</h1><p>所有Java代码停止，native代码可以执行，但不能和JVM交互<br>dump线程 死锁检查 dump堆 GC 可以一起StopTheWorld<br>GC线程之外的线程停止工作，进行垃圾回收。防止新的垃圾生成。<br>危害：长时间服务停止，没有响应；遇到HA系统，可能一起主备切换，严重危害生产环境。<br>老年代停顿时间长（微妙、秒、分钟都有可能）、新生代停顿时间短。</p>
+]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JVM3-参数设置]]></title>
+      <url>http://baobing.github.io/2016/08/28/JVM/JVM3-%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE/</url>
+      <content type="html"><![CDATA[<p>-XX:+printGC 打印GC<br>-XX:+PrintGCDetails 打印GC详细信息,打印堆上各个空间的大小和使用率<br><a id="more"></a><br>-XX:+PrintGCTimeStamps 打印GC发生的时间戳<br>-Xloggc:log/gc.log 指定GC log的位置，以文件输出 帮助开发人员分析问题<br>-XX:+PrintHeapAtGC 打印GC前后堆空间的各个代使用情况和总空间<br>-XX:+TraceClassLoading 监控类的加载<br>-XX:+PrintClassHistogram 按下Ctrl+Break后，打印类的信息 显示：序号、实例数量、总大小、类型 [B指字节数组<br>-Xmx 最大堆<br>-Xmx 最小堆</p>
+<p>空闲内存<br>System.out.println(Runtime.getRuntime().freeMemory());<br>使用内存<br>System.out.println(Runtime.getRuntime().totalMemory());</p>
+<p>-Xmn 设置新生代大小<br>-XX:NewRatio 新生代和老年代的壁纸<br>4表示 新生代：老年代= 1：4 年轻带占堆得20%<br>-XX:SurvivorRation  一个suvivor与年轻带的比值 8 代表  survivor:eden 为 1：8</p>
+<p>-XX:+HeapDumpOnOutOfMemoryError OOM时导出堆到文件<br>-XX:+HeapDumpPath  导出文件路径<br>-XX:OnOutOfMemoryError = 执行一个脚本<br>在OOM时，执行一个脚本<br>官方推荐新生代栈3/8<br>幸存代1/10<br>-XX:PerSize 设置永久区大小<br>-XX:MaxPermSize 永久区最大</p>
+<p>使用CGLIB等库的时候，可能会产生大量的类，这些类，有可能撑爆永久区导致OOM</p>
+<p>-Xss 指定栈大小<br>通常几百K<br>决定函数调用的深度<br>每个线程都有独立的空间<br>局部变量、参数分配在栈上</p>
+<p>-server 服务器模式运行-plan客户端模式启动，启动速度快</p>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[JVM1-运行机制内存工作原理]]></title>
-      <url>http://baobing.github.io/2016/08/28/JVM1-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E5%86%85%E5%AD%98%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
+      <url>http://baobing.github.io/2016/08/28/JVM/JVM1-%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E5%86%85%E5%AD%98%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
       <content type="html"><![CDATA[<h1 id="JVM-规范"><a href="#JVM-规范" class="headerlink" title="JVM 规范"></a>JVM 规范</h1><p>JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：<br><a id="more"></a><br>1、class文件格式<br>2、数据的内部表示和存储<br>3、returnAddress 数据类型定义<br>4、invokedynamic<br>5、定义pc<br>6、堆、栈、方法区<br>7、 类型转化<br>8 、出栈入栈<br>9 、运算<br>10、流程控制<br>11、函数调用<br>12 对javaLibrary提供支持、反射、类加载、初始化类。安全、多线程、弱引用</p>
 <h1 id="运行时数据区的划分"><a href="#运行时数据区的划分" class="headerlink" title="运行时数据区的划分"></a>运行时数据区的划分</h1><ul>
 <li>程序计数器</li>
@@ -14,7 +91,7 @@
 <li>本地方法栈</li>
 <li>方法区</li>
 </ul>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
 <h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>　　一块较小的内存空间，他的作用可以看做是当前线程所执行的字节码的行号指示器。线程私有的内存区域，生命周期与线程相同。<br>　　如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址；如果正在执行的是native方法，则个计数器值则为空。<br>　　此内存区域是唯一一个在java虚拟机规范中没有任何OutOfMemoryError情况的区域。<br>　　Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多喝处理器老说是一个内核）都只会执行一条线程中的指令。为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的计数器。</p>
 <h2 id="JVM栈"><a href="#JVM栈" class="headerlink" title="JVM栈"></a>JVM栈</h2><p>　　栈上分配 ：小对象，不存在内存逃逸的情况下，直接分配在栈上。可以自动回收，减轻GC压力，大对象或者逃逸对象无法栈上分配 。内存逃逸指被多个线程共享。</p>
 <ul>
@@ -47,13 +124,13 @@
 </ul>
 <h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p> jdk1.4中nio被引入，目的是避免在java堆和native堆中来来回复制数据带来的性能损失。全局共享。</p>
 <h1 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h1><p>　　假设Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，这种分配方式成为“指针碰撞”。相对的分配方式成为“空闲列表”。<br>　　对象内存分配的同步：（1）采用CAS配上失败重试的方式保证更新操作的原子性（2）内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一块内存，本地线程缓冲（TLAB）。<br>　　对象头（Object Header）存放对象哈希码、对象的GC分代、类的元数据信息。</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
 <h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>　　对象头、实例数据、和对齐填充（Padding）。对象头包含两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等、这部分数据的长度在32位和64位，官方称它为Mark Word。25位存储哈希码、4位存储对象分代年龄、2位用于存储锁标志</p>
 <p>对象的访问定位</p>
 <p>（1）使用直接指针访问方式的最大好蠢就是速度更快，他节省了一次指针定位 的时间开销</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
 <p>（2）使用句柄</p>
-<img src="/2016/08/28/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
 <h1 id="Java反编译"><a href="#Java反编译" class="headerlink" title="Java反编译"></a>Java反编译</h1><p>javap -verbose Test01 反编译java字节码 查看java字节码</p>
 <h1 id="happen-before原则（指令重排原则）"><a href="#happen-before原则（指令重排原则）" class="headerlink" title="happen-before原则（指令重排原则）"></a>happen-before原则（指令重排原则）</h1><ul>
 <li>程序顺序原则：一个程序内保证语意的串行</li>
