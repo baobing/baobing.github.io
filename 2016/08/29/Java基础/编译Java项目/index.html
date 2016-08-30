@@ -1,0 +1,829 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="一直用Meavn编译打包应用。期间也断断续续了解过一些编译的命令，但是不是很系统尤其是对classpath概念的模糊，这一次写一篇文章记录一下自己的成果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译Java项目">
+<meta property="og:url" content="http://baobing.github.io/2016/08/29/Java基础/编译Java项目/index.html">
+<meta property="og:site_name" content="贝叶斯的智慧">
+<meta property="og:description" content="一直用Meavn编译打包应用。期间也断断续续了解过一些编译的命令，但是不是很系统尤其是对classpath概念的模糊，这一次写一篇文章记录一下自己的成果。">
+<meta property="og:updated_time" content="2016-08-30T03:03:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编译Java项目">
+<meta name="twitter:description" content="一直用Meavn编译打包应用。期间也断断续续了解过一些编译的命令，但是不是很系统尤其是对classpath概念的模糊，这一次写一篇文章记录一下自己的成果。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/08/29/Java基础/编译Java项目/"/>
+
+  <title> 编译Java项目 | 贝叶斯的智慧 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">贝叶斯的智慧</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                编译Java项目
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-29T23:12:57+08:00" content="2016-08-29">
+              2016-08-29
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Java基础/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/29/Java基础/编译Java项目/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/29/Java基础/编译Java项目/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一直用Meavn编译打包应用。期间也断断续续了解过一些编译的命令，但是不是很系统尤其是对classpath概念的模糊，这一次写一篇文章记录一下自己的成果。</p>
+<a id="more"></a>
+<p>参考的博客：</p>
+<blockquote>
+<p><a href="http://www.cnblogs.com/haolujun/archive/2013/03/02/2939698.html" target="_blank" rel="external">http://www.cnblogs.com/haolujun/archive/2013/03/02/2939698.html</a></p>
+</blockquote>
+<h1 id="javac命令（编译）"><a href="#javac命令（编译）" class="headerlink" title="javac命令（编译）"></a>javac命令（编译）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">用法: javac &lt;options&gt; &lt;source files&gt;</div><div class="line">其中, 可能的选项包括:</div><div class="line">  -g                         生成所有调试信息</div><div class="line">  -g:none                    不生成任何调试信息</div><div class="line">  -g:&#123;lines,vars,source&#125;     只生成某些调试信息</div><div class="line">  -nowarn                    不生成任何警告</div><div class="line">  -verbose                   输出有关编译器正在执行的操作的消息</div><div class="line">  -deprecation               输出使用已过时的 API 的源位置</div><div class="line">  -classpath &lt;路径&gt;            指定查找用户类文件和注释处理程序的位置</div><div class="line">  -cp &lt;路径&gt;                   指定查找用户类文件和注释处理程序的位置</div><div class="line">  -sourcepath &lt;路径&gt;           指定查找输入源文件的位置</div><div class="line">  -bootclasspath &lt;路径&gt;        覆盖引导类文件的位置</div><div class="line">  -extdirs &lt;目录&gt;              覆盖所安装扩展的位置</div><div class="line">  -endorseddirs &lt;目录&gt;         覆盖签名的标准路径的位置</div><div class="line">  -proc:&#123;none,only&#125;          控制是否执行注释处理和/或编译。</div><div class="line">  -processor &lt;class1&gt;[,&lt;class2&gt;,&lt;class3&gt;...] 要运行的注释处理程序的名称; 绕过默认的搜索进程</div><div class="line">  -processorpath &lt;路径&gt;        指定查找注释处理程序的位置</div><div class="line">  -parameters                生成元数据以用于方法参数的反射</div><div class="line">  -d &lt;目录&gt;                    指定放置生成的类文件的位置</div><div class="line">  -s &lt;目录&gt;                    指定放置生成的源文件的位置</div><div class="line">  -h &lt;目录&gt;                    指定放置生成的本机标头文件的位置</div><div class="line">  -implicit:&#123;none,class&#125;     指定是否为隐式引用文件生成类文件</div><div class="line">  -encoding &lt;编码&gt;             指定源文件使用的字符编码</div><div class="line">  -source &lt;发行版&gt;              提供与指定发行版的源兼容性</div><div class="line">  -target &lt;发行版&gt;              生成特定 VM 版本的类文件</div><div class="line">  -profile &lt;配置文件&gt;            请确保使用的 API 在指定的配置文件中可用</div><div class="line">  -version                   版本信息</div><div class="line">  -help                      输出标准选项的提要</div><div class="line">  -A关键字[=值]                  传递给注释处理程序的选项</div><div class="line">  -X                         输出非标准选项的提要</div><div class="line">  -J&lt;标记&gt;                     直接将 &lt;标记&gt; 传递给运行时系统</div><div class="line">  -Werror                    出现警告时终止编译</div><div class="line">  @&lt;文件名&gt;                     从文件读取选项和文件名</div></pre></td></tr></table></figure>
+<h1 id="java命令（运行）"><a href="#java命令（运行）" class="headerlink" title="java命令（运行）"></a>java命令（运行）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">用法: java [-options] class [args...]</div><div class="line">           (执行类)</div><div class="line">   或  java [-options] -jar jarfile [args...]</div><div class="line">           (执行 jar 文件)</div><div class="line">其中选项包括:</div><div class="line">    -d32	  使用 32 位数据模型 (如果可用)</div><div class="line">    -d64	  使用 64 位数据模型 (如果可用)</div><div class="line">    -server	  选择 &quot;server&quot; VM</div><div class="line">                  默认 VM 是 server,</div><div class="line">                  因为您是在服务器类计算机上运行。</div><div class="line"></div><div class="line">    -cp &lt;目录和 zip/jar 文件的类搜索路径&gt;</div><div class="line">    -classpath &lt;目录和 zip/jar 文件的类搜索路径&gt;</div><div class="line">                  用 : 分隔的目录, JAR 档案</div><div class="line">                  和 ZIP 档案列表, 用于搜索类文件。</div><div class="line">    -D&lt;名称&gt;=&lt;值&gt;</div><div class="line">                  设置系统属性</div><div class="line">    -verbose:[class|gc|jni]</div><div class="line">                  启用详细输出</div><div class="line">    -version      输出产品版本并退出</div><div class="line">    -version:&lt;值&gt;</div><div class="line">                  需要指定的版本才能运行</div><div class="line">    -showversion  输出产品版本并继续</div><div class="line">    -jre-restrict-search | -no-jre-restrict-search</div><div class="line">                  在版本搜索中包括/排除用户专用 JRE</div><div class="line">    -? -help      输出此帮助消息</div><div class="line">    -X            输出非标准选项的帮助</div><div class="line">    -ea[:&lt;packagename&gt;...|:&lt;classname&gt;]</div><div class="line">    -enableassertions[:&lt;packagename&gt;...|:&lt;classname&gt;]</div><div class="line">                  按指定的粒度启用断言</div><div class="line">    -da[:&lt;packagename&gt;...|:&lt;classname&gt;]</div><div class="line">    -disableassertions[:&lt;packagename&gt;...|:&lt;classname&gt;]</div><div class="line">                  禁用具有指定粒度的断言</div><div class="line">    -esa | -enablesystemassertions</div><div class="line">                  启用系统断言</div><div class="line">    -dsa | -disablesystemassertions</div><div class="line">                  禁用系统断言</div><div class="line">    -agentlib:&lt;libname&gt;[=&lt;选项&gt;]</div><div class="line">                  加载本机代理库 &lt;libname&gt;, 例如 -agentlib:hprof</div><div class="line">                  另请参阅 -agentlib:jdwp=help 和 -agentlib:hprof=help</div><div class="line">    -agentpath:&lt;pathname&gt;[=&lt;选项&gt;]</div><div class="line">                  按完整路径名加载本机代理库</div><div class="line">    -javaagent:&lt;jarpath&gt;[=&lt;选项&gt;]</div><div class="line">                  加载 Java 编程语言代理, 请参阅 java.lang.instrument</div><div class="line">    -splash:&lt;imagepath&gt;</div><div class="line">                  使用指定的图像显示启动屏幕</div></pre></td></tr></table></figure>
+<h1 id="jar命令（打包）"><a href="#jar命令（打包）" class="headerlink" title="jar命令（打包）"></a>jar命令（打包）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">用法: jar &#123;ctxui&#125;[vfmn0PMe] [jar-file] [manifest-file] [entry-point] [-C dir] files ...</div><div class="line">选项:</div><div class="line">    -c  创建新档案</div><div class="line">    -t  列出档案目录</div><div class="line">    -x  从档案中提取指定的 (或所有) 文件</div><div class="line">    -u  更新现有档案</div><div class="line">    -v  在标准输出中生成详细输出</div><div class="line">    -f  指定档案文件名</div><div class="line">    -m  包含指定清单文件中的清单信息</div><div class="line">    -n  创建新档案后执行 Pack200 规范化</div><div class="line">    -e  为捆绑到可执行 jar 文件的独立应用程序</div><div class="line">        指定应用程序入口点</div><div class="line">    -0  仅存储; 不使用任何 ZIP 压缩</div><div class="line">    -P  保留文件名中的前导 &apos;/&apos; (绝对路径) 和 &quot;..&quot; (父目录) 组件</div><div class="line">    -M  不创建条目的清单文件</div><div class="line">    -i  为指定的 jar 文件生成索引信息</div><div class="line">    -C  更改为指定的目录并包含以下文件</div></pre></td></tr></table></figure>
+<h1 id="编译最简单的应用"><a href="#编译最简单的应用" class="headerlink" title="编译最简单的应用"></a>编译最简单的应用</h1><h2 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test02--|---src---|---A.java--|</div></pre></td></tr></table></figure>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class A&#123;</div><div class="line">	public A()&#123;</div><div class="line">		System.out.println(&quot;I am A!&quot;);</div><div class="line">	&#125;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		new A();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="运行命令"><a href="#运行命令" class="headerlink" title="运行命令"></a>运行命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd java/test01/src</div><div class="line">javac A.java</div><div class="line">java A</div></pre></td></tr></table></figure>
+<h2 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">I am A!</div></pre></td></tr></table></figure>
+<h1 id="classpath"><a href="#classpath" class="headerlink" title="classpath"></a>classpath</h1><p>（1）要想成功编译java文件，需要有classpath和包名（package）的共同配合。</p>
+<p>类发现规则：class文件所在目录 = classpath + ‘\’ + 包名（包名中的’.’全变成’\’）</p>
+<p>这个规则大家一定要记住，保证万事OK！Java就是靠这个规则来寻找需要的class文件的。</p>
+<p>（2）何时需要使用-classpath：当你要编译或执行的类引用了其它的类，但被引用类的.class文件不在当前目录下时，就需要通过-classpath来引入类<br>（3）何时需要指定路径：当你要编译的类所在的目录和你执行javac命令的目录不是同一个目录时，就需要指定源文件的路径(CLASSPATH是用来指定.class路径的，不是用来指定.java文件的路径的) </p>
+<h1 id="引入package"><a href="#引入package" class="headerlink" title="引入package"></a>引入package</h1><h2 id="文件目录-1"><a href="#文件目录-1" class="headerlink" title="文件目录"></a>文件目录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">test03--|---src---|---com---|-baobing-|---A.java--|</div><div class="line">                  |--B.java-|</div></pre></td></tr></table></figure>
+<h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">package src.com.baobing;</div><div class="line">public class A&#123;</div><div class="line">    public  A()&#123;</div><div class="line">        System.out.println(&quot;I am A!&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">package src;</div><div class="line">import src.com.baobing.*;</div><div class="line">public class B&#123;</div><div class="line">    public B()&#123;</div><div class="line">        A a = new A();</div><div class="line">        System.out.println(&quot;I am B!&quot;);</div><div class="line">    &#125;</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new B();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="运行命令-1"><a href="#运行命令-1" class="headerlink" title="运行命令"></a>运行命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd ~/java/test02</div><div class="line">javac -cp  ~/java/test02 src/B.java</div><div class="line">java src.B</div></pre></td></tr></table></figure>
+<h2 id="输出结果-1"><a href="#输出结果-1" class="headerlink" title="输出结果"></a>输出结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">I am A!</div><div class="line">I am B!</div></pre></td></tr></table></figure>
+<p><strong><em>需要注意的是包名一定更要和文件目录一一对应。</em></strong> 否则会报错。<br>编译时给出正确的classpath和正确的包名，javac程序即可自动查找编译B.java依赖的A.java文件。</p>
+<h1 id="打JAR包"><a href="#打JAR包" class="headerlink" title="打JAR包"></a>打JAR包</h1><p>文件路径以及代码都与《引入package》环节的一致，就不赘述了。</p>
+<h2 id="运行命令-2"><a href="#运行命令-2" class="headerlink" title="运行命令"></a>运行命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd java/test03</div><div class="line">javac src/*.java</div><div class="line">jar cvf test03.jar src</div><div class="line">java -cp test03.jar src.B</div></pre></td></tr></table></figure>
+<h2 id="输出结果-2"><a href="#输出结果-2" class="headerlink" title="输出结果"></a>输出结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">I am A!</div><div class="line">I am B!</div></pre></td></tr></table></figure>
+<h1 id="引用jar包"><a href="#引用jar包" class="headerlink" title="引用jar包"></a>引用jar包</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">---test04--|---src---|---C.java--|</div><div class="line">           |---lib---|test03.jar-|</div></pre></td></tr></table></figure>
+<h1 id="代码-2"><a href="#代码-2" class="headerlink" title="代码"></a>代码</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">package src;</div><div class="line">import src.*;</div><div class="line">import src.com.baobing.*;</div><div class="line">public class C&#123;</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		new A();</div><div class="line">		System.out.println(&quot;------------------&quot;);</div><div class="line">		new B();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="运行命令-3"><a href="#运行命令-3" class="headerlink" title="运行命令"></a>运行命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cd java/test04</div><div class="line">javac -cp ./lib/test03.jar src/C.java</div><div class="line"># 因为是macos所以用:隔开，必须加上./，否则会报错。揣测是因为使用-cp</div><div class="line"># 就不能使用默认的classpath</div><div class="line">java -cp ./lib/test03.jar:./ src.C</div></pre></td></tr></table></figure>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">I am A!</div><div class="line">------------------</div><div class="line">I am A!</div><div class="line">I am B!</div></pre></td></tr></table></figure>
+<h1 id="可执行jar包"><a href="#可执行jar包" class="headerlink" title="可执行jar包"></a>可执行jar包</h1><h2 id="文件目录-2"><a href="#文件目录-2" class="headerlink" title="文件目录"></a>文件目录</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">test03--|---src-----|---com---|-baobing-|---A.java--|</div><div class="line">                    |--B.java-|</div><div class="line">        |MANIFEST.MF|</div></pre></td></tr></table></figure>
+<h2 id="代码-3"><a href="#代码-3" class="headerlink" title="代码"></a>代码</h2><p>A.java和B.java的代码与《引入package》环节的一致，不赘述。</p>
+<p>注意事项:Main-Class一定要是第一行，不知道原因<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Main-Class: src.B</div><div class="line">Manifest-Version: 1.0</div><div class="line">Created-By: 1.8.0_51 (Oracle Corporation)</div></pre></td></tr></table></figure></p>
+<h2 id="运行命令-4"><a href="#运行命令-4" class="headerlink" title="运行命令"></a>运行命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd java/test05</div><div class="line">jar cvfm test.jar MANIFEST.MF src/B.class src/com/baobing/A.class</div><div class="line">java -jar test.jar</div></pre></td></tr></table></figure>
+<h2 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">I am A!</div><div class="line">I am B!</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/29/JVM/JVM8-锁及优化/" rel="next" title="JVM8-锁及优化">
+                <i class="fa fa-chevron-left"></i> JVM8-锁及优化
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/08/29/Java基础/编译Java项目/"
+     data-title="编译Java项目"
+     data-content=""
+     data-url="http://baobing.github.io/2016/08/29/Java基础/编译Java项目/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/29/Java基础/编译Java项目/"
+           data-title="编译Java项目" data-url="http://baobing.github.io/2016/08/29/Java基础/编译Java项目/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#javac命令（编译）"><span class="nav-number">1.</span> <span class="nav-text">javac命令（编译）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java命令（运行）"><span class="nav-number">2.</span> <span class="nav-text">java命令（运行）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jar命令（打包）"><span class="nav-number">3.</span> <span class="nav-text">jar命令（打包）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译最简单的应用"><span class="nav-number">4.</span> <span class="nav-text">编译最简单的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件目录"><span class="nav-number">4.1.</span> <span class="nav-text">文件目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">4.2.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行命令"><span class="nav-number">4.3.</span> <span class="nav-text">运行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出结果"><span class="nav-number">4.4.</span> <span class="nav-text">输出结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#classpath"><span class="nav-number">5.</span> <span class="nav-text">classpath</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引入package"><span class="nav-number">6.</span> <span class="nav-text">引入package</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件目录-1"><span class="nav-number">6.1.</span> <span class="nav-text">文件目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码-1"><span class="nav-number">6.2.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行命令-1"><span class="nav-number">6.3.</span> <span class="nav-text">运行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出结果-1"><span class="nav-number">6.4.</span> <span class="nav-text">输出结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#打JAR包"><span class="nav-number">7.</span> <span class="nav-text">打JAR包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行命令-2"><span class="nav-number">7.1.</span> <span class="nav-text">运行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出结果-2"><span class="nav-number">7.2.</span> <span class="nav-text">输出结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引用jar包"><span class="nav-number">8.</span> <span class="nav-text">引用jar包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码-2"><span class="nav-number">9.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行命令-3"><span class="nav-number">10.</span> <span class="nav-text">运行命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#运行结果"><span class="nav-number">10.1.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可执行jar包"><span class="nav-number">11.</span> <span class="nav-text">可执行jar包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件目录-2"><span class="nav-number">11.1.</span> <span class="nav-text">文件目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码-3"><span class="nav-number">11.2.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行命令-4"><span class="nav-number">11.3.</span> <span class="nav-text">运行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出"><span class="nav-number">11.4.</span> <span class="nav-text">输出</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
