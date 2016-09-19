@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://baobing.github.io/2016/09/19/JVM/JVM命令-instanceof/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="instanceof是Java反射编程中经常用到的关键字。instanceof关键字作用是验证一个Java实例是否属于某个特定的类或者接口。">
-<meta property="og:updated_time" content="2016-09-19T14:51:24.000Z">
+<meta property="og:updated_time" content="2016-09-19T14:58:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM命令-instanceof">
 <meta name="twitter:description" content="instanceof是Java反射编程中经常用到的关键字。instanceof关键字作用是验证一个Java实例是否属于某个特定的类或者接口。">
@@ -359,8 +359,8 @@
 </li>
 <li><p>如果S属于数组类型SC[],S是一个SC类型的组件，则</p>
 <ul>
-<li>如果T是类类型，则T必须是Object类型。</li>
-<li>如果T是接口类型，然后T必须是数组类型的一元</li>
+<li>如果T是普通类类型，则T必须是Object类型。</li>
+<li>如果T是接口类型，然后T必须是通过数组实现的接口之一</li>
 <li>如果T是一个数据类型TC[],是TC类型数组的组件，则必须符合下面中的一个：<ul>
 <li>TC和SC是相同的原始类型</li>
 <li>TC和SC是相容的引用类型，并且在运行时规则下，类型SC能够映射为TC</li>
