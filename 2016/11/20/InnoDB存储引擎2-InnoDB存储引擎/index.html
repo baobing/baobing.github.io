@@ -1,0 +1,874 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="InnoDB," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="InnoDB存储引擎的版本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InnoDB存储引擎2-InnoDB存储引擎">
+<meta property="og:url" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/index.html">
+<meta property="og:site_name" content="贝叶斯的智慧">
+<meta property="og:description" content="InnoDB存储引擎的版本">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-1.png">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-1-1.png">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-2.png">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-2-1.png">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-3.png">
+<meta property="og:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-5.png">
+<meta property="og:updated_time" content="2016-11-20T05:38:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="InnoDB存储引擎2-InnoDB存储引擎">
+<meta name="twitter:description" content="InnoDB存储引擎的版本">
+<meta name="twitter:image" content="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/"/>
+
+  <title> InnoDB存储引擎2-InnoDB存储引擎 | 贝叶斯的智慧 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">贝叶斯的智慧</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                InnoDB存储引擎2-InnoDB存储引擎
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-20T13:32:04+08:00" content="2016-11-20">
+              2016-11-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/DataBase/" itemprop="url" rel="index">
+                    <span itemprop="name">DataBase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="InnoDB存储引擎的版本"><a href="#InnoDB存储引擎的版本" class="headerlink" title="InnoDB存储引擎的版本"></a>InnoDB存储引擎的版本</h1><a id="more"></a>
+<img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-1.png" alt="2-1" title="2-1">
+<p>Mysql5.5 InnoDB1.1.X<br>Mysql5.6 InnoDB1.2X</p>
+<h1 id="InnoDb体系架构"><a href="#InnoDb体系架构" class="headerlink" title="InnoDb体系架构"></a>InnoDb体系架构</h1> <img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-1-1.png" alt="2-1-1" title="2-1-1">
+<h2 id="后台线程"><a href="#后台线程" class="headerlink" title="后台线程"></a>后台线程</h2><ul>
+<li>Master线程：缓冲池中的数据异步刷新到磁盘，保证数据的一致性，包括脏页的刷新、合并插入缓冲、undo页的回收。</li>
+<li>IO线程：InnoDB存储引擎中大量使用AIO。IO线程主要工作是负责这些IO请求的回调</li>
+<li>Purge线程：回收已经使用并分配的undo页。InnoDb1.1开始引入。</li>
+<li>Page Cleaner Thread线程：脏页刷新操作。InnoDB1.2开始引入。<h2 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h2><h3 id="缓冲池"><a href="#缓冲池" class="headerlink" title="缓冲池"></a>缓冲池</h3>一共八种，分为Mysql缓冲和InnoDB缓冲<br>·<img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-2.png" alt="2-2" title="2-2"><h3 id="LRU-List、Free-List和FlushList"><a href="#LRU-List、Free-List和FlushList" class="headerlink" title="LRU List、Free List和FlushList"></a>LRU List、Free List和FlushList</h3>LRU：最近最久未使用，局部性原理。将页放到队首，查重。改进将选中页防止队列5/8处<br>LFU：基于次数。<br>优化点：</li>
+<li>设置midpoint；</li>
+<li>设置命中页到达热端的命中次数；</li>
+<li>设置热点页被刷出的概率；</li>
+<li>show engine innodb status; innodb_buffer_pool_stats表。查看LUR、FreeList、命中率 等内存使用信息<br>unzip_LRU：管理压缩后的页，页的默认大小为16KB<br>伙伴算法：（申请4KB页为例）</li>
+<li>检查4DB的unzip_LRU列表，减产是否与可用的空闲页</li>
+<li>若有直接使用</li>
+<li>否则，检查8KBunzip_LRU列表</li>
+<li>若能够得到空闲页，将页分成2个4KB页，存放到4KB的unzip_LRU列表</li>
+<li>如不能得到空闲页，将LRU列表申请一个16KB的页，将页分为1个8KB的页和2个4KB的页<br>Flush列表 保存脏页，同时脏页也保存在LRU列表中<h3 id="重做日志缓冲"><a href="#重做日志缓冲" class="headerlink" title="重做日志缓冲"></a>重做日志缓冲</h3>InnoDB存储引擎首先将重做日志信息放入到这个缓冲区，然后按一定频率将其刷新到重做日志文件。<br>重做日志刷新到磁盘时机：</li>
+<li>Master线程每一秒刷新一次</li>
+<li>每个事务提交时会刷新</li>
+<li>重做日志缓冲池空间小于1/2时<h3 id="额外内存池"><a href="#额外内存池" class="headerlink" title="额外内存池"></a>额外内存池</h3>InnoDB中，对内存的管理通过一个称为内存堆的方式进行。在对一些数据结构本身的内存进行分配时，需要从额外的内存池中进行申请，当该区域的内存不够时，会从缓冲池中进行申请。<h1 id="CheckPoint技术"><a href="#CheckPoint技术" class="headerlink" title="CheckPoint技术"></a>CheckPoint技术</h1>将脏页强制刷新到磁盘。解决问题：</li>
+<li>缩短数据库恢复时间</li>
+<li>缓冲池不够用时，将脏页刷新到磁盘</li>
+<li>重做日志不可用时，刷新脏页<br>InnoDB通过LSN来标志版本，LSN是8字节的数字。每个页有LSN，重做日志中也有LSN，Checkpoint也有LSN。<br>Sharp Checkpoint：<br>默认工作方式，数据库关闭时将所有脏页刷新到磁盘<br>Fuzzy Checkpoint：刷新时机</li>
+<li>间隔一段 时间刷新</li>
+<li>更新LRU列表刷新，被移除队列的页</li>
+<li>重做日志文件不可用，循环使用重做日志文件。P35？？？</li>
+<li>脏页太多 默认75页</li>
+</ul>
+<h1 id="Master-工作方式-P36"><a href="#Master-工作方式-P36" class="headerlink" title="Master 工作方式 P36"></a>Master 工作方式 P36</h1><h2 id="InnoDB-1-1"><a href="#InnoDB-1-1" class="headerlink" title="InnoDB 1.1"></a>InnoDB 1.1</h2><p>**磁盘操作会考虑IO的使用情况<br>每一秒的操作：</p>
+<ul>
+<li>日志缓冲刷新到磁盘，即使这个事务还没有提交 （总是）</li>
+<li>合并插入缓冲（可能）</li>
+<li>至多刷新100个脏页到磁盘</li>
+<li>没有用户活动切换到backgroud loop<br>没十秒的操作：</li>
+<li>刷新100个脏页到磁盘</li>
+<li>合并至多5个插入缓冲（总是）</li>
+<li>删除无用的Undo页（总是）</li>
+<li>将日志缓冲刷新到磁盘（总是）<br>刷新100个或者10 个脏页到磁盘（总是）<br>backgroud loop 操作 没有用户活动或者关闭数据库</li>
+<li>删除无用undo页</li>
+<li>合并20个插入缓冲</li>
+<li>跳回到主循环</li>
+</ul>
+<h1 id="InnoDB关键特性"><a href="#InnoDB关键特性" class="headerlink" title="InnoDB关键特性"></a>InnoDB关键特性</h1><h2 id="插入缓冲"><a href="#插入缓冲" class="headerlink" title="插入缓冲"></a>插入缓冲</h2><p>背景：辅助索引插入的值不是单调递增或者单调递减。<br>操作：对于非聚集索引的插入或者更新操作，不是每一次直接插入到索引页，而是先判断插入的非聚集索引页是否在缓冲池中，若在，则直接插入；若不在，则先放入到一个InsertBuffer对象中，好似欺骗。然后再以一定的频率和情况进行Insert Buffer和辅助索引叶子节点的mege操作。<br>使用范围：辅助索引，索引不是唯一的</p>
+<h2 id="Chage-Buffer"><a href="#Chage-Buffer" class="headerlink" title="Chage Buffer"></a>Chage Buffer</h2><p>Insert、Delete、Update都进行缓冲，可以设置启用或禁止其中的某项。</p>
+<h2 id="Insert-Buffer的内部实现-P51"><a href="#Insert-Buffer的内部实现-P51" class="headerlink" title="Insert Buffer的内部实现 P51"></a>Insert Buffer的内部实现 P51</h2><p>InsertBuffer 数据结构是一颗B+树。全局一个B+树，这颗B+树放在表空间中，默认是ibdata1中。<br><img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-2-1.png" alt="2-2-1" title="2-2-1"><br> space 表示 表空间id<br>offerset 表示页所在的偏移量<br>metadata 排序呢每个记录进入InsertBuffer的顺序<br>Insert Buffer BitMap 用来标记每个辅助索引页的可用空间。<br><img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-3.png" alt="2-3" title="2-3"></p>
+<h2 id="两次写"><a href="#两次写" class="headerlink" title="两次写"></a>两次写</h2><p>重做日志中记录的是对页的物理操作，如偏移量800写‘aaaa’记录。如果这个页本身已经发生了损坏，在对其进行重做是没有意义的。这就是说，在应用重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。<br>doublewrite由两部分组成，一部分是内存中doublewrite buffer，大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即两个区，大小同样为2MB。在对缓冲池的脏页进行刷新时，通过memcpy函数将脏页先复制到内存doublewrite buffer，之后分两次，每次1MB顺序写入共享表空间的磁盘上，然后调用fsync函数，同步磁盘，避免缓冲写带来的问题。<br><img src="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/2-5.png" alt="2-5" title="2-5"></p>
+<h2 id="自适应哈希索引"><a href="#自适应哈希索引" class="headerlink" title="自适应哈希索引"></a>自适应哈希索引</h2><p>访问模式一样。以该模式访问100次，页通过该模式放了N次，页中记录/16.</p>
+<h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><h2 id="刷新临近页"><a href="#刷新临近页" class="headerlink" title="刷新临近页"></a>刷新临近页</h2><h1 id="启动、关闭和恢复"><a href="#启动、关闭和恢复" class="headerlink" title="启动、关闭和恢复"></a>启动、关闭和恢复</h1><h1 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h1><ul>
+<li>show engine innodb status； 查看innodb的状态信息</li>
+<li>show variables like ‘%version%’；可以查看mysql和innodb的版本信息</li>
+<li>innodb_file_io_thread 设置IO线程数量 innodb_read_io_thread;innodb_write_io_thread</li>
+<li>innodb_purge_threads 设置purge线程数量</li>
+<li>innodb_buffer_pool_size;缓冲池大小</li>
+<li>innndb_buffer_pool_instances;InnoDB缓冲池数量;</li>
+<li>数据表innodb_buffer_pool_stats保存innoDB相关信息</li>
+<li>innodb_old_blocks_time  页读取到mid位置后需要等待多久才会被加入到LRU的热端</li>
+<li>innodb_buffer_page_lru表 查看LUR列表的信息</li>
+<li>innodb_log_buffer_size 重做</li>
+<li>innodb_lru_scan_depth LRU队列中可用页数量</li>
+<li>innodb_lru_scan_depth LRU队列中空闲页的最小数值 默认1024</li>
+<li>innodb_max_dirty_pages_pct 最大脏页数量，否则刷新会磁盘</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/InnoDB/" rel="tag">#InnoDB</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/" rel="next" title="nnoDB存储引擎1——Mysql体系结构和存储引擎">
+                <i class="fa fa-chevron-left"></i> nnoDB存储引擎1——Mysql体系结构和存储引擎
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/20/InnoDB存储引擎3-文件/" rel="prev" title="InnoDB存储引擎3-文件">
+                InnoDB存储引擎3-文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/"
+     data-title="InnoDB存储引擎2-InnoDB存储引擎"
+     data-content=""
+     data-url="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/"
+           data-title="InnoDB存储引擎2-InnoDB存储引擎" data-url="http://baobing.github.io/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://img2.imgtn.bdimg.com/it/u=3376872335,1228806199&fm=23&gp=0.jpg"
+               alt="Baobing" />
+          <p class="site-author-name" itemprop="name">Baobing</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDB存储引擎的版本"><span class="nav-number">1.</span> <span class="nav-text">InnoDB存储引擎的版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDb体系架构"><span class="nav-number">2.</span> <span class="nav-text">InnoDb体系架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#后台线程"><span class="nav-number">2.1.</span> <span class="nav-text">后台线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存"><span class="nav-number">2.2.</span> <span class="nav-text">内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲池"><span class="nav-number">2.2.1.</span> <span class="nav-text">缓冲池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LRU-List、Free-List和FlushList"><span class="nav-number">2.2.2.</span> <span class="nav-text">LRU List、Free List和FlushList</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重做日志缓冲"><span class="nav-number">2.2.3.</span> <span class="nav-text">重做日志缓冲</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#额外内存池"><span class="nav-number">2.2.4.</span> <span class="nav-text">额外内存池</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CheckPoint技术"><span class="nav-number">3.</span> <span class="nav-text">CheckPoint技术</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master-工作方式-P36"><span class="nav-number">4.</span> <span class="nav-text">Master 工作方式 P36</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB-1-1"><span class="nav-number">4.1.</span> <span class="nav-text">InnoDB 1.1</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#InnoDB关键特性"><span class="nav-number">5.</span> <span class="nav-text">InnoDB关键特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#插入缓冲"><span class="nav-number">5.1.</span> <span class="nav-text">插入缓冲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Chage-Buffer"><span class="nav-number">5.2.</span> <span class="nav-text">Chage Buffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert-Buffer的内部实现-P51"><span class="nav-number">5.3.</span> <span class="nav-text">Insert Buffer的内部实现 P51</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两次写"><span class="nav-number">5.4.</span> <span class="nav-text">两次写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自适应哈希索引"><span class="nav-number">5.5.</span> <span class="nav-text">自适应哈希索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步IO"><span class="nav-number">5.6.</span> <span class="nav-text">异步IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刷新临近页"><span class="nav-number">5.7.</span> <span class="nav-text">刷新临近页</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动、关闭和恢复"><span class="nav-number">6.</span> <span class="nav-text">启动、关闭和恢复</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL"><span class="nav-number">7.</span> <span class="nav-text">SQL</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Baobing</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"baobing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
