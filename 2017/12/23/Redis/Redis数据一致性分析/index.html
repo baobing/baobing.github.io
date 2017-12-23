@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="InnoDB," />
+  <meta name="keywords" content="数据一致性," />
 
 
 
@@ -84,21 +84,18 @@
 
 
 
-<meta name="description" content="Mysql体系结构">
-<meta name="keywords" content="InnoDB">
+<meta name="description" content="提要Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是他有明显的短板，那就是无法保证数据的强一致性。如果你对数据一致性要求不高，完全可以考虑使用Redis存放一些业务数据。接下来我将列举一些Redis的优势,最后再聊聊Redis数据一致性。">
+<meta name="keywords" content="数据一致性">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nnoDB存储引擎1——Mysql体系结构和存储引擎">
-<meta property="og:url" content="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/index.html">
+<meta property="og:title" content="Redis数据一致性分析">
+<meta property="og:url" content="http://baobing.github.io/2017/12/23/Redis/Redis数据一致性分析/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
-<meta property="og:description" content="Mysql体系结构">
+<meta property="og:description" content="提要Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是他有明显的短板，那就是无法保证数据的强一致性。如果你对数据一致性要求不高，完全可以考虑使用Redis存放一些业务数据。接下来我将列举一些Redis的优势,最后再聊聊Redis数据一致性。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/1-1.png">
-<meta property="og:image" content="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/1-2.png">
-<meta property="og:updated_time" content="2016-11-20T05:02:13.000Z">
+<meta property="og:updated_time" content="2017-12-23T01:53:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="nnoDB存储引擎1——Mysql体系结构和存储引擎">
-<meta name="twitter:description" content="Mysql体系结构">
-<meta name="twitter:image" content="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/1-1.png">
+<meta name="twitter:title" content="Redis数据一致性分析">
+<meta name="twitter:description" content="提要Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是他有明显的短板，那就是无法保证数据的强一致性。如果你对数据一致性要求不高，完全可以考虑使用Redis存放一些业务数据。接下来我将列举一些Redis的优势,最后再聊聊Redis数据一致性。">
 
 
 
@@ -119,9 +116,9 @@
 
 
 
-  <link rel="canonical" href="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/"/>
+  <link rel="canonical" href="http://baobing.github.io/2017/12/23/Redis/Redis数据一致性分析/"/>
 
-  <title> nnoDB存储引擎1——Mysql体系结构和存储引擎 | 贝叶斯的智慧 </title>
+  <title> Redis数据一致性分析 | 贝叶斯的智慧 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -274,7 +271,7 @@
             
             
               
-                nnoDB存储引擎1——Mysql体系结构和存储引擎
+                Redis数据一致性分析
               
             
           </h1>
@@ -286,19 +283,38 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-11-20T12:53:59+08:00" content="2016-11-20">
-              2016-11-20
+            <time itemprop="dateCreated" datetime="2017-12-23T09:39:35+08:00" content="2017-12-23">
+              2017-12-23
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/" itemprop="commentsCount"></span>
+                <a href="/2017/12/23/Redis/Redis数据一致性分析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/23/Redis/Redis数据一致性分析/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -321,55 +337,34 @@
       
 
       
-        <h1 id="Mysql体系结构"><a href="#Mysql体系结构" class="headerlink" title="Mysql体系结构"></a>Mysql体系结构</h1><a id="more"></a>
-<img src="/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/1-1.png" title="1-1">
+        <h1 id="提要"><a href="#提要" class="headerlink" title="提要"></a>提要</h1><p>Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是他有明显的短板，那就是<strong><em>无法保证数据的强一致性</em></strong>。如果你对数据一致性要求不高，完全可以考虑使用Redis存放一些业务数据。接下来我将列举一些Redis的优势,最后再聊聊Redis数据一致性。<br><a id="more"></a></p>
+<h1 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h1><h3 id="定制化的数据结构"><a href="#定制化的数据结构" class="headerlink" title="定制化的数据结构"></a>定制化的数据结构</h3><p><strong>字符串(SDS)</strong>：</p>
 <ul>
-<li>连接池组件：授权，线程重用，链接限制，内存检查</li>
-<li>管理服务和工具组件： 备份，恢复，安全，复制，集群，管理权限配置，迁移</li>
-<li>SQL接口组件：DML，DDL，存储过程视图，触发器</li>
-<li>查询分析组件：查询翻译</li>
-<li>优化器组件：访问路径，数据统计</li>
-<li>缓冲组件：全局缓冲 或者 指定引擎缓冲</li>
-<li>插件式存储引擎</li>
-<li>物理文件</li>
+<li>保存字符串长度，O(1)复杂度查询长度；</li>
+<li>字符串操作拼接操作不会带来数组越界异常；</li>
+<li>修改字符串不需要重新分配内存空间；</li>
+<li>可以保存二进制数据;</li>
 </ul>
-<h1 id="各存储引擎之间的比较"><a href="#各存储引擎之间的比较" class="headerlink" title="各存储引擎之间的比较"></a>各存储引擎之间的比较</h1><img src="/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/1-2.png" title="1-2">
-<h2 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h2><ul>
-<li>面向在线事务处理的应用OLTP</li>
-<li>行级锁</li>
-<li>外键</li>
+<p><strong>跳跃表(skip list)</strong>：顺序链表。实现简单，查找快速，平均操作复杂度O(logN)。<br><strong>字典(dict)</strong>：等同于Map。渐进式Rehash。优雅地实现扩容，减少扩容带来的阻塞。<br><strong>压缩列表(ziplist)</strong>：使用二进制方式保存字符串和整数，节省内存。</p>
+<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>Redis根据操作系统的选择合适的IO模型，其中最让人称道的是Epoll支撑下的事件驱动模型(Reactor模型)。Epoll可以支持大量的链接（理论上线是INT类型的最大值），并O(1)复杂度通知用户IO事件。这两点为Redis高并发打下了坚实的基础。</p>
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>Redis的操作都是线程安全的，大部分用户操作都是原子的。原因很简单，Redis是单线程模型。即使不得不在其他线程完成的工作(比如说RDB、AOF重写)，它选择使用子进程进行处理（子进程拷贝父进程数据），</p>
+<h3 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h3><p>Redis3.0之后提供Redis Cluster功能，配合redis-trib工具，使用者可以轻松搭建一个Redis集群。Redis集群支持动态扩容缩容，支持主从互备，支持自动地故障转移。</p>
+<h1 id="数据一致性分析"><a href="#数据一致性分析" class="headerlink" title="数据一致性分析"></a>数据一致性分析</h1><p>数据一致性，Redis要么明确告知客户端请求失败，要么正确响应客户端请求并且持久化结果。需要</p>
+<h2 id="单机持久化"><a href="#单机持久化" class="headerlink" title="单机持久化"></a>单机持久化</h2><p>Redis提供两种持久化方式分别是：RDB和AOF。需要说明的一点是<strong><em>写入文件并不代表持久化成功，还需要将文件同步到磁盘。</em></strong></p>
+<h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><p>RDB指的是Redis将内存中的所有数据持久化到磁盘。这就注定RDB只能在一定间隔的情况执行。我们可以通过配置间隔固定的时间或者固定次数的修改后进行持久化。当然我们也可以通过执行SAVE或者BGSAVE显示的持久化数据。显而易见，以上方式总是无法避免最新的数据无法持久化。</p>
+<h3 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h3><p>AOF指的是Redis记录所有的写操作命令，并且持久化。AOF持久化有三个级别</p>
+<ul>
+<li><strong>no</strong>AOF文件同步交给操作系统决定;</li>
+<li><strong>everysec</strong>每隔一秒执行一次文件同步；</li>
+<li><strong>always</strong>写入文件立即同步。</li>
 </ul>
-<h2 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h2><ul>
-<li>不支持事务</li>
-<li>表锁</li>
-<li>支持全文索引</li>
-<li>在线分析数据库OLAP</li>
-<li>缓冲池只缓存索引文件</li>
-<li>MYD存放数据MYI存放索引</li>
-</ul>
-<h2 id="NDB"><a href="#NDB" class="headerlink" title="NDB"></a>NDB</h2><ul>
-<li>集群</li>
-<li>内存数据库</li>
-<li>JOIN操作在数据库层完成，效率低</li>
-</ul>
-<h2 id="Memory"><a href="#Memory" class="headerlink" title="Memory"></a>Memory</h2><ul>
-<li>内存数据库</li>
-<li>无磁盘持久，丢了就完蛋了</li>
-<li>默认Hash索引</li>
-<li>表锁</li>
-<li>不支持Text，Bolg</li>
-</ul>
-<h2 id="Archive"><a href="#Archive" class="headerlink" title="Archive"></a>Archive</h2><ul>
-<li>只支持insert和select操作</li>
-<li>行锁</li>
-<li>使用zlib算法将数据行压缩存储</li>
-</ul>
-<h1 id="链接Mysql"><a href="#链接Mysql" class="headerlink" title="链接Mysql"></a>链接Mysql</h1><h2 id="TCP-IP"><a href="#TCP-IP" class="headerlink" title="TCP/IP"></a>TCP/IP</h2><h2 id="命名管道和共享内存"><a href="#命名管道和共享内存" class="headerlink" title="命名管道和共享内存"></a>命名管道和共享内存</h2><p>windows系列使用<br>启用配置文件中启用–enable-named-pipe选项。<br>连接时，客户端需要使用–protocol=memory。</p>
-<h2 id="Unix域套接字"><a href="#Unix域套接字" class="headerlink" title="Unix域套接字"></a>Unix域套接字</h2><p>配置文件中指定套接字文件的路径。<br>mysql -u用户名 -s 套接字文件路径</p>
-<h1 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h1><ul>
-<li>show engine; 参看所有存储引擎</li>
-<li>use mysql;select * from user; 查看mysql用户</li>
-</ul>
+<p>虽然always级别最消耗性能，但是他似乎能够保证数据的一致性。不幸的是，这样也不能保证数据绝对的一致性。原因如下：<br>1.无法以事务的形式写AOF文件和执行写操作。一旦机器在写AOF文件和执行写操作中间的某一时刻崩溃，都会导致数据的不一致性。Mysql使用二阶段提交解决这个问题<br>2.文件同步到磁盘过程并非原子操作。mysql同步两次写解决这个问题。</p>
+<h2 id="主从数据一致性"><a href="#主从数据一致性" class="headerlink" title="主从数据一致性"></a>主从数据一致性</h2><p>Redis支持主从互备，自动地故障转移。如果主从之间能够保证数据一致性，那我们也不需要担心持久化造成的数据不一致。不幸的是主从互备并不能保证数据一致性。</p>
+<ol>
+<li>宕机。虽然多台机器同时宕机的概率极低，当时我们不能忽略这种可能(墨菲定律)。</li>
+<li>网络故障。主服务器主动将所有写操作发给从服务器。出现网络通信不畅，就会出现主从不同步。即使网络恢复正常，主服务器也不会将从服务器未接收到的命令发给从服务器。Mysql主从通过从服务器发送确认信号的方式确保主从一致。</li>
+<li>过期Key。从服务器不会主动删除过期Key。即使我们访问从服务期的过期Key，从服务器还是不会删除过期Key或者返回空，而是将过期key返回给客户端。<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>Rdis一款优秀的缓存中间件。Redis的短板在于它无法保证数据的强一致性。如果您的业务场景对数据一致性要求很高，请不要把Redis当做DB使用。</li>
+</ol>
 
       
     </div>
@@ -392,7 +387,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/InnoDB/" rel="tag">#InnoDB</a>
+            <a href="/tags/数据一致性/" rel="tag">#数据一致性</a>
           
         </div>
       
@@ -401,17 +396,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/09/19/JVM/JVM命令-instanceof/" rel="next" title="JVM命令-instanceof">
-                <i class="fa fa-chevron-left"></i> JVM命令-instanceof
+              <a href="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/" rel="next" title="InnoDB存储引擎5-索引与算法">
+                <i class="fa fa-chevron-left"></i> InnoDB存储引擎5-索引与算法
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/11/20/数据库/InnoDB存储引擎2-InnoDB存储引擎/" rel="prev" title="InnoDB存储引擎2-InnoDB存储引擎">
-                InnoDB存储引擎2-InnoDB存储引擎 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -426,10 +417,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/"
-     data-title="nnoDB存储引擎1——Mysql体系结构和存储引擎"
+        <div class="ds-share flat" data-thread-key="2017/12/23/Redis/Redis数据一致性分析/"
+     data-title="Redis数据一致性分析"
      data-content=""
-     data-url="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/">
+     data-url="http://baobing.github.io/2017/12/23/Redis/Redis数据一致性分析/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -456,8 +447,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/"
-           data-title="nnoDB存储引擎1——Mysql体系结构和存储引擎" data-url="http://baobing.github.io/2016/11/20/数据库/InnoDB存储引擎1—Mysql体系结构和存储引擎/">
+      <div class="ds-thread" data-thread-key="2017/12/23/Redis/Redis数据一致性分析/"
+           data-title="Redis数据一致性分析" data-url="http://baobing.github.io/2017/12/23/Redis/Redis数据一致性分析/">
       </div>
     
   </div>
@@ -548,7 +539,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql体系结构"><span class="nav-number">1.</span> <span class="nav-text">Mysql体系结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#各存储引擎之间的比较"><span class="nav-number">2.</span> <span class="nav-text">各存储引擎之间的比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB存储引擎"><span class="nav-number">2.1.</span> <span class="nav-text">InnoDB存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MyISAM"><span class="nav-number">2.2.</span> <span class="nav-text">MyISAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NDB"><span class="nav-number">2.3.</span> <span class="nav-text">NDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory"><span class="nav-number">2.4.</span> <span class="nav-text">Memory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Archive"><span class="nav-number">2.5.</span> <span class="nav-text">Archive</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#链接Mysql"><span class="nav-number">3.</span> <span class="nav-text">链接Mysql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-IP"><span class="nav-number">3.1.</span> <span class="nav-text">TCP/IP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命名管道和共享内存"><span class="nav-number">3.2.</span> <span class="nav-text">命名管道和共享内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Unix域套接字"><span class="nav-number">3.3.</span> <span class="nav-text">Unix域套接字</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL"><span class="nav-number">4.</span> <span class="nav-text">SQL</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#提要"><span class="nav-number">1.</span> <span class="nav-text">提要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#优势"><span class="nav-number">2.</span> <span class="nav-text">优势</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定制化的数据结构"><span class="nav-number">2.0.1.</span> <span class="nav-text">定制化的数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高并发"><span class="nav-number">2.0.2.</span> <span class="nav-text">高并发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程安全"><span class="nav-number">2.1.</span> <span class="nav-text">线程安全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#集群"><span class="nav-number">2.1.1.</span> <span class="nav-text">集群</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据一致性分析"><span class="nav-number">3.</span> <span class="nav-text">数据一致性分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单机持久化"><span class="nav-number">3.1.</span> <span class="nav-text">单机持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB"><span class="nav-number">3.1.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF"><span class="nav-number">3.1.2.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主从数据一致性"><span class="nav-number">3.2.</span> <span class="nav-text">主从数据一致性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
           </div>
         </section>
