@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="线程安全">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM8-锁及优化">
 <meta property="og:url" content="http://baobing.github.io/2016/08/29/JVM/JVM8-锁及优化/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="线程安全">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2016-08-29T02:48:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM8-锁及优化">
@@ -340,7 +342,7 @@
 <h1 id="对象头Mark"><a href="#对象头Mark" class="headerlink" title="对象头Mark"></a>对象头Mark</h1><p>描述对象的hash、锁信息，垃圾回收标记，年龄<br>指向锁记录的指针；指向monitor的指针 ；GC标记；偏向锁线程ID；</p>
 <h1 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h1><p>应用场景：大部分情况是没有竞争的情况，可以铜鼓哦偏向来提高性能；<br>锁偏向当前已经占有锁的线程。<br>将对象Mark的标记设置为偏向，并将线程ID写入对象头mark<br>只要没有竞争，获得偏向锁的线程，在将来进入同步块，不需要做同步<br>当其他线程请求相同的锁时，偏向模式结束<br>-XX：+UseBiaseLocking 默认启用；<br>-XX：BiasedLockingStartupDelay = 0；<br>-XX：-UseBiasedLocking 不启用偏向锁<br>竞争激烈的场合，不使用；<br>默认撑起刚开始不使用偏向锁，刚开始竞争比较激烈</p>
 <h1 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h1><p>BacicObjectLock 嵌入在线程栈中的对象 。<br>包含两部分：BasicLock 对象头；指向持有本锁的对象的指针；<br>普通锁的处理性能不理想<br> 如果对象没有被锁定，将对象头的mark指针保存到锁对象中，将对象头设置为指向锁的指针。<br>对象头的指的方向是否在线程的内存区域中，说明线程持有锁。<br>具体代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">lock.set_displaecd_header(mark);</div><div class="line">if(mark == (markOop) Atomic::cmpxchg_ptr(lock,obj()-&gt;mark_addr(),mark))&#123;</div><div class="line">     TEVENT(slow_enter:release stacklock);</div><div class="line">     return ;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lock.set_displaecd_header(mark);</span><br><span class="line">if(mark == (markOop) Atomic::cmpxchg_ptr(lock,obj()-&gt;mark_addr(),mark))&#123;</span><br><span class="line">     TEVENT(slow_enter:release stacklock);</span><br><span class="line">     return ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如果轻量级锁失败表示存在竞争，升级为重量级锁（常规锁）<br>在没有锁竞争的前提下，减少传统锁使用OS互斥产生的性能损耗；</p>
 <h1 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h1><p>空循环，等待锁。<br>如果线程可以很快获得锁，name可以不再os层挂起线程，让线程做几个空操作（自选）<br>如果同步块很长，自选失败，会降低系统性能<br>如果同步快很短，自选成功，节省线程挂起切换时间，提升系统性能</p>
 <h1 id="JVM获取锁的步骤"><a href="#JVM获取锁的步骤" class="headerlink" title="JVM获取锁的步骤"></a>JVM获取锁的步骤</h1><p>偏向锁可用先会尝试偏向锁。<br>轻量级锁可用胡先尝试轻量级锁<br>以上都失败，尝试自旋锁<br>再失败，尝试普通锁，使用os互斥量在操作系统层挂起</p>
@@ -481,7 +483,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -489,7 +491,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -546,7 +548,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

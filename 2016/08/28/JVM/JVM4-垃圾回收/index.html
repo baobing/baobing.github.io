@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="垃圾判定引用计数算法循环引用 每次都要技术影响性能">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM4-垃圾回收">
 <meta property="og:url" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="垃圾判定引用计数算法循环引用 每次都要技术影响性能">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/pic1.png">
 <meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM4-垃圾回收/pic2.png">
 <meta property="og:updated_time" content="2016-08-28T16:26:04.000Z">
@@ -340,11 +342,11 @@
       
         <h1 id="垃圾判定"><a href="#垃圾判定" class="headerlink" title="垃圾判定"></a>垃圾判定</h1><h2 id="引用计数算法"><a href="#引用计数算法" class="headerlink" title="引用计数算法"></a>引用计数算法</h2><p>循环引用 每次都要技术影响性能<br><a id="more"></a></p>
 <h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象</p>
-<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><p>1）标记-清除算法 老年代<br>2）标记压缩 老年代<br>3）复制算法 缺点空间浪费<br>4）分代算法<br>新生代分为一大两小，大小8:1<br>大对象：移到老年代。<br>小对象：放置到复制空间<br>老年对象：长期有效的对象<br>s0、s1只有一个能用<br><img src="/2016/08/28/JVM/JVM4-垃圾回收/pic1.png" alt="pic1.png" title=""></p>
+<h1 id="回收算法"><a href="#回收算法" class="headerlink" title="回收算法"></a>回收算法</h1><p>1）标记-清除算法 老年代<br>2）标记压缩 老年代<br>3）复制算法 缺点空间浪费<br>4）分代算法<br>新生代分为一大两小，大小8:1<br>大对象：移到老年代。<br>小对象：放置到复制空间<br>老年对象：长期有效的对象<br>s0、s1只有一个能用<br><img src="/2016/08/28/JVM/JVM4-垃圾回收/pic1.png"></p>
 <h1 id="内存空间"><a href="#内存空间" class="headerlink" title="内存空间"></a>内存空间</h1><p>短命对象归为新生代，长命对象归为老年代<br>根据不同代的特点，选取合适的收集算法<br>少量对象存活，适合复制算法。新生代。<br>大量对象存活，适合标记清理或者标记压缩。老年代。<br>对象多次GC未被回收放入老年代，或者新生代空间不足放入老年代。</p>
 <h1 id="可触及性"><a href="#可触及性" class="headerlink" title="可触及性"></a>可触及性</h1><ul>
 <li>可复活： 一旦所有引用被释放，就是可复活状态；因为在finalize()中可能复活该对象；<br>避免使用finalize()方法，被调用时间不确定，使用finally代替。<br>finalize方法一个对象只能使用一次。</li>
-<li>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象<img src="/2016/08/28/JVM/JVM4-垃圾回收/pic2.png" alt="pic2.png" title="">
+<li>GCroot :jvm栈中引用的对象，方法区中的类静态属性引用的对象，常量池的对象，本地方法栈JNI（native方法）的引用的对象<img src="/2016/08/28/JVM/JVM4-垃圾回收/pic2.png">
 </li>
 </ul>
 <h1 id="Stop-The-World"><a href="#Stop-The-World" class="headerlink" title="Stop The World"></a>Stop The World</h1><p>所有Java代码停止，native代码可以执行，但不能和JVM交互<br>dump线程 死锁检查 dump堆 GC 可以一起StopTheWorld<br>GC线程之外的线程停止工作，进行垃圾回收。防止新的垃圾生成。<br>危害：长时间服务停止，没有响应；遇到HA系统，可能一起主备切换，严重危害生产环境。<br>老年代停顿时间长（微妙、秒、分钟都有可能）、新生代停顿时间短。</p>
@@ -480,7 +482,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -488,7 +490,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -545,7 +547,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="class装载验证流程加载取得类的二进制流 ；转为方法区的数据结构；生成Class对象">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM6-类加载">
 <meta property="og:url" content="http://baobing.github.io/2016/08/29/JVM/JVM6-类加载/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="class装载验证流程加载取得类的二进制流 ；转为方法区的数据结构；生成Class对象">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/08/29/JVM/JVM6-类加载/pic1">
 <meta property="og:image" content="http://baobing.github.io/2016/08/29/JVM/JVM6-类加载/pic2">
 <meta property="og:updated_time" content="2016-08-29T02:31:50.000Z">
@@ -345,8 +347,8 @@
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>执行类构造器clinit ：static变量赋值 static语句<br>子类的<clint>调用钱保证父类的clint被调用<br>clinit是线程安全的</clint></p>
 <h1 id="类装载器ClassLoader"><a href="#类装载器ClassLoader" class="headerlink" title="类装载器ClassLoader"></a>类装载器ClassLoader</h1><p>ClassLoader读入Java字节码将类装载到JVM中<br>ClassLoader可以定制，满足不同 的字节码流获取方式<br>加载阶段</p>
 <h2 id="重要方法"><a href="#重要方法" class="headerlink" title="重要方法"></a>重要方法</h2><p>loadClass  载入并返回一个Class<br>defineClass 定义一个类，不公开调用<br>findClass 回调方法足鼎ClassLoader的推荐做法<br>findLoadedClass 寻找已加载的类</p>
-<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>BootStrap（rt.jar）、Extension(lib/ext/*/jar)、App 、CustomerClassLod er<br><img src="/2016/08/29/JVM/JVM6-类加载/pic1" alt="pic1" title=""><br>向上寻找父亲知否加载，父亲加载好返回Class给子类<br>-Xbootclasspath<br>让jvm从指定的路径中加载bootclass，用来替换jdk的rt.jar。一般不会用到。</p>
-<h2 id="Thread-setContextClassLoader-上下文加载器"><a href="#Thread-setContextClassLoader-上下文加载器" class="headerlink" title="Thread.setContextClassLoader() 上下文加载器"></a>Thread.setContextClassLoader() 上下文加载器</h2><p>问题：上层ClassLoader无法查看底层ClassLoader中的类<br>是一个角色，任何一个加载器都可以是这个角色<br>解决顶层ClassLoader无法访问底层 ClassLoader<br>顶层classLoader传入底层classLoader<br>2.5 双亲委派模式的破坏<br>双亲模式是默认的模式但是不是必须这么做<br>Tomcat的WebappClassLoder就会先加载自己的Class，找不到再委托parent<br>OSGi（热加载）的ClassLOder芯层王庄结构，分局需要自由加载Class<br>class被替换后，系统无需重启，替换的类立即成效<br><img src="/2016/08/29/JVM/JVM6-类加载/pic2" alt="pic2" title=""></p>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>BootStrap（rt.jar）、Extension(lib/ext/*/jar)、App 、CustomerClassLod er<br><img src="/2016/08/29/JVM/JVM6-类加载/pic1"><br>向上寻找父亲知否加载，父亲加载好返回Class给子类<br>-Xbootclasspath<br>让jvm从指定的路径中加载bootclass，用来替换jdk的rt.jar。一般不会用到。</p>
+<h2 id="Thread-setContextClassLoader-上下文加载器"><a href="#Thread-setContextClassLoader-上下文加载器" class="headerlink" title="Thread.setContextClassLoader() 上下文加载器"></a>Thread.setContextClassLoader() 上下文加载器</h2><p>问题：上层ClassLoader无法查看底层ClassLoader中的类<br>是一个角色，任何一个加载器都可以是这个角色<br>解决顶层ClassLoader无法访问底层 ClassLoader<br>顶层classLoader传入底层classLoader<br>2.5 双亲委派模式的破坏<br>双亲模式是默认的模式但是不是必须这么做<br>Tomcat的WebappClassLoder就会先加载自己的Class，找不到再委托parent<br>OSGi（热加载）的ClassLOder芯层王庄结构，分局需要自由加载Class<br>class被替换后，系统无需重启，替换的类立即成效<br><img src="/2016/08/29/JVM/JVM6-类加载/pic2"></p>
 
       
     </div>
@@ -479,7 +481,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -487,7 +489,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -544,7 +546,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

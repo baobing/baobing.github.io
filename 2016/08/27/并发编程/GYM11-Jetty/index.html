@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="简要的介绍了Jetty的启动流程。对象池是一个很新颖的概念，与线程池有所区别。">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GYM11-Jetty简介">
 <meta property="og:url" content="http://baobing.github.io/2016/08/27/并发编程/GYM11-Jetty/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="简要的介绍了Jetty的启动流程。对象池是一个很新颖的概念，与线程池有所区别。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2016-08-27T02:26:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GYM11-Jetty简介">
@@ -340,19 +342,19 @@
 <h2 id="初始化ServerConnector"><a href="#初始化ServerConnector" class="headerlink" title="初始化ServerConnector"></a>初始化ServerConnector</h2><ul>
 <li>初始化SecheduledExecutorScheduler</li>
 <li><p>初始化ByteBufferPool （相当于对象池，减少GC），创建对象的效率是很高的，回收很低。不能使用sycronized同步，效率太低，必须使用无锁。<br>ArrayByteBufferPool。大小不一定相同，池中保存很多大小不同的对象。<br>列外处理：如果社情的ByteBuffer过大或者过小无法在Pool中满足，则可以申请陈宫，但无法归还给Pool</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public ArrayByteBufferPool(int minSize,int increment,int maxSize)</div><div class="line">direct[] = </div><div class="line">indirect[] = </div><div class="line">Queue&lt;ByteBuffer&gt; = new ConcurrentLinkedQueue&lt;&gt;();</div><div class="line">//1取得合适的Bucket 2从Bucket中取得ByteBuffer 3不存在创建</div><div class="line">acquire()</div><div class="line">//1取得合适的Bucket 2清空Buffer 3归还Pool </div><div class="line">release()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public ArrayByteBufferPool(int minSize,int increment,int maxSize)</span><br><span class="line">direct[] = </span><br><span class="line">indirect[] = </span><br><span class="line">Queue&lt;ByteBuffer&gt; = new ConcurrentLinkedQueue&lt;&gt;();</span><br><span class="line">//1取得合适的Bucket 2从Bucket中取得ByteBuffer 3不存在创建</span><br><span class="line">acquire()</span><br><span class="line">//1取得合适的Bucket 2清空Buffer 3归还Pool </span><br><span class="line">release()</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>ConnectionFactory维护<br>用于创建链接，比如Accept后，需要创建一个表示链接的对象</p>
 </li>
 <li><p>获取cpu数量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cores = Runtime.getRuntime().availableProcessors();</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cores = Runtime.getRuntime().availableProcessors();</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>更新acceptor数量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">acceptors = Math.max(1,Math.min(4,cores/8));</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acceptors = Math.max(1,Math.min(4,cores/8));</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建acceptor线程组</p>
 </li>
-<li>初始化ServerConnectorManger<br>继承自<br>保存selector线程数量<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Math.min(4,Runtime.getRuntime().availableProcessors()/2)</div></pre></td></tr></table></figure>
+<li>初始化ServerConnectorManger<br>继承自<br>保存selector线程数量<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Math.min(4,Runtime.getRuntime().availableProcessors()/2)</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h2 id="设置port"><a href="#设置port" class="headerlink" title="设置port"></a>设置port</h2><h2 id="关联Server和Connector"><a href="#关联Server和Connector" class="headerlink" title="关联Server和Connector"></a>关联Server和Connector</h2><h1 id="Server-start"><a href="#Server-start" class="headerlink" title="Server.start"></a>Server.start</h1><h2 id="设置启动状态"><a href="#设置启动状态" class="headerlink" title="设置启动状态"></a>设置启动状态</h2><h2 id="启动过程doStart"><a href="#启动过程doStart" class="headerlink" title="启动过程doStart"></a>启动过程doStart</h2><ul>
@@ -364,11 +366,11 @@
 <li>启动Connector<br>取得ConnectionFactory<br>创建selector线程并启动<br>创建Acceptor线程 设置线程名字优先级，将线程放入acceptors 监听端口<br>没有Acceptor的情况<h2 id="启动完毕"><a href="#启动完毕" class="headerlink" title="启动完毕"></a>启动完毕</h2><h1 id="Http请求"><a href="#Http请求" class="headerlink" title="Http请求"></a>Http请求</h1><h2 id="Accept成功"><a href="#Accept成功" class="headerlink" title="Accept成功"></a>Accept成功</h2></li>
 <li>设置为非阻塞模式</li>
 <li>配置Socket</li>
-<li>正式处理<br>选择可用ManagedSelector线程<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">private ManagedSelector chooseSelector()&#123;</div><div class="line">    //没有使用原子整数，不必担心因为多线程安全导致的问题</div><div class="line">    long s = _selectorIndex++;</div><div class="line">    int index = (int) (s % getSelectorCount());</div><div class="line">    return _selectors[index]; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<li>正式处理<br>选择可用ManagedSelector线程<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private ManagedSelector chooseSelector()&#123;</span><br><span class="line">    //没有使用原子整数，不必担心因为多线程安全导致的问题</span><br><span class="line">    long s = _selectorIndex++;</span><br><span class="line">    int index = (int) (s % getSelectorCount());</span><br><span class="line">    return _selectors[index]; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>ManagedSelector处理<br>提交任务 加入到ConcurrentArrayQueue队列</p>
-<h2 id="请求处理"><a href="#请求处理" class="headerlink" title="请求处理"></a>请求处理</h2><p>ManagedSelector.run()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">private void runChanges()&#123;</div><div class="line">    Runnable change;</div><div class="line">    while((change = _changes.poll())!=null)</div><div class="line">        runChange(change);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="请求处理"><a href="#请求处理" class="headerlink" title="请求处理"></a>请求处理</h2><p>ManagedSelector.run()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">private void runChanges()&#123;</span><br><span class="line">    Runnable change;</span><br><span class="line">    while((change = _changes.poll())!=null)</span><br><span class="line">        runChange(change);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>select()<br>处理SelectionKey</p>
 
       
@@ -502,7 +504,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -510,7 +512,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -567,7 +569,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

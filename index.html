@@ -88,6 +88,7 @@
 <meta property="og:title" content="贝叶斯的智慧">
 <meta property="og:url" content="http://baobing.github.io/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
+<meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="贝叶斯的智慧">
 
@@ -268,7 +269,473 @@
             
               
                 
-                <a class="post-title-link" href="/2016/11/20/InnoDB存储引擎3-文件/" itemprop="url">
+                <a class="post-title-link" href="/2017/12/23/Redis数据一致性分析/" itemprop="url">
+                  Redis数据一致性分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-12-23T09:39:35+08:00" content="2017-12-23">
+              2017-12-23
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/12/23/Redis数据一致性分析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/23/Redis数据一致性分析/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/" itemprop="url">
+                  InnoDB存储引擎5-索引与算法
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-23T21:53:16+08:00" content="2016-11-23">
+              2016-11-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/DateBase/" itemprop="url" rel="index">
+                    <span itemprop="name">DateBase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/23/数据库/InnoDB存储引擎5-索引与算法/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="InnoDB存储引擎索引概述"><a href="#InnoDB存储引擎索引概述" class="headerlink" title="InnoDB存储引擎索引概述"></a>InnoDB存储引擎索引概述</h1><p>InnoDB常见索引B+树索引、全文索引、哈希索引。<br>B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
+<h1 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h1><h2 id="二分查找法"><a href="#二分查找法" class="headerlink" title="二分查找法"></a>二分查找法</h2><p>PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑B+树也用到了二分查找法）。</p>
+<h1 id="二叉查找树和平衡二叉树"><a href="#二叉查找树和平衡二叉树" class="headerlink" title="二叉查找树和平衡二叉树"></a>二叉查找树和平衡二叉树</h1><h1 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h1><h2 id="B-树的插入操作"><a href="#B-树的插入操作" class="headerlink" title="B+树的插入操作"></a>B+树的插入操作</h2><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-1.png">
+<p>##Ｂ＋树的删除操作<br><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-2.png"></p>
+<h1 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+树索引"></a>B+树索引</h1><p>B+索引在数据库中有一个特点是搞扇出性，因此在数据库中，B+树的高度一般都是2~4层，这也就是说查找某一简直的行记录时最多只需要2到4次IO。当前一般的机械磁盘每秒至少可以做10次IO。数据库中B+树索引分为聚集索引和辅助索引。</p>
+<p>##　聚集索引<br>InnoDB存储引擎表示索引组织表，即表中数据按照主键顺序存放。而聚集索引就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。<br><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-14.png"></p>
+<h2 id="辅助索引"><a href="#辅助索引" class="headerlink" title="辅助索引"></a>辅助索引</h2><p>对于辅助索引，叶子节点并不含行记录的全部数据。叶子节点除了包含键值意外，每个叶子节点中的索引行中还包含了一个书签。该书签来告诉InnoDB存储引擎哪里可以找到与索引相对应的行数据</p>
+<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-16.png">
+<h2 id="B-树索引的分裂"><a href="#B-树索引的分裂" class="headerlink" title="B+树索引的分裂"></a>B+树索引的分裂</h2><h2 id="索引管理"><a href="#索引管理" class="headerlink" title="索引管理"></a>索引管理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alter table 表名称 add  index|key 索引名 （列名，）</span><br><span class="line">alter table 表名称 drop  index|key 索引名 </span><br><span class="line">create/drop index  on 表名称</span><br></pre></td></tr></table></figure>
+<p>Show Index from</p>
+<h3 id="Fast-Index-Creation"><a href="#Fast-Index-Creation" class="headerlink" title="Fast Index Creation"></a>Fast Index Creation</h3><p>Mysql5.5版本之前，DDL操作过程：</p>
+<ul>
+<li>首先创建一张新的临时表，表结构为通过命令alter table 新定义的结构。</li>
+<li>然后把原表中数据导入到临时表</li>
+<li>删除原表 更换表名<br>InnoDB1.0开始支持     一种称为fast index creation的索引创建方式。索引创建时会阻塞表上的DML操作。<br>对于辅助索引，会对表加上一个s锁。不用重建表，因次速度快很多。删除富足索引操作就更简单了，InnoDB存储引擎只需要更新内部视图，并将辅助索引的空间标记为可用，同时删除mysql数据库内部视图上对该表的索引定义即可。<br>FIC常见过程对表上了S锁，因此只能对该表进行读操作，只限定于辅助索引，对于主键的创建和删除同样要创建新表。<h3 id="Online-Schema-Change"><a href="#Online-Schema-Change" class="headerlink" title="Online Schema Change"></a>Online Schema Change</h3>最早由facebook实现的一种在线执行ddl的方式。可以有读写事务对表进行DDL操作。<br>OSC是一个php脚本，因此其有一定的局限性。进行修改的表一定要有主键，且表本身不能存在外键和触发器。此外，允许set sql_bin_log = 0,因此所做的操作不会同步slave服务器，可能导致主从不一致的情况。<h2 id="Online-DDL"><a href="#Online-DDL" class="headerlink" title="Online DDL"></a>Online DDL</h2>Mysql 5.6开始支持Online DDL。允许辅助索引创建的同事进行诸如Insert、update、delete这类DML操作。此外逼近是辅助索引，以下DDL操作都可以通过在线的方式进行操作 </li>
+<li>改变自增长值</li>
+<li>天剑或删除外键约束</li>
+<li>列的重命名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 新的alter table</span><br><span class="line">alter table tbl_name Add index index_name (index_col_name)</span><br><span class="line">algorithm = &#123;default|inplace|copy&#125; lock = &#123;default|none|shared|exclusive&#125;</span><br></pre></td></tr></table></figure>
+<p>algorithm 指定创建和删除索引的算法，cpoy表示按照mysql5.1版本之前的工作模式，即创建临时表的方式。inplace表示不需要创建临时表。default表示根据参数old_alter_table来判断，该参数默认值为off，表示采用inplace的方式。</p>
+<p>lock部分为索引创建或删除时对表添加锁的情况，已有的选择为：</p>
+<ul>
+<li>none：对目标表不添加任何锁</li>
+<li>share：和fic类似，对目标表加上一个s锁</li>
+<li>exclusive：对目标添加一个x锁</li>
+<li>default：一次尝试none、share、exclusive模式</li>
+</ul>
+<p>Online DDL的原理是在执行创建或者删除操作的同事，将insert、update、delete这类dml操作日志写入到一个缓存中，待完成索引创建后再将重做应用到表上，一次达到数据的一致性。<br>由于Online DDL在创建索引完成后再通过重做日志达到数据库的最终一致性，这意味着在索引创建过程中，sql优化器不会选择正在创建中的索引。</p>
+<h1 id="5-5-Cardinality"><a href="#5-5-Cardinality" class="headerlink" title="5.5 Cardinality"></a>5.5 Cardinality</h1><p>cardinality表示索引中不重复记录数量的预估值。cardinality/表中行数应尽可能的接近1。</p>
+<p>##InnoDB存储引擎的cardinality统计<br>innoDB内部更新cardinality信息的策略为</p>
+<ul>
+<li>表中十六之一的数据发生过变化</li>
+<li>sta_modified_counter&gt;2 000 000 000<br>默认InnoDB存储引擎对8个叶子节点进行采样，采样的过程如下：</li>
+<li>取得B+树索引中叶子节点的数量，记为A-</li>
+<li>随机去个B+树索引中的8个叶子节点，统计每个页不同记录的个数，记为P1，P2…P8</li>
+<li>根据采样信息给出cardinality的预估值<br>当执行sql语句analyze table show table status、showindex 一集访问information_schema架构下的表tables和statistics会导致存储引擎重新计算索引的cardinality。P214<h1 id="5-6-B-树索引的使用"><a href="#5-6-B-树索引的使用" class="headerlink" title="5.6 B+树索引的使用"></a>5.6 B+树索引的使用</h1><h2 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h2><h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><h2 id="优化器选择不使用索引的情况"><a href="#优化器选择不使用索引的情况" class="headerlink" title="优化器选择不使用索引的情况"></a>优化器选择不使用索引的情况</h2>没有命中覆盖索引，并且查询的数据量大于表的20%，优化器会选择聚集索引来查找数据。因此对于不能进行索引覆盖的情况，优化器选择辅助索引的情况是，通过辅助所以呢查找的数据是少量的。利用顺序读来替换随机读的查找<h2 id="索引提示-index-hint"><a href="#索引提示-index-hint" class="headerlink" title="索引提示 index hint"></a>索引提示 index hint</h2>use index 只是告诉优化器可以选择该索引，实际上优化器还是胡再根据自己判断进行选择。如果使用 force index 一定会使用索引。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * form t use index(a) where a =1 and b = 2;</span><br><span class="line">select * form t force index(a) where a =1 and b = 2;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Multi-Range-Read-优化"><a href="#Multi-Range-Read-优化" class="headerlink" title="Multi-Range Read 优化"></a>Multi-Range Read 优化</h2><p>Mysql5.6版本开始支持。<br>对于InnoDB和MyISAM存储引擎的范围查询和Join查询操作，MRR的工作方式如下：</p>
+<ul>
+<li>将查询得到的辅助索引键值存放于一个缓存中，这是缓存中的数据是根据辅助索引键值排序的。</li>
+<li>将缓存中的键值根据RowID进行排序。</li>
+<li>根据rowID的排序顺序来访问实际的数据文件<br>MRR 优化有一下几个好处</li>
+<li>MRR使数据访问变得较为顺序。在查询辅助索引时，首先根据得到的查询结果，按照主键进行排序，并按照主键顺序进行书签查找。</li>
+<li>减少缓冲池中页被替换的次数</li>
+<li>批量处理对键值的操作</li>
+</ul>
+<h2 id="Index-condition-pushdown-优化-P226"><a href="#Index-condition-pushdown-优化-P226" class="headerlink" title="Index condition pushdown 优化 P226"></a>Index condition pushdown 优化 P226</h2><p>Mysql5.6开始支持。之前当进行索引查找时，首先根据索引来查找记录，然后再根据where条件过滤记录。ICP判断是够可以进行where条件的过滤，也就是将where的部分过滤操作放在存储引擎层。</p>
+<h1 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h1><h2 id="InnoDB存储引擎中哈希算法"><a href="#InnoDB存储引擎中哈希算法" class="headerlink" title="InnoDB存储引擎中哈希算法"></a>InnoDB存储引擎中哈希算法</h2><p>自适应hash索引想问见第二章</p>
+<h2 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h2><h2 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h2><p>全文检索通常使用代拍索引来实现。它在辅助表中存储了单次与单词自身在一个或多个文档中位置之间的映射。</p>
+<ul>
+<li>inverted file index ，表现形式为{单次，单次所在文档的id}</li>
+<li>full inverted index，其变现形式为{单次，（单次所在文档的id，在具体文档中的位置）}<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-6.png">
+<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-7.png">
+</li>
+</ul>
+<h2 id="InnoDB全文检索"><a href="#InnoDB全文检索" class="headerlink" title="InnoDB全文检索"></a>InnoDB全文检索</h2><p>innoDB存储引擎从1.2开始支持全文检索的技术。InnoDB中环将（documentID，Position）视为一个“ilist”。因此在全文检索表中，有两个列，一个是word字段，另一个是ilist字段，并且在word字段上有索引。此外，由于InnoDB在ilist字段中存放了position信息，故可以进行proximity search。InnoDB会批量对Auxiliary  table进行更新，而不是每次插入后更新一次。查询是，首先将FTS index cache 中对应的word字段合并到 辅助表中，然后再进行查询。这个merge操作类似Inser buffer的功能，不同的是 inser buffer 是一个持久的兑现个，并且其是B+树结构。FTS index cache由红黑树排序后批量插入。<br>当数据库关闭时，cache中的数据会通过到磁盘的辅助表中，然而，数据库发生宕机时，未能将cache同步到磁盘上。那么下次重启数据库时，当用户对表进行全文检索时，InnoDB存储引擎会自动读取未完成的文档，然后进行分词操作，在激情分词的结果放入到FTS index cache。<br>innoDB存储引擎中，为了支持全文检索，必须有一个列和word进行映射，这个列被命名为为fts_doc_id,类型必须是 bigint unsigned not null，必须加 unique index。上述这些操作都会有innoDB存储引擎自己完成</p>
+<p>InnoDB全文检索存在的限制</p>
+<ul>
+<li>每张表只能有一个全文检索的索引</li>
+<li>由多列组合而成的全文检索索引列必须使用相同的字符集和排序规则</li>
+<li>不支持没有单次界定符的预先 如 中文、 日语、韩语。<br><strong><em>不支持中文 还研究个毛</em></strong></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/11/23/数据库/InnoDB存储引擎4-表/" itemprop="url">
+                  InnoDB存储引擎4-表
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-23T21:45:46+08:00" content="2016-11-23">
+              2016-11-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/DataBase/" itemprop="url" rel="index">
+                    <span itemprop="name">DataBase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/23/数据库/InnoDB存储引擎4-表/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/23/数据库/InnoDB存储引擎4-表/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="索引组织表"><a href="#索引组织表" class="headerlink" title="索引组织表"></a>索引组织表</h1><p>InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。<br>在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：</p>
+<ul>
+<li>首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。</li>
+<li>如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。<h1 id="InnoDB逻辑存储结构"><a href="#InnoDB逻辑存储结构" class="headerlink" title="InnoDB逻辑存储结构"></a>InnoDB逻辑存储结构</h1>表空间由段（segment）、区（extent）、页（page）。<h2 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h2><h2 id="段"><a href="#段" class="headerlink" title="段"></a>段</h2>常见的段有数据段、索引段、回滚段<h2 id="区"><a href="#区" class="headerlink" title="区"></a>区</h2>区是由连续页组成的空间，在任何情况下每个区的大小都为1MB。为了保证区中页的连续性，InnoDB存储引擎一次从磁盘申请4~5个区。在默认情况下，InnoDB存储引擎页的大小为16KB，即一个区中一共有64个连续的页。创建表的默认大小是96KB。其实这是因为在这个段开始时，先用32个页大小的碎片页来存放数据，在使用完这些页之后，才是64个连续页的申请。这样做的目的是，对于一些小表，或者是undo这类的段，可以在开始时申请较少的空间，节省磁盘容量的开销。<h2 id="页"><a href="#页" class="headerlink" title="页"></a>页</h2>在InnoDB存储中，默认每个页的大小为16KB。而从1.2开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。设置完成，则所有表中页的大小都为innodb_pae_siez，不可以对其再次进行修改。除非通过mysqldump导入和导出操作来产生新的库。<br>InnoDB常见页类型：</li>
+<li>数据页</li>
+<li>undo页</li>
+<li>系统页</li>
+<li>事务数据页</li>
+<li>插入缓冲位图页</li>
+<li>插入缓冲空闲列表页</li>
+<li>未压缩的二进制大对象页</li>
+<li>压缩二进制大对象页<h2 id="行"><a href="#行" class="headerlink" title="行"></a>行</h2>每个页最多存放16KB/2-200行的记录，即7992行记录<h1 id="InnoDB行记录格式"><a href="#InnoDB行记录格式" class="headerlink" title="InnoDB行记录格式"></a>InnoDB行记录格式</h1>可以通过 show table status like ‘table_name’ 查看表行存储格式的信息。<h2 id="Compact行记录格式-P105"><a href="#Compact行记录格式-P105" class="headerlink" title="Compact行记录格式 P105"></a>Compact行记录格式 P105</h2>Mysql5.0中引入。一个页中存放行数据越多，其性能就越高。<img src="/2016/11/23/数据库/InnoDB存储引擎4-表/4-2.png">
+编程字段长度列表：长度小于255用一个字节，最大65535。<br>Null标志位用二进制表示为Null的列<br>记录头<img src="/2016/11/23/数据库/InnoDB存储引擎4-表/4-1.png">
+没行数据除了用户定义的列外，还有两个隐藏列，事务ID列和回滚指针列，分别为6字节和7字节的大小。若InnoDB表没有定义主键，每行还会增加一个6字节的rowid列。<h1 id="Redumdant行记录格式"><a href="#Redumdant行记录格式" class="headerlink" title="Redumdant行记录格式"></a>Redumdant行记录格式</h1>Mysql5.0版本记录存储方式<h2 id="行溢出数据"><a href="#行溢出数据" class="headerlink" title="行溢出数据"></a>行溢出数据</h2>BlOB、TEXT可以不讲数据放在溢出页面，而且即便是Varchar列数据类型，依然有可能被存放为行溢出数据。<br>Varchar类型的最大长度65532.Varchar（N）中的N指的是字符的长度。而文档中说明Varchar类型最大支持65535，单位是字节。Mysql官方手册中定义的65535长度是指所有Varchar列的长度总和，如果列的长度总和超出这个长度，依然无法创建。<br>InnoDB存储引擎表是索引组织的，即B+Tree的结构，这样每个页中至少应该有两条行记录。Varchar不溢出的最大长度是8098字节。<br>数据保存再BLOB页中，数据页只保存数据的钱768字节。<h2 id="Compressed和Dynamic行记录格式"><a href="#Compressed和Dynamic行记录格式" class="headerlink" title="Compressed和Dynamic行记录格式"></a>Compressed和Dynamic行记录格式</h2>以前支持的compact和redundant格式称为antelope文件格式，新的文件格式称为Barracuda文件格式。Barracuda文件格式下拥有两种新的行记录格式：Compressed和Dynamic。<br>新的两种记录格式对于存放在BLOB中的数据采用了完全溢出的方式<h2 id="Char的行结构存储"><a href="#Char的行结构存储" class="headerlink" title="Char的行结构存储"></a>Char的行结构存储</h2>Mysql4.1版本开始，Char（N）中N指的是字符的长度，而不是之前版本的字节长度。也就说在不同的字符集下，char类型列内部存储的可能不是定长的数据。因此，对于多字节字符编码的char数据类型的存储，InnoDB在内部将其视为变长字符类型。<h1 id="InnoDB数据页结构"><a href="#InnoDB数据页结构" class="headerlink" title="InnoDB数据页结构"></a>InnoDB数据页结构</h1>InnoDB数据页由一下7部分组成</li>
+<li>File Header 文件头</li>
+<li>Page Header 页头</li>
+<li>Infimum和Supremum Records</li>
+<li>User Records 用户记录</li>
+<li>Free Space 空闲空间</li>
+<li>Page Direcory 页目录</li>
+<li>File Trailer 文件结尾信息</li>
+</ul>
+<h2 id="File-Header"><a href="#File-Header" class="headerlink" title="File Header"></a>File Header</h2><img src="/2016/11/23/数据库/InnoDB存储引擎4-表/4-3.png">
+<h2 id="Page-Header"><a href="#Page-Header" class="headerlink" title="Page Header"></a>Page Header</h2><img src="/2016/11/23/数据库/InnoDB存储引擎4-表/4-5.png">
+<h2 id="Infimum和Suprenum-Record"><a href="#Infimum和Suprenum-Record" class="headerlink" title="Infimum和Suprenum Record"></a>Infimum和Suprenum Record</h2><p>在InnoDB存储引擎中，每个数据页中有两个虚拟的行记录，用来限定记录的边界。Innfimum记录是比该页中任何主键都要小的值，Supremum指比任何可能大的值还要大的值。这两个值都在页创建时被建立，并且在任何情况下不会被删除。</p>
+<h2 id="User-Record-和-Free-Space"><a href="#User-Record-和-Free-Space" class="headerlink" title="User Record 和 Free Space"></a>User Record 和 Free Space</h2><p>User Record实际存储行记录的内容。<strong><em>InnoDB存储引擎表总是B+树索引组织的</em></strong><br>Free Space很明显指的就是空闲空间，同样也是个链表数据结构。在一条记录被删除后，该空间会被加入到空闲链表中。</p>
+<h2 id="Page-Directory"><a href="#Page-Directory" class="headerlink" title="Page Directory"></a>Page Directory</h2><p>指向页内行记录的系数索引，倒序保存。同一个槽位下面的行记录用链表串联</p>
+<h2 id="File-Trailer"><a href="#File-Trailer" class="headerlink" title="File Trailer"></a>File Trailer</h2><p>为了检测页已经完整写入磁盘。<br>前四个字节代表该页的checksum值，最后4个字节和FileHeader中的FIL_PAGE_LSN值进行比较。<br>InnoDB每次从磁盘读取一个页就会检测该页的完整性，即页是否发生Corrupt。</p>
+<h2 id="Named-File-Formats机制"><a href="#Named-File-Formats机制" class="headerlink" title="Named File Formats机制"></a>Named File Formats机制</h2><p>从InnoDB1.0版本开始，通过Named File Formats机制来解决不同版本下页结构兼容的问题</p>
+<p>#约束</p>
+<h2 id="数据完整性"><a href="#数据完整性" class="headerlink" title="数据完整性"></a>数据完整性</h2><p>InnoDB存储引擎表中，域完整性可以通过以下几种途径来保证：</p>
+<ul>
+<li>选择合适的数据类型确保一个数据值满足特定条件</li>
+<li>外键约束</li>
+<li>编写触发器</li>
+<li>还可以开率用Default约束作为强制域完整性的一个方面。默认值。<h2 id="约束创建和查找"><a href="#约束创建和查找" class="headerlink" title="约束创建和查找"></a>约束创建和查找</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create table p (</span><br><span class="line">id int , uid int,</span><br><span class="line">primary key (id),</span><br><span class="line">foreign key (uid) references p (id);</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">select constrint_name,constrint_type from</span><br><span class="line">information_schema.table,constraints </span><br><span class="line">where table_schema = &apos;数据库名称&apos; and table_name = &apos;表名称&apos;；</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="对错误数据的约束"><a href="#对错误数据的约束" class="headerlink" title="对错误数据的约束"></a>对错误数据的约束</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set sql_mode = &apos;strict_trans_tables&apos;</span><br><span class="line">#不满足约束报错，而不是警告</span><br></pre></td></tr></table></figure>
+<h1 id="Enum和set约束"><a href="#Enum和set约束" class="headerlink" title="Enum和set约束"></a>Enum和set约束</h1><p>表上有一个性别类型，规定域的范围只能是male或者female，在这种情况下用户可以通过enum进行约束。</p>
+<h1 id="触发器和约束"><a href="#触发器和约束" class="headerlink" title="触发器和约束"></a>触发器和约束</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">create trigger 触发器名称 before|after |insert|update|delete</span><br><span class="line">on 表名 for each row 触发器语句</span><br><span class="line"></span><br><span class="line">create trigger tgr_usercash_update before update on usercash</span><br><span class="line">for each row </span><br><span class="line">begin </span><br><span class="line">if new.cash -old.cash &gt;0 then</span><br><span class="line">    insert into usercash_error_log</span><br><span class="line">    select old.userid,old.cash,new.cash;</span><br><span class="line">    set new.cash = old.cash;</span><br><span class="line">end if;</span><br><span class="line">end;</span><br></pre></td></tr></table></figure>
+<h2 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h2><p>一般来说，成被引用表为父表，引用的表称为子表。外键定义时的 on delete 和 on update 表示在对父表进行delete和update操作时，对子表所做的操作。</p>
+<ul>
+<li>cascade表示 通过操作</li>
+<li>set null 父表改变，子表更新为null</li>
+<li>not action 抛出无措，不允许这类操作发生</li>
+<li>restrict 与no action 相同。默认值<h1 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h1><h2 id="视图作用"><a href="#视图作用" class="headerlink" title="视图作用"></a>视图作用</h2>视图主要用途之一被用作一个抽闲该装置，特别是对于一些应用程序，程序本身不需要关心基表的结构，只需要按照视图定义来取数据或更新数据，因此，视图同事在一定程度上起到一个安全层的作用。<br>虽然视图是基于基表的一个虚拟表，但是用户可以对某些视图进行更新操作，其本质就是通过视图的定义来更新基本表、。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create view v_t as select * form t where id &lt; 10 with check option;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>with check option 检查SQL，防止不满足视图条件的数据进入。</p>
+<h2 id="物化视图"><a href="#物化视图" class="headerlink" title="物化视图"></a>物化视图</h2><p>Oracle对视图物化提供良好的支持。Mysql数据库本身并不支持物化视图，换句话说，Mysql数据库中的视图总是虚拟的。用户可以定时把数据导入到另一张表。触发器实现。</p>
+<h1 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h1><h2 id="分区概述"><a href="#分区概述" class="headerlink" title="分区概述"></a>分区概述</h2><p>分区功能并不是在存储u引擎曾完成的，因此不是只有InnoDB存储引擎支持分区，常见的存储引擎MyISAM、NDB等都支持。CSV、Merge等不支持<br>Mysql数据库在5.1版本添加对分区的支持，分区的过程是将一个表或者索引分解为多个更小、更可管理的部分。Mysql数据库支持水平分区，不支持垂直分区。此外，mysql数据库的分局是局部分区索引，一个分区中既存放数据又存放索引。目前不支持全局分区。<br>在OLTP应用中，对于分区的使用应该非常小心。</p>
+<h2 id="分区类型"><a href="#分区类型" class="headerlink" title="分区类型"></a>分区类型</h2><h3 id="range分区"><a href="#range分区" class="headerlink" title="range分区"></a>range分区</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create table t( id int) engine=innodb</span><br><span class="line">partition by range(id)(</span><br><span class="line">partition p0 values less than(10),</span><br><span class="line">partition p1 values less than(20)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>maxvalue 代表正无穷<br>然哥分区主要用于日期列的分区<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create table sales( mony int not null ,date datetime) engine=innodb</span><br><span class="line">partition by range(to_days(date))(</span><br><span class="line">partition p201001values less than(to_days(&apos;2010-02-01&apos;)),</span><br><span class="line">partition p201002values less than(to_days(&apos;2010-02-02&apos;))</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>explain partition 查看语句分区使用情况。<br>range分区查询，优化器只能对year，to_days,.to_seconds,unix_timestamp这类函数进行优化选择。</p>
+<h3 id="List分区"><a href="#List分区" class="headerlink" title="List分区"></a>List分区</h3><p>list分区与range相似，只是分区列的值是离散的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create table t( id int) engine=innodb</span><br><span class="line">partition by list(id)(</span><br><span class="line">partition p0 values  in (1,3,5,7,8),</span><br><span class="line">partition p1 values in (2,4,6,8)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>在用insert插入多个行数据的过程中遇到分区未定义的值时，MyISAM和InnoDB存储引擎的处理完全不同。myIsam将之前的行数据都插入，但之后的数据不会被插入。innodb将其视为一个事务，因此没有任何插入</p>
+<p>###　hash分区<br>hash分区的目的是将数据均匀地分布到预先定义的各个分区中，保证各分区的数据数量大致是一样的。Mysql自动完成这些工作，用户所要做的只是基于将要进行哈希分区的列值顶一个列值或表达式，一集指定被分区的表将会被分割成分区数量.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create table t_linear_hash(a int)engine=innodb</span><br><span class="line">partitiion by linear hash(a)</span><br><span class="line">partitions 4;</span><br></pre></td></tr></table></figure></p>
+<p>mysql数据库还支持一种称为linearhash的分区，它使用一个更加复杂的算法来确定新行插入到已经分区的表中的位置。P165</p>
+<h1 id="key分区-p166"><a href="#key分区-p166" class="headerlink" title="key分区 p166"></a>key分区 p166</h1><p>key分区和hash分区相似，不同之处在于hsah分区使用用户定义的函数进行分区，key分区使用mysql数据库提供的函数进行分区。</p>
+<h1 id="columns-分区"><a href="#columns-分区" class="headerlink" title="columns 分区"></a>columns 分区</h1><p>前面四中分区中，分区的条件是：数据必须是整形。columns不需要</p>
+<h2 id="子分区"><a href="#子分区" class="headerlink" title="子分区"></a>子分区</h2><p>Mysql数据库允许在range和list分区上再进行hash或key子分区。<br>每个子分区的数量必须相同<br>要在一个分区表的任何分区上使用subpartition来明确定义任何字分区，就必须定义所有的子分区<br>每个subpartition自居必须包括子分区的一个名字<br>子分区的名字必须是唯一的</p>
+<h2 id="分区中null值"><a href="#分区中null值" class="headerlink" title="分区中null值"></a>分区中null值</h2><p>mysql 数据库的分区总是视null值小于任何一个非null值，这和order by操作一样。Hash和key分区对于null的处理是将含有null值得记录返回0。</p>
+<h2 id="分区和性能-P176"><a href="#分区和性能-P176" class="headerlink" title="分区和性能 P176"></a>分区和性能 P176</h2><p>对于OLTP应用，分区应该非常小心，在这种应用下，通常不可能会获取一张 大表10%的数据，大部分都是铜鼓欧索引返回几条记录即可。根据B+树索引的原理克制，对于一张达标，一般的B+树需要2~3次的磁盘IO。一次B+树可以很好的完成操作，不需要分区的帮助。<br>1000w行的表B+树只有两层。设计不好的索引得不偿失。10个分区，如果设计不好就要进行20次IO。</p>
+<h2 id="表和分区间-交换数据"><a href="#表和分区间-交换数据" class="headerlink" title="表和分区间 交换数据"></a>表和分区间 交换数据</h2>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/11/20/数据库/InnoDB存储引擎3-文件/" itemprop="url">
                   InnoDB存储引擎3-文件
                 </a>
               
@@ -312,8 +779,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/11/20/InnoDB存储引擎3-文件/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/InnoDB存储引擎3-文件/" itemprop="commentsCount"></span>
+                <a href="/2016/11/20/数据库/InnoDB存储引擎3-文件/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/数据库/InnoDB存储引擎3-文件/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -339,7 +806,7 @@
         
           <h1 id="参数文件"><a href="#参数文件" class="headerlink" title="参数文件"></a>参数文件</h1><h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/11/20/InnoDB存储引擎3-文件/#more" rel="contents">
+            <a class="btn" href="/2016/11/20/数据库/InnoDB存储引擎3-文件/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -390,7 +857,7 @@
             
               
                 
-                <a class="post-title-link" href="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/" itemprop="url">
+                <a class="post-title-link" href="/2016/11/20/数据库/InnoDB存储引擎2-InnoDB存储引擎/" itemprop="url">
                   InnoDB存储引擎2-InnoDB存储引擎
                 </a>
               
@@ -434,8 +901,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/" itemprop="commentsCount"></span>
+                <a href="/2016/11/20/数据库/InnoDB存储引擎2-InnoDB存储引擎/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/20/数据库/InnoDB存储引擎2-InnoDB存储引擎/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -461,7 +928,7 @@
         
           <h1 id="InnoDB存储引擎的版本"><a href="#InnoDB存储引擎的版本" class="headerlink" title="InnoDB存储引擎的版本"></a>InnoDB存储引擎的版本</h1>
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/11/20/InnoDB存储引擎2-InnoDB存储引擎/#more" rel="contents">
+            <a class="btn" href="/2016/11/20/数据库/InnoDB存储引擎2-InnoDB存储引擎/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1082,372 +1549,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/29/JVM/JVM5-GC收集器和参数/" itemprop="url">
-                  JVM5-GC收集器和参数
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-29T00:13:43+08:00" content="2016-08-29">
-              2016-08-29
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/29/JVM/JVM5-GC收集器和参数/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/29/JVM/JVM5-GC收集器和参数/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="堆得回顾"><a href="#堆得回顾" class="headerlink" title="堆得回顾"></a>堆得回顾</h1><p>大对象、栈分配、不在新生代。<br>s0、s1大小相同、对称，只能一个可用。<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/08/29/JVM/JVM5-GC收集器和参数/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/28/JVM/JVM4-垃圾回收/" itemprop="url">
-                  JVM4-垃圾回收
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-28T17:41:40+08:00" content="2016-08-28">
-              2016-08-28
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/28/JVM/JVM4-垃圾回收/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/28/JVM/JVM4-垃圾回收/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="垃圾判定"><a href="#垃圾判定" class="headerlink" title="垃圾判定"></a>垃圾判定</h1><h2 id="引用计数算法"><a href="#引用计数算法" class="headerlink" title="引用计数算法"></a>引用计数算法</h2><p>循环引用 每次都要技术影响性能<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/08/28/JVM/JVM4-垃圾回收/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/28/JVM/JVM3-参数设置/" itemprop="url">
-                  JVM3-参数设置
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-28T10:55:01+08:00" content="2016-08-28">
-              2016-08-28
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JVM</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/28/JVM/JVM3-参数设置/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/28/JVM/JVM3-参数设置/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>-XX:+printGC 打印GC<br>-XX:+PrintGCDetails 打印GC详细信息,打印堆上各个空间的大小和使用率<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/08/28/JVM/JVM3-参数设置/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1493,7 +1594,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1501,7 +1602,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1547,7 +1648,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

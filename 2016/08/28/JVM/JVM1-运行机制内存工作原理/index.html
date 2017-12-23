@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM1-运行机制内存工作原理">
 <meta property="og:url" content="http://baobing.github.io/2016/08/28/JVM/JVM1-运行机制内存工作原理/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="JVM 规范JVM可以运行除了java之外的很多语言，如groovy,jruby,scala。JVM规范包括：">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic4.png">
 <meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic1.png">
 <meta property="og:image" content="http://baobing.github.io/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic2.png">
@@ -348,7 +350,7 @@
 <li>本地方法栈</li>
 <li>方法区</li>
 </ul>
-<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic4.png" alt="pic4.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic4.png">
 <h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>　　一块较小的内存空间，他的作用可以看做是当前线程所执行的字节码的行号指示器。线程私有的内存区域，生命周期与线程相同。<br>　　如果线程正在执行的是一个Java方法，这个计数器记录的是正在执行的虚拟机字节码指令的地址；如果正在执行的是native方法，则个计数器值则为空。<br>　　此内存区域是唯一一个在java虚拟机规范中没有任何OutOfMemoryError情况的区域。<br>　　Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器（对于多喝处理器老说是一个内核）都只会执行一条线程中的指令。为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的计数器。</p>
 <h2 id="JVM栈"><a href="#JVM栈" class="headerlink" title="JVM栈"></a>JVM栈</h2><p>　　栈上分配 ：小对象，不存在内存逃逸的情况下，直接分配在栈上。可以自动回收，减轻GC压力，大对象或者逃逸对象无法栈上分配 。内存逃逸指被多个线程共享。</p>
 <ul>
@@ -381,13 +383,13 @@
 </ul>
 <h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p> jdk1.4中nio被引入，目的是避免在java堆和native堆中来来回复制数据带来的性能损失。全局共享。</p>
 <h1 id="对象创建"><a href="#对象创建" class="headerlink" title="对象创建"></a>对象创建</h1><p>　　假设Java堆中内存是绝对规整的，所有用过的内存都放在一边，空闲的内存放在另一边，中间放着一个指针作为分界点的指示器，这种分配方式成为“指针碰撞”。相对的分配方式成为“空闲列表”。<br>　　对象内存分配的同步：（1）采用CAS配上失败重试的方式保证更新操作的原子性（2）内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在Java堆中预先分配一块内存，本地线程缓冲（TLAB）。<br>　　对象头（Object Header）存放对象哈希码、对象的GC分代、类的元数据信息。</p>
-<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic1.png" alt="pic1.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic1.png">
 <h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>　　对象头、实例数据、和对齐填充（Padding）。对象头包含两部分信息，第一部分用于存储对象自身的运行时数据，如哈希码、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等、这部分数据的长度在32位和64位，官方称它为Mark Word。25位存储哈希码、4位存储对象分代年龄、2位用于存储锁标志</p>
 <p>对象的访问定位</p>
 <p>（1）使用直接指针访问方式的最大好蠢就是速度更快，他节省了一次指针定位 的时间开销</p>
-<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic2.png" alt="pic2.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic2.png">
 <p>（2）使用句柄</p>
-<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic3.png" alt="pic3.png" title="">
+<img src="/2016/08/28/JVM/JVM1-运行机制内存工作原理/pic3.png">
 <h1 id="Java反编译"><a href="#Java反编译" class="headerlink" title="Java反编译"></a>Java反编译</h1><p>javap -verbose Test01 反编译java字节码 查看java字节码</p>
 <h1 id="happen-before原则（指令重排原则）"><a href="#happen-before原则（指令重排原则）" class="headerlink" title="happen-before原则（指令重排原则）"></a>happen-before原则（指令重排原则）</h1><ul>
 <li>程序顺序原则：一个程序内保证语意的串行</li>
@@ -561,7 +563,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -569,7 +571,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -626,7 +628,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

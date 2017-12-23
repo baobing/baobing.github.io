@@ -85,11 +85,13 @@
 
 
 <meta name="description" content="堆得回顾大对象、栈分配、不在新生代。s0、s1大小相同、对称，只能一个可用。">
+<meta name="keywords" content="GYM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM5-GC收集器和参数">
 <meta property="og:url" content="http://baobing.github.io/2016/08/29/JVM/JVM5-GC收集器和参数/index.html">
 <meta property="og:site_name" content="贝叶斯的智慧">
 <meta property="og:description" content="堆得回顾大对象、栈分配、不在新生代。s0、s1大小相同、对称，只能一个可用。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/08/29/JVM/JVM5-GC收集器和参数/pic1">
 <meta property="og:image" content="http://baobing.github.io/2016/08/29/JVM/JVM5-GC收集器和参数/pic2">
 <meta property="og:updated_time" content="2016-08-28T16:27:52.000Z">
@@ -338,13 +340,13 @@
       
 
       
-        <h1 id="堆得回顾"><a href="#堆得回顾" class="headerlink" title="堆得回顾"></a>堆得回顾</h1><p>大对象、栈分配、不在新生代。<br>s0、s1大小相同、对称，只能一个可用。<br><a id="more"></a><br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic1" alt="pic1" title=""></p>
+        <h1 id="堆得回顾"><a href="#堆得回顾" class="headerlink" title="堆得回顾"></a>堆得回顾</h1><p>大对象、栈分配、不在新生代。<br>s0、s1大小相同、对称，只能一个可用。<br><a id="more"></a><br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic1"></p>
 <h1 id="串行收集器"><a href="#串行收集器" class="headerlink" title="串行收集器"></a>串行收集器</h1><p>1）最古老，最稳定，效率高，可能产生较长的停顿。<br>只有一个线程回收，多核中性能不能得到发挥。<br>2）-XX:+UseSerialGC<br>新生代 老年代使用串行回收；新生代复制算法；老年代标记－压缩；<br> DefNew新生代、Tenured老年代、Perm永久代</p>
 <h1 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h1><p>-XX:+UseParNewGC 新生代执行并行收集<br> ParNew 新生代</p>
 <h1 id="Parallel收集器"><a href="#Parallel收集器" class="headerlink" title="Parallel收集器"></a>Parallel收集器</h1><p>1）类似于ParNew 新生代复制算法；老年代标记－压缩；<br>PSYoungGen年轻代/ParLOldGen老年代收集/PSPermGen</p>
 <p>2）-XX:+UseParallelGC 使用Parallel收集器+老年代串行<br>-XX:+UseParallelOldGC 使用ParallelOldGC 使用Parallel收集器+并行老年代</p>
 <p>3）-XX:MaxGCPauseMills 最大停顿时间，单位毫秒；GC尽力保证回收时间不超过设定值<br>-XX:GCTimeRation 0-100的取值范围；垃圾收集时间占总时间的比；默认99，即最大允许1%时间做GC ，比重大，GC时间长<br>这两个参数是矛盾的。因为停顿时间和吞吐量不可能同时调优。</p>
-<h1 id="CMS收集器-Concurrent-Mark-Sweep"><a href="#CMS收集器-Concurrent-Mark-Sweep" class="headerlink" title="CMS收集器 Concurrent Mark Sweep"></a>CMS收集器 Concurrent Mark Sweep</h1><p>与应用程序一起并发执行；老年代收集器；并发阶段吞吐量降低；<br>降低停顿、清理不彻、不能再空间快满时清理<br>-XX:CMSInitiatingOccupancyFraction 设置出发GC的阈值 ；<br>如果空间不够，就会引起concurrent mode failure，遇到此情况停止业务，采用串行收集器。<br>CMS-concurrent-sweep 收集显示文字<br>-XX:+UseConcMarkSweepGC<br>新生代用并行收集器，老年代使用CMS+串行收集器<br>-XX:+UseCMSCompactAtFullColleciont  FullGC后，进行一次空间整理，整理过程是独占的，会引起停顿时间变长<br>-XX:CMSFullGCsBeforeCompaction 设置进行几次Full GC（CMS GC）后，进行一次碎片整理<br>-XX:ParallelCMSThreads 设定CMS的线程数量<br>-XX:+CMSClassUnloadingEnabled 允许对类元数据进行回收<br>工作流程：<br>（1）初始标记 根可以直接关联到的对象；速度快；需要停顿<br>（2）并发标记 主要标记过程，标记全部对象；主要步骤；<br>（3）重新标记  由于编发标记时，用户线程依然运行，因此正式清理前修正，需要停止其他线程<br>（4）并发清除 基于标记结果，直接清理对象<br>由于清理时并发的所以只能清除不能压缩<br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic2" alt="pic2" title=""></p>
+<h1 id="CMS收集器-Concurrent-Mark-Sweep"><a href="#CMS收集器-Concurrent-Mark-Sweep" class="headerlink" title="CMS收集器 Concurrent Mark Sweep"></a>CMS收集器 Concurrent Mark Sweep</h1><p>与应用程序一起并发执行；老年代收集器；并发阶段吞吐量降低；<br>降低停顿、清理不彻、不能再空间快满时清理<br>-XX:CMSInitiatingOccupancyFraction 设置出发GC的阈值 ；<br>如果空间不够，就会引起concurrent mode failure，遇到此情况停止业务，采用串行收集器。<br>CMS-concurrent-sweep 收集显示文字<br>-XX:+UseConcMarkSweepGC<br>新生代用并行收集器，老年代使用CMS+串行收集器<br>-XX:+UseCMSCompactAtFullColleciont  FullGC后，进行一次空间整理，整理过程是独占的，会引起停顿时间变长<br>-XX:CMSFullGCsBeforeCompaction 设置进行几次Full GC（CMS GC）后，进行一次碎片整理<br>-XX:ParallelCMSThreads 设定CMS的线程数量<br>-XX:+CMSClassUnloadingEnabled 允许对类元数据进行回收<br>工作流程：<br>（1）初始标记 根可以直接关联到的对象；速度快；需要停顿<br>（2）并发标记 主要标记过程，标记全部对象；主要步骤；<br>（3）重新标记  由于编发标记时，用户线程依然运行，因此正式清理前修正，需要停止其他线程<br>（4）并发清除 基于标记结果，直接清理对象<br>由于清理时并发的所以只能清除不能压缩<br><img src="/2016/08/29/JVM/JVM5-GC收集器和参数/pic2"></p>
 
       
     </div>
@@ -477,7 +479,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">33</span>
+              <span class="site-state-item-count">36</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -485,7 +487,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -542,7 +544,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
