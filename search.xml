@@ -6,35 +6,35 @@
     <entry>
       <title><![CDATA[Redis数据一致性分析]]></title>
       <url>http://baobing.github.io/2017/12/23/Redis/Redis%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E5%88%86%E6%9E%90/</url>
-      <content type="html"><![CDATA[<h1 id="提要"><a href="#提要" class="headerlink" title="提要"></a>提要</h1><p>Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是他有明显的短板，那就是<strong><em>无法保证数据的强一致性</em></strong>。如果你对数据一致性要求不高，完全可以考虑使用Redis存放一些业务数据。接下来我将列举一些Redis的优势,最后再聊聊Redis数据一致性。<br><a id="more"></a></p>
+      <content type="html"><![CDATA[<h1 id="提要"><a href="#提要" class="headerlink" title="提要"></a>提要</h1><p>Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是它也有明显的短板，那就是<strong><em>无法保证数据的强一致性</em></strong>。如果你对数据一致性要求不高，完全可以考虑使用Redis存放业务数据。接下来我将列举Redis的优势,然后再聊聊Redis数据一致性。<br><a id="more"></a></p>
 <h1 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h1><h2 id="定制化的数据结构"><a href="#定制化的数据结构" class="headerlink" title="定制化的数据结构"></a>定制化的数据结构</h2><p><strong>字符串(SDS)</strong>：</p>
 <ul>
-<li>保存字符串长度，O(1)复杂度查询长度；</li>
-<li>字符串操作拼接操作不会带来数组越界异常；</li>
+<li>字符串保存自身长度，查询长度只需O(1)复杂度；</li>
+<li>字符串拼接操作不会带来数组越界异常；</li>
 <li>修改字符串不需要重新分配内存空间；</li>
 <li>可以保存二进制数据;</li>
 </ul>
 <p><strong>跳跃表(skip list)</strong>：顺序链表。实现简单，查找快速，平均操作复杂度O(logN)。<br><strong>字典(dict)</strong>：等同于Map。渐进式Rehash。优雅地实现扩容，减少扩容带来的阻塞。<br><strong>压缩列表(ziplist)</strong>：使用二进制方式保存字符串和整数，节省内存。</p>
-<h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><p>Redis根据操作系统的选择合适的IO模型，其中最让人称道的是Epoll支撑下的事件驱动模型(Reactor模型)。Epoll可以支持大量的链接（理论上线是INT类型的最大值），并O(1)复杂度通知用户IO事件。这两点为Redis高并发打下了坚实的基础。</p>
-<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>Redis的操作都是线程安全的，大部分用户操作都是原子的。原因很简单，Redis是单线程模型。即使不得不在其他线程完成的工作(比如说RDB、AOF重写)，它选择使用子进程进行处理（子进程拷贝父进程数据），</p>
+<h2 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h2><p>Redis根据操作系统类型的选择合适的IO模型，其中最让人称道的是Epoll支撑下的事件驱动模型(Reactor模型)。Epoll可以支持大量的链接（理论上线是INT类型的最大值），并以O(1)复杂度通知用户进程IO事件。这两点为Redis高并发打下了坚实的基础。</p>
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>Redis的操作都是线程安全的，大部分用户指令都是原子的。原因很简单，Redis是单线程模型。不适合在主进程执行的操作(比如说RDB、AOF重写)，它选择使用子进程进行处理（子进程拷贝父进程数据）。</p>
 <h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><p>Redis3.0之后提供Redis Cluster功能，配合redis-trib工具，使用者可以轻松搭建一个Redis集群。Redis集群支持动态扩容缩容，支持主从互备，支持自动地故障转移。</p>
-<h1 id="数据一致性分析"><a href="#数据一致性分析" class="headerlink" title="数据一致性分析"></a>数据一致性分析</h1><p>数据一致性，Redis要么明确告知客户端请求失败，要么正确响应客户端请求并且持久化结果。需要</p>
+<h1 id="数据一致性分析"><a href="#数据一致性分析" class="headerlink" title="数据一致性分析"></a>数据一致性分析</h1><p>数据一致性，Redis要么明确告知客户端请求失败，要么正确响应客户端请求并且持久化结果。</p>
 <h2 id="单机持久化"><a href="#单机持久化" class="headerlink" title="单机持久化"></a>单机持久化</h2><p>Redis提供两种持久化方式分别是：RDB和AOF。需要说明的一点是<strong><em>写入文件并不代表持久化成功，还需要将文件同步到磁盘。</em></strong></p>
-<h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><p>RDB指的是Redis将内存中的所有数据持久化到磁盘。这就注定RDB只能在一定间隔的情况执行。我们可以通过配置间隔固定的时间或者固定次数的修改后进行持久化。当然我们也可以通过执行SAVE或者BGSAVE显示的持久化数据。显而易见，以上方式总是无法避免最新的数据无法持久化。</p>
+<h3 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h3><p>RDB指的是Redis将内存中的用户数据持久化到磁盘。这就注定RDB只能在一定时间间隔的情况执行。Redis支持时间间隔和数据修改次数两种维度出发RDB。当然我们也可以通过执行SAVE或者BGSAVE命令显示地持久化数据。显而易见，以上方式总是无法避免部分最新的数据无法持久化到磁盘。</p>
 <h3 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h3><p>AOF指的是Redis记录所有的写操作命令，并且持久化。AOF持久化有三个级别</p>
 <ul>
-<li><strong>no</strong>AOF文件同步交给操作系统决定;</li>
-<li><strong>everysec</strong>每隔一秒执行一次文件同步；</li>
-<li><strong>always</strong>写入文件立即同步。</li>
+<li><strong>no</strong>：AOF文件同步交给操作系统决定;</li>
+<li><strong>everysec</strong>：每隔一秒执行一次文件同步；</li>
+<li><strong>always</strong>：写入文件立即同步。</li>
 </ul>
-<p>虽然always级别最消耗性能，但是他似乎能够保证数据的一致性。不幸的是，这样也不能保证数据绝对的一致性。原因如下：<br>1.无法以事务的形式写AOF文件和执行写操作。一旦机器在写AOF文件和执行写操作中间的某一时刻崩溃，都会导致数据的不一致性。Mysql使用二阶段提交解决这个问题<br>2.文件同步到磁盘过程并非原子操作。mysql同步两次写解决这个问题。</p>
+<p>虽然always级别最消耗性能，但是它似乎能够保证数据的一致性。不幸的是，它也不能保证数据绝对的一致性。原因如下：<br>1.无法以事务的形式写AOF文件和执行写操作。一旦机器在写AOF文件和执行写操作中间的某一时刻崩溃，都会导致数据的不一致性。Mysql使用二阶段提交解决这个问题。<br>2.文件同步到磁盘过程并非原子操作。mysql同步磁盘使用”double write”解决这个问题。</p>
 <h2 id="主从数据一致性"><a href="#主从数据一致性" class="headerlink" title="主从数据一致性"></a>主从数据一致性</h2><p>Redis支持主从互备，自动地故障转移。如果主从之间能够保证数据一致性，那我们也不需要担心持久化造成的数据不一致。不幸的是主从互备并不能保证数据一致性。</p>
 <ol>
-<li>宕机。虽然多台机器同时宕机的概率极低，当时我们不能忽略这种可能(墨菲定律)。</li>
-<li>网络故障。主服务器主动将所有写操作发给从服务器。出现网络通信不畅，就会出现主从不同步。即使网络恢复正常，主服务器也不会将从服务器未接收到的命令发给从服务器。Mysql主从通过从服务器发送确认信号的方式确保主从一致。</li>
-<li>过期Key。从服务器不会主动删除过期Key。即使我们访问从服务期的过期Key，从服务器还是不会删除过期Key或者返回空，而是将过期key返回给客户端。</li>
+<li>宕机。虽然多台机器同时宕机的概率极低。但我们不能忽略这种可能(墨菲定律)。</li>
+<li>网络故障。主服务器主动将所有写操作发给从服务器。当网络通信不畅时，就会出现主从不同步。即使网络恢复正常，主服务器也不会将从服务器未接收到的命令发给从服务器。Mysql主从解决方案，从服务器以发送确认信号的方式确保主从一致。</li>
+<li>过期Key。从服务器不会主动删除过期Key。即使我们访问从服务期的过期Key，从服务器将过期key返回给客户端。</li>
 </ol>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Rdis一款优秀的缓存中间件。Redis的短板在于它无法保证数据的强一致性。如果您的业务场景对数据一致性要求很高，请不要把Redis当做DB使用。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Redis一款优秀的缓存中间件。Redis的短板在于它无法保证数据的强一致性。如果您的业务场景对数据一致性要求很高，请不要把Redis当做DB使用。</p>
 ]]></content>
     </entry>
     
