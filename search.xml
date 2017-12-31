@@ -7,8 +7,9 @@
       <title><![CDATA[Kafka传递语义设计—翻译]]></title>
       <url>http://baobing.github.io/2018/01/01/kafka/Kafka%E4%BC%A0%E9%80%92%E8%AF%AD%E4%B9%89%E8%AE%BE%E8%AE%A1%E2%80%94%E7%BF%BB%E8%AF%91/</url>
       <content type="html"><![CDATA[<blockquote>
-<p>官方文档地址:<a href="http://kafka.apache.org/documentation/#design" target="_blank" rel="noopener">http://kafka.apache.org/documentation/#design</a><br>Kafka版本：1.0.0<br><a id="more"></a></p>
+<p>官方文档地址:<a href="http://kafka.apache.org/documentation/#design" target="_blank" rel="noopener">http://kafka.apache.org/documentation/#design</a><br>Kafka版本：1.0.0 </p>
 </blockquote>
+<a id="more"></a>
 <h1 id="4-6-消息传递语义-Message-Delivery-Semantics"><a href="#4-6-消息传递语义-Message-Delivery-Semantics" class="headerlink" title="4.6 消息传递语义(Message Delivery Semantics)"></a>4.6 消息传递语义(Message Delivery Semantics)</h1><p>根据上文我们已经对生产者(producers) 和消费者(consumers)怎样工作有了大概的了解。接下来让我们来讨论一下Kafka在生产者和消费者之间提供的语义保证。Kafka可以提供多种消息传递保证：</p>
 <ul>
 <li>最多一次(<strong>At most once</strong>)—消息可能出现丢失的情况，不会出现重传。</li>

@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="Baobin Keeping">
 <meta property="og:description" content="官方文档地址:http://kafka.apache.org/documentation/#designKafka版本：1.0.0">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-31T16:13:56.000Z">
+<meta property="og:updated_time" content="2017-12-31T16:17:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka传递语义设计—翻译">
 <meta name="twitter:description" content="官方文档地址:http://kafka.apache.org/documentation/#designKafka版本：1.0.0">
@@ -338,8 +338,9 @@
 
       
         <blockquote>
-<p>官方文档地址:<a href="http://kafka.apache.org/documentation/#design" target="_blank" rel="noopener">http://kafka.apache.org/documentation/#design</a><br>Kafka版本：1.0.0<br><a id="more"></a></p>
+<p>官方文档地址:<a href="http://kafka.apache.org/documentation/#design" target="_blank" rel="noopener">http://kafka.apache.org/documentation/#design</a><br>Kafka版本：1.0.0 </p>
 </blockquote>
+<a id="more"></a>
 <h1 id="4-6-消息传递语义-Message-Delivery-Semantics"><a href="#4-6-消息传递语义-Message-Delivery-Semantics" class="headerlink" title="4.6 消息传递语义(Message Delivery Semantics)"></a>4.6 消息传递语义(Message Delivery Semantics)</h1><p>根据上文我们已经对生产者(producers) 和消费者(consumers)怎样工作有了大概的了解。接下来让我们来讨论一下Kafka在生产者和消费者之间提供的语义保证。Kafka可以提供多种消息传递保证：</p>
 <ul>
 <li>最多一次(<strong>At most once</strong>)—消息可能出现丢失的情况，不会出现重传。</li>
