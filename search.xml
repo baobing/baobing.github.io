@@ -4,6 +4,34 @@
   
     
     <entry>
+      <title><![CDATA[Kafka传递语义设计—翻译]]></title>
+      <url>http://baobing.github.io/2018/01/01/kafka/Kafka%E4%BC%A0%E9%80%92%E8%AF%AD%E4%B9%89%E8%AE%BE%E8%AE%A1%E2%80%94%E7%BF%BB%E8%AF%91/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>官方文档地址:<a href="http://kafka.apache.org/documentation/#design" target="_blank" rel="noopener">http://kafka.apache.org/documentation/#design</a><br>Kafka版本：1.0.0<br><a id="more"></a></p>
+</blockquote>
+<h1 id="4-6-消息传递语义-Message-Delivery-Semantics"><a href="#4-6-消息传递语义-Message-Delivery-Semantics" class="headerlink" title="4.6 消息传递语义(Message Delivery Semantics)"></a>4.6 消息传递语义(Message Delivery Semantics)</h1><p>根据上文我们已经对生产者(producers) 和消费者(consumers)怎样工作有了大概的了解。接下来让我们来讨论一下Kafka在生产者和消费者之间提供的语义保证。Kafka可以提供多种消息传递保证：</p>
+<ul>
+<li>最多一次(<strong>At most once</strong>)—消息可能出现丢失的情况，不会出现重传。</li>
+<li>最少一次(<strong>At least once</strong>)—消息绝对不会出现丢失的情况，会出现重传。</li>
+<li>有且仅有一次(<strong>Exactly once</strong>)—每条消息被消费有且仅有一次。<br>消息传递保证可以分成两个问题：<strong><em>发布消息和消费消息的可靠性</em></strong>。<br>许多系统声称提供”Exactly once”传递语义，但是仔细阅读，他们中大部分表述带有误导性。例如：</li>
+<li>他们没有考虑到生产者和消费者宕机的情况；</li>
+<li>多个消费进程的情况；</li>
+<li>写入磁盘的数据坑你丢失的情况；<h2 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h2>发送消息的过程中我们有一个概念叫做消息被提交(“committed”)。一旦发布的消息被提交(“committed”),只要该消息写入的分区(partition)其中一个备份(replicates)保持“alive”状态，消息就不会丢失。下一节中我们再详细讨论一下几个概念消息提交、存活分区、我们处理地各种类型的失败场景。现在我们假设所有的节点(broker)是完美的，不会出现数据丢失，然后尝试理解消费者和生产者可用性的保证。如果生产者<br>发送消息的过程中发生了网络故障，生产者无法缺省错误发生在消息提交前还是发生在消息提交后，它只能选择重发。这种情况和数据库使用自增主键插入数据库类似。</li>
+</ul>
+<p>0.11.0.0之前的版本中，如果生成者没有收到消息被成功提交的回复，它只能选择重发这条消息。这就保证Kafka提供at-least-once语义。即使原始的发送请求成功地写入日志，但是这条消息可能被再次发布，并写入日志。自0.11.0.0以来，Kafka生产者提供幂等传输功能，它保证日志中不存在重复的消息。为了达到这个目的，每个节点(broker)为每个生产者分配一个ID，并且使用生产者发送消息中的序列号进行去重。0.11.0.0版本开始，Kafka生产者可以在同一个topic的不同分区使用<strong><em>transaction-like</em></strong>语义（要不所有消息成功提交，要不没有一个提交）。这种语义的主要使用情景是Kafka的exactly-once处理过程，下面将会描述。</p>
+<p>不是所有情境下都需要这么强的语义保证。对于延迟敏感的用户可以指定自己想要的可靠性级别（durability level）。如果Producer指定等待消息被提交，那么这可能消耗10ms。Producer也可以指定以异步的方式发送消息或只等Leader节点写入消息(but not necessarily the followers)。</p>
+<h2 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h2><p>接下来我们以消费者的视角描述这些传递语义。所有的分区备份(replicas)都有完全一样的日志偏移量(offsets)。消费者控制消费消息的位置（简称消费位置）。如果消费者不宕机，它完全可以把消费位置保存在内存中。如果其中一个消费者宕机，我们想让其他进程接管这个分区（partition），新的处理进程需要选择正确的消费位置。消费者对于处理消息和更新消费位置有以下几个选项</p>
+<ol>
+<li>消费者可以读取消息，然后保存保存消费位置，最后处理这个消息。在成功保存的消费位置之后，保存消息处理结果之前，消费者发生崩溃。这种情况下，尽管这个消费位置之前的消息没有被处理，新接管的消费者还是会从保存的消费位置开始消费。这对应于“at-most-once”的语义，如在消费者fail消息可能不会被处理。</li>
+<li>消费者可以读取消息，处理消息，最后保存消费位置。在处理消息之后保存消费位置之前消费者崩溃。这种情况下，新接管的消费者会重复处理已经被处理过的消息。这个对应与”at-least-once”语义。<br>怎样实现exactly once语义呢？我们可以利用0.11.0.0版本中生产者提供的事务能力(transaction-like 上文有所提及)。将消费位置和消息处理结果在同一个事务中处理（先发送消费偏移量然后再发送消息处理结果）。如果事务中断，消费位置回滚到之前的位置，并且这条数据对其他消费者是否可见取决于”isolation level”。默认级别“read_uncommitted”中，即使是中断事务中的数据，消息还是对其他消费者可见。但是在“read_committed“级别消费者将只能获取已经提交的数据和非事务中的数据。<br>写入外部系统时，难点是同步消费位置和消息处理结果。经典的办法是使用二阶段完成同步。更优雅的方式是消费者同时存储消费偏移量和处理结果。消费者想要写入的输出系统不支持二阶段提交。比如，Kafka连接器将消费位置和消息一同发送给HDFS，HDFS能保证两者同时更新或者同时不更新。<blockquote>
+<p>We follow similar patterns for many other data systems which require these stronger semantics and for which the messages do not have a primary key to allow for deduplication.（翻译不来）<br>Kafka在Kafka Stream中支持exactly-once传输。在Kafka中传输处理数据时，使用事务的生产者和消费者能够提供exactly-once传递。<br>Exactly-once delivery for other destination systems generally requires cooperation with such systems, but Kafka provides the offset which makes implementing this feasible (see also Kafka Connect)<br>Kafka默认的保证消息”at-least-once”传递。通过放弃生产者重试和消费者提交消费位置，用户可以实现”at-most-once“传递</p>
+</blockquote>
+</li>
+</ol>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[Redis数据一致性分析]]></title>
       <url>http://baobing.github.io/2017/12/23/Redis/Redis%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E5%88%86%E6%9E%90/</url>
       <content type="html"><![CDATA[<h1 id="提要"><a href="#提要" class="headerlink" title="提要"></a>提要</h1><p>Redis是一款优秀的分布式缓存中间件。当然它能胜任的工作还有很多，比如说队列、分布式锁、Key-Value数据库。Redis的优秀毋庸置疑，但是它也有明显的短板，那就是<strong><em>无法保证数据的强一致性</em></strong>。如果你对数据一致性要求不高，完全可以考虑使用Redis存放业务数据。接下来我将列举Redis的优势,然后再聊聊Redis数据一致性。<br><a id="more"></a></p>
