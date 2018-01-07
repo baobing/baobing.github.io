@@ -84,22 +84,22 @@
 
 
 
-<meta name="description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。InnoDB逻辑存储结构表空间由">
+<meta name="description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。">
 <meta name="keywords" content="InnoDB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="InnoDB存储引擎4-表">
 <meta property="og:url" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/index.html">
 <meta property="og:site_name" content="Baobin Keeping">
-<meta property="og:description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。InnoDB逻辑存储结构表空间由">
+<meta property="og:description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/4-2.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/4-1.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/4-3.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/4-5.png">
-<meta property="og:updated_time" content="2016-11-23T13:51:42.000Z">
+<meta property="og:updated_time" content="2018-01-07T06:04:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InnoDB存储引擎4-表">
-<meta name="twitter:description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。InnoDB逻辑存储结构表空间由">
+<meta name="twitter:description" content="索引组织表InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：  首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。 如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。">
 <meta name="twitter:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎4-表/4-2.png">
 
 
@@ -345,7 +345,14 @@
         <h1 id="索引组织表"><a href="#索引组织表" class="headerlink" title="索引组织表"></a>索引组织表</h1><p>InnoDB中，表都是根据主键顺序组织存放的，这种存放方式的表称为索引组织表。<br>在InnoDB存储引擎表中，每张表都有个主键，如果没有InnoDB回按如下的方式选择或创建主键：</p>
 <ul>
 <li>首先判断表中是否有非空的唯一索引，如果有，则该列即为主键。主键选择更具定义索引的顺序，而不是建表时列的顺序。</li>
-<li>如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。<h1 id="InnoDB逻辑存储结构"><a href="#InnoDB逻辑存储结构" class="headerlink" title="InnoDB逻辑存储结构"></a>InnoDB逻辑存储结构</h1>表空间由段（segment）、区（extent）、页（page）。<h2 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h2><h2 id="段"><a href="#段" class="headerlink" title="段"></a>段</h2>常见的段有数据段、索引段、回滚段<h2 id="区"><a href="#区" class="headerlink" title="区"></a>区</h2>区是由连续页组成的空间，在任何情况下每个区的大小都为1MB。为了保证区中页的连续性，InnoDB存储引擎一次从磁盘申请4~5个区。在默认情况下，InnoDB存储引擎页的大小为16KB，即一个区中一共有64个连续的页。创建表的默认大小是96KB。其实这是因为在这个段开始时，先用32个页大小的碎片页来存放数据，在使用完这些页之后，才是64个连续页的申请。这样做的目的是，对于一些小表，或者是undo这类的段，可以在开始时申请较少的空间，节省磁盘容量的开销。<h2 id="页"><a href="#页" class="headerlink" title="页"></a>页</h2>在InnoDB存储中，默认每个页的大小为16KB。而从1.2开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。设置完成，则所有表中页的大小都为innodb_pae_siez，不可以对其再次进行修改。除非通过mysqldump导入和导出操作来产生新的库。<br>InnoDB常见页类型：</li>
+<li>如果不符合上述条件，InnoSB存储引擎自动创建一个6字节大小的指针。</li>
+</ul>
+<a id="more"></a>
+<h1 id="InnoDB逻辑存储结构"><a href="#InnoDB逻辑存储结构" class="headerlink" title="InnoDB逻辑存储结构"></a>InnoDB逻辑存储结构</h1><p>表空间由段（segment）、区（extent）、页（page）。</p>
+<h2 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h2><h2 id="段"><a href="#段" class="headerlink" title="段"></a>段</h2><p>常见的段有数据段、索引段、回滚段</p>
+<h2 id="区"><a href="#区" class="headerlink" title="区"></a>区</h2><p>区是由连续页组成的空间，在任何情况下每个区的大小都为1MB。为了保证区中页的连续性，InnoDB存储引擎一次从磁盘申请4~5个区。在默认情况下，InnoDB存储引擎页的大小为16KB，即一个区中一共有64个连续的页。创建表的默认大小是96KB。其实这是因为在这个段开始时，先用32个页大小的碎片页来存放数据，在使用完这些页之后，才是64个连续页的申请。这样做的目的是，对于一些小表，或者是undo这类的段，可以在开始时申请较少的空间，节省磁盘容量的开销。</p>
+<h2 id="页"><a href="#页" class="headerlink" title="页"></a>页</h2><p>在InnoDB存储中，默认每个页的大小为16KB。而从1.2开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。设置完成，则所有表中页的大小都为innodb_pae_siez，不可以对其再次进行修改。除非通过mysqldump导入和导出操作来产生新的库。<br>InnoDB常见页类型：</p>
+<ul>
 <li>数据页</li>
 <li>undo页</li>
 <li>系统页</li>
