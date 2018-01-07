@@ -84,13 +84,13 @@
 
 
 
-<meta name="description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。 数据结构与算法二分查找法PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑">
+<meta name="description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。">
 <meta name="keywords" content="InnoDB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="InnoDB存储引擎5-索引与算法">
 <meta property="og:url" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/index.html">
 <meta property="og:site_name" content="Baobin Keeping">
-<meta property="og:description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。 数据结构与算法二分查找法PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑">
+<meta property="og:description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-1.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-2.png">
@@ -98,10 +98,10 @@
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-16.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-6.png">
 <meta property="og:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-7.png">
-<meta property="og:updated_time" content="2016-11-23T14:01:40.000Z">
+<meta property="og:updated_time" content="2018-01-07T05:03:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="InnoDB存储引擎5-索引与算法">
-<meta name="twitter:description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。 数据结构与算法二分查找法PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑">
+<meta name="twitter:description" content="InnoDB存储引擎索引概述InnoDB常见索引B+树索引、全文索引、哈希索引。B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。">
 <meta name="twitter:image" content="http://baobing.github.io/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-1.png">
 
 
@@ -344,7 +344,7 @@
       
 
       
-        <h1 id="InnoDB存储引擎索引概述"><a href="#InnoDB存储引擎索引概述" class="headerlink" title="InnoDB存储引擎索引概述"></a>InnoDB存储引擎索引概述</h1><p>InnoDB常见索引B+树索引、全文索引、哈希索引。<br>B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
+        <h1 id="InnoDB存储引擎索引概述"><a href="#InnoDB存储引擎索引概述" class="headerlink" title="InnoDB存储引擎索引概述"></a>InnoDB存储引擎索引概述</h1><p>InnoDB常见索引B+树索引、全文索引、哈希索引。<br>B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。<br><a id="more"></a></p>
 <h1 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h1><h2 id="二分查找法"><a href="#二分查找法" class="headerlink" title="二分查找法"></a>二分查找法</h2><p>PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑B+树也用到了二分查找法）。</p>
 <h1 id="二叉查找树和平衡二叉树"><a href="#二叉查找树和平衡二叉树" class="headerlink" title="二叉查找树和平衡二叉树"></a>二叉查找树和平衡二叉树</h1><h1 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h1><h2 id="B-树的插入操作"><a href="#B-树的插入操作" class="headerlink" title="B+树的插入操作"></a>B+树的插入操作</h2><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-1.png">
 <p>##Ｂ＋树的删除操作<br><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-2.png"></p>

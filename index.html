@@ -584,73 +584,12 @@
 
       
         
-          
-            <h1 id="InnoDB存储引擎索引概述"><a href="#InnoDB存储引擎索引概述" class="headerlink" title="InnoDB存储引擎索引概述"></a>InnoDB存储引擎索引概述</h1><p>InnoDB常见索引B+树索引、全文索引、哈希索引。<br>B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
-<h1 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h1><h2 id="二分查找法"><a href="#二分查找法" class="headerlink" title="二分查找法"></a>二分查找法</h2><p>PageDiretory中槽是按照主键顺序存放的，对于某一条具体记录的查询是通过page directory进行二分查找得到的。（我怀疑B+树也用到了二分查找法）。</p>
-<h1 id="二叉查找树和平衡二叉树"><a href="#二叉查找树和平衡二叉树" class="headerlink" title="二叉查找树和平衡二叉树"></a>二叉查找树和平衡二叉树</h1><h1 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h1><h2 id="B-树的插入操作"><a href="#B-树的插入操作" class="headerlink" title="B+树的插入操作"></a>B+树的插入操作</h2><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-1.png">
-<p>##Ｂ＋树的删除操作<br><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-2.png"></p>
-<h1 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+树索引"></a>B+树索引</h1><p>B+索引在数据库中有一个特点是搞扇出性，因此在数据库中，B+树的高度一般都是2~4层，这也就是说查找某一简直的行记录时最多只需要2到4次IO。当前一般的机械磁盘每秒至少可以做10次IO。数据库中B+树索引分为聚集索引和辅助索引。</p>
-<p>##　聚集索引<br>InnoDB存储引擎表示索引组织表，即表中数据按照主键顺序存放。而聚集索引就是按照每张表的主键构造一棵B+树，同时叶子节点中存放的即为整张表的行记录数据，也将聚集索引的叶子节点称为数据页。<br><img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-14.png"></p>
-<h2 id="辅助索引"><a href="#辅助索引" class="headerlink" title="辅助索引"></a>辅助索引</h2><p>对于辅助索引，叶子节点并不含行记录的全部数据。叶子节点除了包含键值意外，每个叶子节点中的索引行中还包含了一个书签。该书签来告诉InnoDB存储引擎哪里可以找到与索引相对应的行数据</p>
-<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-16.png">
-<h2 id="B-树索引的分裂"><a href="#B-树索引的分裂" class="headerlink" title="B+树索引的分裂"></a>B+树索引的分裂</h2><h2 id="索引管理"><a href="#索引管理" class="headerlink" title="索引管理"></a>索引管理</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">alter table 表名称 add  index|key 索引名 （列名，）</span><br><span class="line">alter table 表名称 drop  index|key 索引名 </span><br><span class="line">create/drop index  on 表名称</span><br></pre></td></tr></table></figure>
-<p>Show Index from</p>
-<h3 id="Fast-Index-Creation"><a href="#Fast-Index-Creation" class="headerlink" title="Fast Index Creation"></a>Fast Index Creation</h3><p>Mysql5.5版本之前，DDL操作过程：</p>
-<ul>
-<li>首先创建一张新的临时表，表结构为通过命令alter table 新定义的结构。</li>
-<li>然后把原表中数据导入到临时表</li>
-<li>删除原表 更换表名<br>InnoDB1.0开始支持     一种称为fast index creation的索引创建方式。索引创建时会阻塞表上的DML操作。<br>对于辅助索引，会对表加上一个s锁。不用重建表，因次速度快很多。删除富足索引操作就更简单了，InnoDB存储引擎只需要更新内部视图，并将辅助索引的空间标记为可用，同时删除mysql数据库内部视图上对该表的索引定义即可。<br>FIC常见过程对表上了S锁，因此只能对该表进行读操作，只限定于辅助索引，对于主键的创建和删除同样要创建新表。<h3 id="Online-Schema-Change"><a href="#Online-Schema-Change" class="headerlink" title="Online Schema Change"></a>Online Schema Change</h3>最早由facebook实现的一种在线执行ddl的方式。可以有读写事务对表进行DDL操作。<br>OSC是一个php脚本，因此其有一定的局限性。进行修改的表一定要有主键，且表本身不能存在外键和触发器。此外，允许set sql_bin_log = 0,因此所做的操作不会同步slave服务器，可能导致主从不一致的情况。<h2 id="Online-DDL"><a href="#Online-DDL" class="headerlink" title="Online DDL"></a>Online DDL</h2>Mysql 5.6开始支持Online DDL。允许辅助索引创建的同事进行诸如Insert、update、delete这类DML操作。此外逼近是辅助索引，以下DDL操作都可以通过在线的方式进行操作 </li>
-<li>改变自增长值</li>
-<li>天剑或删除外键约束</li>
-<li>列的重命名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 新的alter table</span><br><span class="line">alter table tbl_name Add index index_name (index_col_name)</span><br><span class="line">algorithm = &#123;default|inplace|copy&#125; lock = &#123;default|none|shared|exclusive&#125;</span><br></pre></td></tr></table></figure>
-<p>algorithm 指定创建和删除索引的算法，cpoy表示按照mysql5.1版本之前的工作模式，即创建临时表的方式。inplace表示不需要创建临时表。default表示根据参数old_alter_table来判断，该参数默认值为off，表示采用inplace的方式。</p>
-<p>lock部分为索引创建或删除时对表添加锁的情况，已有的选择为：</p>
-<ul>
-<li>none：对目标表不添加任何锁</li>
-<li>share：和fic类似，对目标表加上一个s锁</li>
-<li>exclusive：对目标添加一个x锁</li>
-<li>default：一次尝试none、share、exclusive模式</li>
-</ul>
-<p>Online DDL的原理是在执行创建或者删除操作的同事，将insert、update、delete这类dml操作日志写入到一个缓存中，待完成索引创建后再将重做应用到表上，一次达到数据的一致性。<br>由于Online DDL在创建索引完成后再通过重做日志达到数据库的最终一致性，这意味着在索引创建过程中，sql优化器不会选择正在创建中的索引。</p>
-<h1 id="5-5-Cardinality"><a href="#5-5-Cardinality" class="headerlink" title="5.5 Cardinality"></a>5.5 Cardinality</h1><p>cardinality表示索引中不重复记录数量的预估值。cardinality/表中行数应尽可能的接近1。</p>
-<p>##InnoDB存储引擎的cardinality统计<br>innoDB内部更新cardinality信息的策略为</p>
-<ul>
-<li>表中十六之一的数据发生过变化</li>
-<li>sta_modified_counter&gt;2 000 000 000<br>默认InnoDB存储引擎对8个叶子节点进行采样，采样的过程如下：</li>
-<li>取得B+树索引中叶子节点的数量，记为A-</li>
-<li>随机去个B+树索引中的8个叶子节点，统计每个页不同记录的个数，记为P1，P2…P8</li>
-<li>根据采样信息给出cardinality的预估值<br>当执行sql语句analyze table show table status、showindex 一集访问information_schema架构下的表tables和statistics会导致存储引擎重新计算索引的cardinality。P214<h1 id="5-6-B-树索引的使用"><a href="#5-6-B-树索引的使用" class="headerlink" title="5.6 B+树索引的使用"></a>5.6 B+树索引的使用</h1><h2 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h2><h2 id="覆盖索引"><a href="#覆盖索引" class="headerlink" title="覆盖索引"></a>覆盖索引</h2><h2 id="优化器选择不使用索引的情况"><a href="#优化器选择不使用索引的情况" class="headerlink" title="优化器选择不使用索引的情况"></a>优化器选择不使用索引的情况</h2>没有命中覆盖索引，并且查询的数据量大于表的20%，优化器会选择聚集索引来查找数据。因此对于不能进行索引覆盖的情况，优化器选择辅助索引的情况是，通过辅助所以呢查找的数据是少量的。利用顺序读来替换随机读的查找<h2 id="索引提示-index-hint"><a href="#索引提示-index-hint" class="headerlink" title="索引提示 index hint"></a>索引提示 index hint</h2>use index 只是告诉优化器可以选择该索引，实际上优化器还是胡再根据自己判断进行选择。如果使用 force index 一定会使用索引。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">select * form t use index(a) where a =1 and b = 2;</span><br><span class="line">select * form t force index(a) where a =1 and b = 2;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="Multi-Range-Read-优化"><a href="#Multi-Range-Read-优化" class="headerlink" title="Multi-Range Read 优化"></a>Multi-Range Read 优化</h2><p>Mysql5.6版本开始支持。<br>对于InnoDB和MyISAM存储引擎的范围查询和Join查询操作，MRR的工作方式如下：</p>
-<ul>
-<li>将查询得到的辅助索引键值存放于一个缓存中，这是缓存中的数据是根据辅助索引键值排序的。</li>
-<li>将缓存中的键值根据RowID进行排序。</li>
-<li>根据rowID的排序顺序来访问实际的数据文件<br>MRR 优化有一下几个好处</li>
-<li>MRR使数据访问变得较为顺序。在查询辅助索引时，首先根据得到的查询结果，按照主键进行排序，并按照主键顺序进行书签查找。</li>
-<li>减少缓冲池中页被替换的次数</li>
-<li>批量处理对键值的操作</li>
-</ul>
-<h2 id="Index-condition-pushdown-优化-P226"><a href="#Index-condition-pushdown-优化-P226" class="headerlink" title="Index condition pushdown 优化 P226"></a>Index condition pushdown 优化 P226</h2><p>Mysql5.6开始支持。之前当进行索引查找时，首先根据索引来查找记录，然后再根据where条件过滤记录。ICP判断是够可以进行where条件的过滤，也就是将where的部分过滤操作放在存储引擎层。</p>
-<h1 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h1><h2 id="InnoDB存储引擎中哈希算法"><a href="#InnoDB存储引擎中哈希算法" class="headerlink" title="InnoDB存储引擎中哈希算法"></a>InnoDB存储引擎中哈希算法</h2><p>自适应hash索引想问见第二章</p>
-<h2 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h2><h2 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h2><p>全文检索通常使用代拍索引来实现。它在辅助表中存储了单次与单词自身在一个或多个文档中位置之间的映射。</p>
-<ul>
-<li>inverted file index ，表现形式为{单次，单次所在文档的id}</li>
-<li>full inverted index，其变现形式为{单次，（单次所在文档的id，在具体文档中的位置）}<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-6.png">
-<img src="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/5-7.png">
-</li>
-</ul>
-<h2 id="InnoDB全文检索"><a href="#InnoDB全文检索" class="headerlink" title="InnoDB全文检索"></a>InnoDB全文检索</h2><p>innoDB存储引擎从1.2开始支持全文检索的技术。InnoDB中环将（documentID，Position）视为一个“ilist”。因此在全文检索表中，有两个列，一个是word字段，另一个是ilist字段，并且在word字段上有索引。此外，由于InnoDB在ilist字段中存放了position信息，故可以进行proximity search。InnoDB会批量对Auxiliary  table进行更新，而不是每次插入后更新一次。查询是，首先将FTS index cache 中对应的word字段合并到 辅助表中，然后再进行查询。这个merge操作类似Inser buffer的功能，不同的是 inser buffer 是一个持久的兑现个，并且其是B+树结构。FTS index cache由红黑树排序后批量插入。<br>当数据库关闭时，cache中的数据会通过到磁盘的辅助表中，然而，数据库发生宕机时，未能将cache同步到磁盘上。那么下次重启数据库时，当用户对表进行全文检索时，InnoDB存储引擎会自动读取未完成的文档，然后进行分词操作，在激情分词的结果放入到FTS index cache。<br>innoDB存储引擎中，为了支持全文检索，必须有一个列和word进行映射，这个列被命名为为fts_doc_id,类型必须是 bigint unsigned not null，必须加 unique index。上述这些操作都会有innoDB存储引擎自己完成</p>
-<p>InnoDB全文检索存在的限制</p>
-<ul>
-<li>每张表只能有一个全文检索的索引</li>
-<li>由多列组合而成的全文检索索引列必须使用相同的字符集和排序规则</li>
-<li>不支持没有单次界定符的预先 如 中文、 日语、韩语。<br><strong><em>不支持中文 还研究个毛</em></strong></li>
-</ul>
-
-          
+          <h1 id="InnoDB存储引擎索引概述"><a href="#InnoDB存储引擎索引概述" class="headerlink" title="InnoDB存储引擎索引概述"></a>InnoDB存储引擎索引概述</h1><p>InnoDB常见索引B+树索引、全文索引、哈希索引。<br>B+树索引并不能找到一个给定键值的具体行。B+树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/11/23/数据库/InnoDB存储引擎5-索引与算法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
